@@ -1,0 +1,26 @@
+.git
+.vscode
+
+**/node_modules
+**/.next
+
+# Python
+**/__pycache__
+**/*.pyc
+ai/venv
+ai/.venv
+
+# Local vector DB / caches
+ai/data/chroma
+ai/data/cache
+
+# Logs
+**/*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Local env files (do not bake secrets into images)
+**/.env
+**/.env.*

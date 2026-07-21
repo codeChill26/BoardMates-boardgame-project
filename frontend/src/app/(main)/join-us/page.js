@@ -1,0 +1,186 @@
+'use client';
+
+import React from 'react';
+import Link from 'next/link';
+import { motion, useReducedMotion } from 'framer-motion';
+import { useLanguageStore } from '@/hooks/useLanguageStore';
+import { translations } from '@/data/translations';
+import { teams } from '@/data/teams';
+
+// Chia bai: moi cua so ban duoc "chia" ra lan luot nhu chia bai tu co bai —
+// bay len, xoay tu -8deg ve 0, phong tu 0.86 len 1, spring nay nhe khi dap.
+// Con (item) khong can khai bao initial/animate — framer tu lay ten trang thai
+// "hidden"/"show" tu cha (container) truyen xuong.
+const container = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.08 } },
+};
+
+const item = {
+  hidden: { opacity: 0, y: 26, rotate: -8, scale: 0.86 },
+  show: {
+    opacity: 1,
+    y: 0,
+    rotate: 0,
+    scale: 1,
+    transition: { type: 'spring', stiffness: 420, damping: 26 },
+  },
+};
+
+// Bong cung cua .window-shadow la 4px. Hover thi day len va keo bong dai ra 8px,
+// nhu the ngoi cua so nhac khoi mat ban. Mau navy = #182d45, trung --color-on-surface.
+const hoverNang = { y: -4, x: -4, boxShadow: '8px 8px 0px 0px #182d45' };
+
+// TODO: điền email hoặc link form tuyển dụng, ví dụ:
+//   'mailto:hello@boardmates.vn'  hoặc  'https://forms.gle/...'
+// Còn để rỗng thì nút Ứng tuyển hiện ở trạng thái disabled.
+const APPLY_URL = '';
+
+function TeamWindow({ team, t, language, reducedMotion }) {
+  return (
+    <motion.article
+      variants={reducedMotion ? undefined : item}
+      whileHover={reducedMotion ? undefined : hoverNang}
+      className="window-border window-shadow bg-surface-container-lowest overflow-hidden flex flex-col h-full"
+    >
+      <Link
+        href={`/join-us/${team.slug}`}
+        className="w-full retro-title-bar bg-surface-container-high px-4 py-2 flex justify-between items-center cursor-pointer hover:bg-surface-container-highest transition-colors"
+      >
+        <span className="font-label text-[10px] md:text-xs font-bold uppercase tracking-widest text-on-surface truncate pr-2">
+          {team.slug.replace(/-/g, '_')}.exe
+        </span>
+        <span className="material-symbols-outlined text-on-surface-variant text-sm">open_in_new</span>
+      </Link>
+
+      {/* flex-1 flex-col + mt-auto o nut -> moi the cao bang nhau, nut luon o day.
+          line-clamp gioi han so dong -> noi dung dong deu giua cac the. */}
+      <div className="p-6 flex flex-col flex-1 gap-4">
+        <div className="flex items-center gap-3">
+          <span className="material-symbols-outlined text-primary text-2xl">{team.icon}</span>
+          <h3 className="font-headline text-2xl md:text-3xl font-bold text-on-surface">
+            {team.name[language]}
+          </h3>
+        </div>
+
+        <div className="space-y-2">
+          <h4 className="font-label text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">
+            {t.mission}
+          </h4>
+          <p className="font-body text-sm md:text-base text-on-surface line-clamp-2 min-h-[2.8em]">{team.mission[language]}</p>
+        </div>
+
+        <div className="pt-4 border-t-2 border-outline-variant space-y-2">
+          <h4 className="font-label text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">
+            {t.responsibilities}
+          </h4>
+          <ul className="space-y-1">
+            {team.responsibilities[language].slice(0, 2).map((item, idx) => (
+              <li key={idx} className="font-body text-sm text-on-surface flex gap-2">
+                <span className="text-primary shrink-0">-</span>
+                <span className="line-clamp-1">{item}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <Link
+          href={`/join-us/${team.slug}`}
+          className="mt-auto self-start inline-flex items-center gap-2 bg-primary text-on-primary px-4 py-2 rounded-md font-label font-bold uppercase tracking-widest text-[10px] hover:bg-primary-dim transition-colors"
+        >
+          {language === 'vi' ? 'Xem Job Description' : 'View Job Description'}
+          <span className="material-symbols-outlined text-sm">arrow_forward</span>
+        </Link>
+      </div>
+    </motion.article>
+  );
+}
+
+export default function JoinUsPage() {
+  const { language } = useLanguageStore();
+  const t = translations[language].joinUs;
+  const reducedMotion = useReducedMotion();
+
+  return (
+    <div className="pt-28 md:pt-32 pb-20 px-6 md:px-8 max-w-7xl mx-auto w-full space-y-16">
+      {/* Cua so bat mo: scale 0.94 -> 1.02 -> 1 bang spring, nhu mo mot phan mem */}
+      <motion.section
+        initial={reducedMotion ? false : { opacity: 0, scale: 0.94 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ type: 'spring', stiffness: 260, damping: 18 }}
+        className="window-border window-shadow bg-surface-container-lowest overflow-hidden"
+      >
+        <div className="retro-title-bar bg-surface-container-high px-4 py-2 flex justify-between items-center">
+          <span className="font-label text-[10px] md:text-xs font-bold uppercase tracking-widest text-on-surface truncate pr-2">
+            join_us.exe
+          </span>
+          <div className="flex gap-2 shrink-0">
+            <div className="w-2 h-2 md:w-3 md:h-3 rounded-full border border-on-surface"></div>
+            <div className="w-2 h-2 md:w-3 md:h-3 rounded-full border border-on-surface bg-primary"></div>
+          </div>
+        </div>
+        <div className="p-6 md:p-12 space-y-6">
+          <h1 className="text-4xl md:text-6xl font-headline font-bold leading-[0.9] tracking-tighter text-on-surface">
+            {t.title}
+          </h1>
+          <p className="text-base md:text-lg text-on-surface-variant font-body max-w-2xl">
+            {t.intro}
+          </p>
+        </div>
+      </motion.section>
+
+      <section className="space-y-8">
+        <h2 className="text-3xl md:text-4xl font-headline font-bold text-on-surface">
+          {t.openPositions}
+        </h2>
+
+        <motion.div
+          className="grid grid-cols-1 lg:grid-cols-2 auto-rows-fr gap-8 items-stretch"
+          variants={reducedMotion ? undefined : container}
+          initial={reducedMotion ? false : 'hidden'}
+          whileInView={reducedMotion ? undefined : 'show'}
+          viewport={{ once: true, amount: 0.1 }}
+        >
+          {teams.map((team) => (
+            <TeamWindow
+              key={team.slug}
+              team={team}
+              t={t}
+              language={language}
+              reducedMotion={reducedMotion}
+            />
+          ))}
+        </motion.div>
+      </section>
+
+      <section className="window-border window-shadow bg-secondary-container p-6 md:p-12 flex flex-col items-center text-center gap-4">
+        <h2 className="text-3xl md:text-4xl font-headline font-bold text-on-secondary-container">
+          {t.applyTitle}
+        </h2>
+        <p className="font-body text-base text-on-secondary-container max-w-xl">{t.applyDesc}</p>
+
+        {APPLY_URL ? (
+          <a
+            href={APPLY_URL}
+            className="mt-2 bg-primary text-on-primary px-8 py-4 rounded-md font-label font-bold uppercase tracking-widest window-shadow hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all cursor-pointer"
+          >
+            {t.applyCta}
+          </a>
+        ) : (
+          <>
+            <button
+              type="button"
+              disabled
+              className="mt-2 bg-primary text-on-primary px-8 py-4 rounded-md font-label font-bold uppercase tracking-widest opacity-50 cursor-not-allowed"
+            >
+              {t.applyCta}
+            </button>
+            <p className="font-label text-[10px] uppercase tracking-widest text-on-secondary-container">
+              {t.applyPending}
+            </p>
+          </>
+        )}
+      </section>
+    </div>
+  );
+}

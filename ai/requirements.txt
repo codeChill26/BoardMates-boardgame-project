@@ -1,0 +1,16 @@
+# AI / Python service dependencies
+#
+# For production pinning/locking, after install run:
+#   py -m pip freeze > requirements.lock.txt
+
+openai
+ollama
+langchain
+chromadb
+sentence-transformers
+fastapi
+uvicorn[standard]
+python-dotenv
+requests
+numpy
+pandas

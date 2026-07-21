@@ -1,0 +1,116 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ----------------------------------------------------------------
+// 1. KHAI BÁO CÁC ENUM Ở ĐÂY
+// ----------------------------------------------------------------
+enum Role {
+  USER
+  ADMIN
+}
+
+enum UserStatus {
+  ACTIVE
+  BANNED
+}
+
+enum ListingType {
+  SELL
+  RENT
+  EXCHANGE
+}
+
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  DONE
+  CANCELLED
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  username  String
+  email     String   @unique
+  password  String?
+  googleId  String?  @unique
+  phone     String?
+  avatarUrl String?
+
+  city      String?
+ // lat       Float?
+//lng       Float?
+
+  role      Role        @default(USER)
+  status    UserStatus  @default(ACTIVE)
+
+  createdAt DateTime @default(now())
+
+  listings  Listing[]
+}
+
+model BoardGame {
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String?
+  categories  String[] @default([])
+  minPlayers  Int?
+  maxPlayers  Int?
+  playTime    Int?
+  age         Int?
+  publisher   String?
+  imageUrl    String?
+
+  listings    Listing[]
+}
+
+model Listing {
+  id          Int      @id @default(autoincrement())
+  userId      Int
+  gameId      Int
+
+  type        ListingType
+  price       Float?
+  rentPrice   Float?
+  condition   String?
+
+  description String?
+  status      String   @default("ACTIVE")
+
+  createdAt   DateTime @default(now())
+
+  user        User      @relation(fields: [userId], references: [id])
+  game        BoardGame @relation(fields: [gameId], references: [id])
+
+  orders      Order[]
+}
+
+model Order {
+  id              Int      @id @default(autoincrement())
+  buyerId         Int
+  listingId       Int
+
+  type            ListingType
+  status          OrderStatus @default(PENDING)
+  totalPrice      Float?
+
+  startDate       DateTime?
+  endDate         DateTime?
+
+  meetingAddress  String?
+  meetingLat      Float?
+  meetingLng      Float?
+
+  createdAt       DateTime @default(now())
+
+  listing         Listing @relation(fields: [listingId], references: [id])
+}

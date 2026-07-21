@@ -1,0 +1,119 @@
+@import "tailwindcss";
+
+@theme {
+  /* Surface — kem #F9F2EA lấy từ nền Logo.png */
+  --color-surface: #f9f2ea;
+  --color-background: #f9f2ea;
+  --color-surface-bright: #fffcf7;
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-container-low: #fcf7f0;
+  --color-surface-container: #f5ede2;
+  --color-surface-container-high: #efe6d8;
+  --color-surface-container-highest: #e8ddcc;
+  --color-surface-variant: #e8ddcc;
+  --color-surface-dim: #e4d9c7;
+
+  /* Chữ — navy #182D45, 12.6:1 trên kem */
+  --color-on-surface: #182d45;
+  --color-on-background: #182d45;
+  --color-on-surface-variant: #4a5a70;
+
+  /* Viền — xám của logo */
+  --color-outline: #7c8698;
+  --color-outline-variant: #c7cdd6;
+
+  /* Primary — ochre #8F5D1E, 5.0:1 trên kem (an toàn cho chữ) */
+  --color-primary: #8f5d1e;
+  --color-primary-dim: #6f4715;
+  --color-on-primary: #ffffff;
+  --color-primary-container: #cd8a30;
+  --color-on-primary-container: #182d45;
+  --color-primary-fixed: #cd8a30;
+  --color-primary-fixed-dim: #b87a28;
+  --color-on-primary-fixed: #182d45;
+  --color-on-primary-fixed-variant: #4a3208;
+  --color-surface-tint: #8f5d1e;
+  --color-inverse-primary: #e0a64f;
+
+  /* Tertiary — amber #CD8A30 gốc từ logo.
+     CHỈ dùng làm nền/mảng đặc. KHÔNG dùng làm chữ trên kem: chỉ đạt 2.6:1, dưới WCAG AA. */
+  --color-tertiary: #cd8a30;
+  --color-tertiary-dim: #a96d22;
+  --color-on-tertiary: #182d45;
+  --color-tertiary-container: #f0d6a8;
+  --color-on-tertiary-container: #4a3208;
+  --color-tertiary-fixed: #f0d6a8;
+  --color-tertiary-fixed-dim: #e0a64f;
+  --color-on-tertiary-fixed: #4a3208;
+  --color-on-tertiary-fixed-variant: #664700;
+
+  /* Secondary — navy nhạt (thay palette xanh lá cũ; logo không có xanh lá) */
+  --color-secondary: #2e4a6b;
+  --color-secondary-dim: #22384f;
+  --color-on-secondary: #ffffff;
+  --color-secondary-container: #d6dee9;
+  --color-on-secondary-container: #182d45;
+  --color-secondary-fixed: #d6dee9;
+  --color-secondary-fixed-dim: #b4c2d4;
+  --color-on-secondary-fixed: #182d45;
+  --color-on-secondary-fixed-variant: #2e4a6b;
+
+  /* Inverse */
+  --color-inverse-surface: #182d45;
+  --color-inverse-on-surface: #f9f2ea;
+
+  /* Error — giữ đỏ quy ước */
+  --color-error: #c0262d;
+  --color-error-dim: #9f0519;
+  --color-error-container: #fb5151;
+  --color-on-error: #ffffff;
+  --color-on-error-container: #570008;
+
+  --font-headline: "Newsreader", serif;
+  --font-body: "Manrope", sans-serif;
+  --font-label: "Space Grotesk", sans-serif;
+
+  --radius-default: 0.25rem;
+  --radius-lg: 0.5rem;
+  --radius-xl: 0.75rem;
+}
+
+@layer utilities {
+  .material-symbols-outlined {
+    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  }
+
+  .window-shadow {
+    box-shadow: 4px 4px 0px 0px #182d45;
+  }
+
+  .window-border {
+    border: 2px solid #182d45;
+  }
+
+  .retro-title-bar {
+    border-bottom: 2px solid #182d45;
+  }
+}
+
+:root {
+  font-family: var(--font-body);
+  color: var(--color-on-surface);
+  background-color: var(--color-surface);
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background-color: var(--color-surface);
+}
+
+#root {
+  width: 100%;
+}
+
+.page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}

@@ -1,0 +1,34 @@
+services:
+  ai:
+    build:
+      context: .
+      dockerfile: ai/Dockerfile
+    ports:
+      - "8001:8001"
+    environment:
+      # If you run Ollama on the host machine (Windows/Mac), this usually works from Docker.
+      - OLLAMA_HOST=http://host.docker.internal:11434
+    volumes:
+      # Persist local ChromaDB data across container restarts.
+      - ./ai/data/chroma:/app/ai/data/chroma
+
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - PORT=8080
+      # Provide your own DATABASE_URL (Postgres) if you want DB-backed features.
+      # - DATABASE_URL=postgresql://USER:PASS@HOST:5432/DB?schema=public
+
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+      - ai
