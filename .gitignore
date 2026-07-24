@@ -80,3 +80,4 @@ ai/data/cache/
 
 # Local secrets for AI service
 ai/.env
+/backend/data/

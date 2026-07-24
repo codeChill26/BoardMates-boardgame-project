@@ -36,22 +36,38 @@ const hoverNang = { y: -4, x: -4, boxShadow: '8px 8px 0px 0px #182d45' };
 // Còn để rỗng thì nút Ứng tuyển hiện ở trạng thái disabled.
 const APPLY_URL = '';
 
-function TeamWindow({ team, t, language, reducedMotion }) {
+function TeamWindow({ team, t, language, reducedMotion, isOpen }) {
+  // Vi tri da dong: to xam, khong bam duoc (pointer-events-none chan moi click),
+  // khong nhac len khi hover, hien nhan "Da dong".
+  const closedCls = isOpen ? '' : 'grayscale opacity-55 pointer-events-none select-none';
+
   return (
     <motion.article
       variants={reducedMotion ? undefined : item}
-      whileHover={reducedMotion ? undefined : hoverNang}
-      className="window-border window-shadow bg-surface-container-lowest overflow-hidden flex flex-col h-full"
+      whileHover={reducedMotion || !isOpen ? undefined : hoverNang}
+      aria-disabled={!isOpen}
+      className={`window-border window-shadow bg-surface-container-lowest overflow-hidden flex flex-col h-full ${closedCls}`}
     >
-      <Link
-        href={`/join-us/${team.slug}`}
-        className="w-full retro-title-bar bg-surface-container-high px-4 py-2 flex justify-between items-center cursor-pointer hover:bg-surface-container-highest transition-colors"
-      >
-        <span className="font-label text-[10px] md:text-xs font-bold uppercase tracking-widest text-on-surface truncate pr-2">
-          {team.slug.replace(/-/g, '_')}.exe
-        </span>
-        <span className="material-symbols-outlined text-on-surface-variant text-sm">open_in_new</span>
-      </Link>
+      {isOpen ? (
+        <Link
+          href={`/join-us/${team.slug}`}
+          className="w-full retro-title-bar bg-surface-container-high px-4 py-2 flex justify-between items-center cursor-pointer hover:bg-surface-container-highest transition-colors"
+        >
+          <span className="font-label text-[10px] md:text-xs font-bold uppercase tracking-widest text-on-surface truncate pr-2">
+            {team.slug.replace(/-/g, '_')}.exe
+          </span>
+          <span className="material-symbols-outlined text-on-surface-variant text-sm">open_in_new</span>
+        </Link>
+      ) : (
+        <div className="w-full retro-title-bar bg-surface-container-high px-4 py-2 flex justify-between items-center">
+          <span className="font-label text-[10px] md:text-xs font-bold uppercase tracking-widest text-on-surface truncate pr-2">
+            {team.slug.replace(/-/g, '_')}.exe
+          </span>
+          <span className="font-label text-[9px] font-bold uppercase tracking-widest text-on-surface-variant">
+            {language === 'vi' ? 'Đã đóng' : 'Closed'}
+          </span>
+        </div>
+      )}
 
       {/* flex-1 flex-col + mt-auto o nut -> moi the cao bang nhau, nut luon o day.
           line-clamp gioi han so dong -> noi dung dong deu giua cac the. */}
@@ -84,13 +100,19 @@ function TeamWindow({ team, t, language, reducedMotion }) {
           </ul>
         </div>
 
-        <Link
-          href={`/join-us/${team.slug}`}
-          className="mt-auto self-start inline-flex items-center gap-2 bg-primary text-on-primary px-4 py-2 rounded-md font-label font-bold uppercase tracking-widest text-[10px] hover:bg-primary-dim transition-colors"
-        >
-          {language === 'vi' ? 'Xem Job Description' : 'View Job Description'}
-          <span className="material-symbols-outlined text-sm">arrow_forward</span>
-        </Link>
+        {isOpen ? (
+          <Link
+            href={`/join-us/${team.slug}`}
+            className="mt-auto self-start inline-flex items-center gap-2 bg-primary text-on-primary px-4 py-2 rounded-md font-label font-bold uppercase tracking-widest text-[10px] hover:bg-primary-dim transition-colors"
+          >
+            {language === 'vi' ? 'Xem Job Description' : 'View Job Description'}
+            <span className="material-symbols-outlined text-sm">arrow_forward</span>
+          </Link>
+        ) : (
+          <span className="mt-auto self-start inline-flex items-center gap-2 bg-surface-container-high text-on-surface-variant px-4 py-2 rounded-md font-label font-bold uppercase tracking-widest text-[10px]">
+            {language === 'vi' ? 'Đã đóng ứng tuyển' : 'Applications closed'}
+          </span>
+        )}
       </div>
     </motion.article>
   );
@@ -100,6 +122,15 @@ export default function JoinUsPage() {
   const { language } = useLanguageStore();
   const t = translations[language].joinUs;
   const reducedMotion = useReducedMotion();
+
+  // Lay trang thai mo/dong tu backend. Loi mang -> coi nhu tat ca dang mo.
+  const [openMap, setOpenMap] = React.useState({});
+  React.useEffect(() => {
+    fetch('http://localhost:8080/api/positions')
+      .then((r) => r.json())
+      .then((j) => setOpenMap(j?.data || {}))
+      .catch(() => {});
+  }, []);
 
   return (
     <div className="pt-28 md:pt-32 pb-20 px-6 md:px-8 max-w-7xl mx-auto w-full space-y-16">
@@ -148,6 +179,7 @@ export default function JoinUsPage() {
               t={t}
               language={language}
               reducedMotion={reducedMotion}
+              isOpen={openMap[team.slug] !== false}
             />
           ))}
         </motion.div>

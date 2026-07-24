@@ -15,6 +15,7 @@ var authRouter = require('./src/routes/auth'); // Router Đăng nhập/Đăng k�
 var listingsRouter = require('./src/routes/listings');
 var ordersRouter = require('./src/routes/orders');
 var adminRouter = require('./src/routes/admin');
+var positionsRouter = require('./src/routes/positions');
 
 const passport = require('./src/config/passport'); // Khởi tạo passport cấu hình
 
@@ -39,6 +40,7 @@ app.use('/api/auth', authRouter);
 app.use('/api/listings', listingsRouter);
 app.use('/api/orders', ordersRouter);
 app.use('/api/admin', adminRouter);
+app.use('/api/positions', positionsRouter);
 app.use('/api/users', usersRouter);
 app.use('/api', indexRouter);
 
