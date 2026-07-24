@@ -312,7 +312,15 @@ function Navbar() {
               </div>
             )}
           </div>
-        ) : null}
+        ) : (
+          <Link
+            href="/login"
+            className="flex items-center gap-2 bg-primary text-on-primary px-4 py-2 rounded-md font-label text-[10px] font-bold uppercase tracking-widest hover:bg-primary-dim transition-colors cursor-pointer"
+          >
+            <span className="material-symbols-outlined text-base">login</span>
+            <span className="hidden sm:inline">{t.login}</span>
+          </Link>
+        )}
       </div>
 
       {/* Mobile Menu Overlay */}
@@ -340,9 +348,9 @@ function Navbar() {
                 <span className="font-label text-xs uppercase text-on-surface-variant">Ngôn ngữ / Language</span>
                 <LanguageSwitcher />
               </div>
-              {user && (
+              {user ? (
                 <>
-                  <Link 
+                  <Link
                     href="/profile"
                     onClick={(event) => handleNavClick(event, '/profile', { closeMenu: true })}
                     scroll={false}
@@ -351,7 +359,7 @@ function Navbar() {
                     <span className="material-symbols-outlined">account_circle</span>
                     {t.profile}
                   </Link>
-                  <button 
+                  <button
                     onClick={handleLogout}
                     className="flex items-center gap-2 text-primary font-label uppercase text-sm tracking-widest"
                   >
@@ -359,6 +367,15 @@ function Navbar() {
                     {t.logout}
                   </button>
                 </>
+              ) : (
+                <Link
+                  href="/login"
+                  onClick={() => setIsMenuOpen(false)}
+                  className="flex items-center justify-center gap-2 bg-primary text-on-primary px-4 py-3 rounded-md font-label text-sm font-bold uppercase tracking-widest"
+                >
+                  <span className="material-symbols-outlined text-lg">login</span>
+                  {t.login}
+                </Link>
               )}
             </div>
           </div>
