@@ -1,10 +1,13 @@
 'use client';
 
 import React, { useState } from 'react';
+import Image from 'next/image';
 import { motion, useReducedMotion } from 'framer-motion';
 import { useLanguageStore } from '@/hooks/useLanguageStore';
 import { translations } from '@/data/translations';
 import dynamic from 'next/dynamic';
+import youthLogo from '@/assets/youth-plus-logo.png';
+import { YOUTH_FANPAGE_URL } from '@/data/links';
 
 // three.js chi chay duoc o trinh duyet va la mieng nang nhat trang nay, nen tai
 // dong + tat SSR: khong nem WebGL vao bundle server, khong chan lan render dau.
@@ -154,6 +157,110 @@ function SectionBody({ section, reducedMotion }) {
   return null;
 }
 
+// BoardMates la du an truc thuoc Youth+. Card dung doc, dat canh cua so about.exe
+// — khong nhet vao trong duoc vi cua so do la con xuc xac 6 mat, them mat thu 7
+// la hong phep an do.
+function YouthSection({ t, reducedMotion }) {
+  const y = t.youth;
+
+  return (
+    <motion.section
+      data-tour="about-youth"
+      initial={reducedMotion ? false : { opacity: 0, y: 24 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.15 }}
+      transition={{ type: 'spring', stiffness: 240, damping: 26 }}
+      className="xl:col-span-3 window-border window-shadow bg-surface-container-lowest overflow-hidden flex flex-col"
+    >
+      <div className="retro-title-bar bg-surface-container-high px-4 py-2 flex justify-between items-center">
+        <span className="font-label text-[10px] font-bold uppercase tracking-widest text-on-surface truncate pr-2">
+          youth_plus.exe
+        </span>
+        <span className="material-symbols-outlined text-on-surface-variant text-sm">hub</span>
+      </div>
+
+      <div className="p-6 flex flex-col gap-5 flex-1">
+        <div className="flex flex-col items-center gap-3 text-center">
+          <Image
+            src={youthLogo}
+            alt="Youth+ HCM"
+            width={256}
+            height={219}
+            className="w-32 h-auto object-contain"
+          />
+          <div className="space-y-1">
+            <span className="block font-label text-[10px] font-bold uppercase tracking-widest text-primary">
+              {y.badge}
+            </span>
+            <h2 className="text-2xl font-headline font-bold tracking-tight text-on-surface">
+              {y.title}
+            </h2>
+          </div>
+        </div>
+
+        <p className="font-body text-sm text-on-surface leading-relaxed border-t-2 border-outline-variant pt-5">
+          {y.body}
+        </p>
+
+        <div className="space-y-3 border-t-2 border-outline-variant pt-5">
+          <h3 className="font-label text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">
+            {y.modelLabel}
+          </h3>
+
+          {/* Cho chuoi tu xuong dong trong cot hep — xep doc han 4 tang thi card
+              cao gap doi about.exe ben canh. */}
+          <div className="flex flex-wrap items-center gap-x-1.5 gap-y-2">
+            {y.modelNodes.map((node, idx) => (
+              <React.Fragment key={`${node}-${idx}`}>
+                <span className="window-border bg-surface-container-low px-2 py-1.5 font-label text-[10px] font-bold uppercase tracking-widest text-on-surface">
+                  {node}
+                </span>
+                {idx < y.modelNodes.length - 1 ? (
+                  <span
+                    aria-hidden="true"
+                    className="material-symbols-outlined text-on-surface-variant text-sm leading-none"
+                  >
+                    arrow_forward
+                  </span>
+                ) : null}
+              </React.Fragment>
+            ))}
+          </div>
+
+          <p className="font-body text-sm text-on-surface-variant">{y.modelNote}</p>
+        </div>
+
+        <div className="grid grid-cols-2 gap-3 border-t-2 border-outline-variant pt-5">
+          {y.stats.map((s) => (
+            <div key={s.name} className="window-border bg-surface-container-lowest p-3 space-y-1">
+              <div className="font-headline text-2xl font-bold text-primary">{s.value}</div>
+              <div className="font-label text-[9px] uppercase tracking-widest text-on-surface-variant leading-tight">
+                {s.name}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {YOUTH_FANPAGE_URL ? (
+          <a
+            href={YOUTH_FANPAGE_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-auto inline-flex items-center justify-center gap-2 bg-primary text-on-primary px-4 py-3 rounded-md font-label font-bold uppercase tracking-widest text-[10px] hover:bg-primary-dim transition-colors"
+          >
+            {y.cta}
+            <span className="material-symbols-outlined text-sm">open_in_new</span>
+          </a>
+        ) : (
+          <p className="mt-auto font-label text-[10px] uppercase tracking-widest text-on-surface-variant">
+            {y.ctaPending}
+          </p>
+        )}
+      </div>
+    </motion.section>
+  );
+}
+
 export default function AboutPage() {
   const { language } = useLanguageStore();
   const t = translations[language].about;
@@ -162,9 +269,12 @@ export default function AboutPage() {
 
   const section = t.sections.find((s) => s.face === face) ?? t.sections[0];
 
+  // about.exe rong, youth_plus.exe la cot doc hep ben canh. Chi tach cot tu xl tro
+  // len — duoi do about.exe da phai chia doi cho con xuc xac roi, chen them cot
+  // nua la be het.
   return (
-    <div className="pt-28 md:pt-32 pb-20 px-6 md:px-8 max-w-7xl mx-auto w-full">
-      <section className="window-border window-shadow bg-surface-container-lowest overflow-hidden">
+    <div className="pt-28 md:pt-32 pb-20 px-6 md:px-8 max-w-7xl mx-auto w-full grid grid-cols-1 xl:grid-cols-12 gap-8">
+      <section className="xl:col-span-9 window-border window-shadow bg-surface-container-lowest overflow-hidden">
         <div className="retro-title-bar bg-surface-container-high px-4 py-2 flex justify-between items-center">
           <span className="font-label text-[10px] md:text-xs font-bold uppercase tracking-widest text-on-surface truncate pr-2">
             about.exe
@@ -234,6 +344,8 @@ export default function AboutPage() {
           </div>
         </div>
       </section>
+
+      <YouthSection t={t} reducedMotion={reducedMotion} />
     </div>
   );
 }

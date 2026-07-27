@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { motion, useReducedMotion } from 'framer-motion';
 import { useLanguageStore } from '@/hooks/useLanguageStore';
 import { translations } from '@/data/translations';
-import { teams } from '@/data/teams';
+import { teams, APPLY_URL } from '@/data/teams';
 
 // Chia bai: moi cua so ban duoc "chia" ra lan luot nhu chia bai tu co bai —
 // bay len, xoay tu -8deg ve 0, phong tu 0.86 len 1, spring nay nhe khi dap.
@@ -31,18 +31,21 @@ const item = {
 // nhu the ngoi cua so nhac khoi mat ban. Mau navy = #182d45, trung --color-on-surface.
 const hoverNang = { y: -4, x: -4, boxShadow: '8px 8px 0px 0px #182d45' };
 
-// TODO: điền email hoặc link form tuyển dụng, ví dụ:
-//   'mailto:hello@boardmates.vn'  hoặc  'https://forms.gle/...'
-// Còn để rỗng thì nút Ứng tuyển hiện ở trạng thái disabled.
-const APPLY_URL = '';
-
-function TeamWindow({ team, t, language, reducedMotion, isOpen }) {
+function TeamWindow({ team, t, language, reducedMotion, isOpen, headcount }) {
   // Vi tri da dong: to xam, khong bam duoc (pointer-events-none chan moi click),
   // khong nhac len khi hover, hien nhan "Da dong".
   const closedCls = isOpen ? '' : 'grayscale opacity-55 pointer-events-none select-none';
 
+  // The tren card chi hien icon + so cho gon, nen nhan day du day vao title/aria.
+  // headcountUnit rong (ban EN) -> bo luon khoang trang thua.
+  const headcountLabel = `${t.headcount}: ${headcount}${t.headcountUnit ? ` ${t.headcountUnit}` : ''}`;
+
   return (
     <motion.article
+      // layout: trang thai mo/dong ve tu backend sau khi trang da ve xong, nen thu
+      // tu the doi mot lan ngay sau do — cho framer truot chung sang cho moi thay
+      // vi nhay cai rup.
+      layout={!reducedMotion}
       variants={reducedMotion ? undefined : item}
       whileHover={reducedMotion || !isOpen ? undefined : hoverNang}
       aria-disabled={!isOpen}
@@ -72,11 +75,25 @@ function TeamWindow({ team, t, language, reducedMotion, isOpen }) {
       {/* flex-1 flex-col + mt-auto o nut -> moi the cao bang nhau, nut luon o day.
           line-clamp gioi han so dong -> noi dung dong deu giua cac the. */}
       <div className="p-6 flex flex-col flex-1 gap-4">
-        <div className="flex items-center gap-3">
-          <span className="material-symbols-outlined text-primary text-2xl">{team.icon}</span>
-          <h3 className="font-headline text-2xl md:text-3xl font-bold text-on-surface">
-            {team.name[language]}
-          </h3>
+        <div className="flex items-start justify-between gap-3">
+          <div className="flex items-center gap-3 min-w-0">
+            <span className="material-symbols-outlined text-primary text-2xl shrink-0">{team.icon}</span>
+            <h3 className="font-headline text-2xl md:text-3xl font-bold text-on-surface">
+              {team.name[language]}
+            </h3>
+          </div>
+
+          {/* headcount = 0 hoac chua khai bao -> an han, khong hien "0 nguoi". */}
+          {headcount ? (
+            <span
+              title={headcountLabel}
+              aria-label={headcountLabel}
+              className="shrink-0 mt-1 inline-flex items-center gap-1 border-2 border-outline-variant bg-surface-container px-2 py-1 rounded-md font-label text-[10px] font-bold uppercase tracking-widest text-on-surface-variant"
+            >
+              <span className="material-symbols-outlined text-sm" aria-hidden="true">group</span>
+              {headcount}
+            </span>
+          ) : null}
         </div>
 
         <div className="space-y-2">
@@ -123,14 +140,26 @@ export default function JoinUsPage() {
   const t = translations[language].joinUs;
   const reducedMotion = useReducedMotion();
 
-  // Lay trang thai mo/dong tu backend. Loi mang -> coi nhu tat ca dang mo.
-  const [openMap, setOpenMap] = React.useState({});
+  // Lay trang thai { slug: { isOpen, headcount } } tu backend.
+  // Loi mang -> map rong -> coi nhu tat ca dang mo, so luong lay tu teams.js.
+  const [positions, setPositions] = React.useState({});
   React.useEffect(() => {
     fetch('http://localhost:8080/api/positions')
       .then((r) => r.json())
-      .then((j) => setOpenMap(j?.data || {}))
+      .then((j) => setPositions(j?.data || {}))
       .catch(() => {});
   }, []);
+
+  // Vi tri con mo len tren, da dong dan xuong duoi. sort() cua JS on dinh, nen
+  // trong tung nhom van giu nguyen thu tu goc khai bao o teams.js.
+  const orderedTeams = React.useMemo(() => {
+    return [...teams].sort((a, b) => {
+      const aOpen = positions[a.slug]?.isOpen !== false;
+      const bOpen = positions[b.slug]?.isOpen !== false;
+      if (aOpen === bOpen) return 0;
+      return aOpen ? -1 : 1;
+    });
+  }, [positions]);
 
   return (
     <div className="pt-28 md:pt-32 pb-20 px-6 md:px-8 max-w-7xl mx-auto w-full space-y-16">
@@ -172,14 +201,17 @@ export default function JoinUsPage() {
           whileInView={reducedMotion ? undefined : 'show'}
           viewport={{ once: true, amount: 0.1 }}
         >
-          {teams.map((team) => (
+          {orderedTeams.map((team) => (
             <TeamWindow
               key={team.slug}
               team={team}
               t={t}
               language={language}
               reducedMotion={reducedMotion}
-              isOpen={openMap[team.slug] !== false}
+              isOpen={positions[team.slug]?.isOpen !== false}
+              // Console ghi de duoc so luong; khong ghi de (null) thi lay so
+              // mac dinh khai bao trong teams.js.
+              headcount={positions[team.slug]?.headcount ?? team.headcount}
             />
           ))}
         </motion.div>
@@ -194,9 +226,12 @@ export default function JoinUsPage() {
         {APPLY_URL ? (
           <a
             href={APPLY_URL}
-            className="mt-2 bg-primary text-on-primary px-8 py-4 rounded-md font-label font-bold uppercase tracking-widest window-shadow hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all cursor-pointer"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-2 inline-flex items-center gap-2 bg-primary text-on-primary px-8 py-4 rounded-md font-label font-bold uppercase tracking-widest window-shadow hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all cursor-pointer"
           >
             {t.applyCta}
+            <span className="material-symbols-outlined text-base">open_in_new</span>
           </a>
         ) : (
           <>

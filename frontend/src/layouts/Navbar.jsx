@@ -68,7 +68,9 @@ function Navbar() {
   const handleLogout = () => {
     logout();
     setIsMenuOpen(false);
-    router.push('/login');
+    // Ve trang chu chu khong ve /login: trang do dang la cua hau, dang xuat ma
+    // van thay man hinh dang nhap thi nguoc voi y do giau no.
+    router.push('/');
   };
 
   const toggleNotifications = () => {
@@ -97,12 +99,15 @@ function Navbar() {
     }
   };
 
+  // tourId: moc cho NavbarTour bam vao (document.querySelector('[data-tour=...]')).
+  // CHI gan o ban desktop ben duoi — menu mobile de trong de querySelector khong
+  // nham lan giua hai ban sao cua cung mot link.
   const navLinks = [
-    { to: '/', label: t.home },
-    { to: '/community', label: t.community, comingSoon: true },
-    { to: '/events', label: t.events, comingSoon: true },
-    { to: '/join-us', label: t.joinUs },
-    { to: '/about', label: t.about },
+    { to: '/', label: t.home, tourId: 'nav-home' },
+    { to: '/community', label: t.community, comingSoon: true, tourId: 'nav-community' },
+    { to: '/events', label: t.events, comingSoon: true, tourId: 'nav-events' },
+    { to: '/join-us', label: t.joinUs, tourId: 'nav-join-us' },
+    { to: '/about', label: t.about, tourId: 'nav-about' },
   ];
 
   return (
@@ -114,6 +119,7 @@ function Navbar() {
         <div className="md:hidden flex items-center">
           <button
             type="button"
+            data-tour="nav-menu"
             className="material-symbols-outlined text-on-surface cursor-pointer p-1"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
           >
@@ -154,6 +160,7 @@ function Navbar() {
             <Link
               key={link.to}
               href={link.to}
+              data-tour={link.tourId}
               onClick={(event) => handleNavClick(event, link.to)}
               scroll={false}
               className={`relative pb-3 font-label uppercase text-[10px] tracking-widest transition-colors duration-200 cursor-pointer active:opacity-70 flex items-center gap-1.5 ${isActive ? 'text-primary' : 'text-on-surface hover:text-primary'}`}
@@ -191,7 +198,7 @@ function Navbar() {
       </div>
 
       <div className="flex items-center gap-2 md:gap-4">
-        <div className="hidden sm:block">
+        <div className="hidden sm:block" data-tour="nav-language">
           <LanguageSwitcher />
         </div>
 
@@ -241,9 +248,13 @@ function Navbar() {
           </div>
         ) : null}
 
+        {/* Giai doan tuyen core team: CHI hien khu tai khoan khi DA dang nhap.
+            Nhanh else (nut "Dang nhap") da bi go — khach vang lai khong thay loi
+            vao, admin tu go /login. Bat lai: khoi phuc <Link href="/login"> o day
+            va o menu mobile ben duoi; key t.login van con trong translations.js. */}
         {user ? (
           <div className="relative" ref={profileRef}>
-            <button 
+            <button
               onClick={() => setIsProfileOpen(!isProfileOpen)}
               className="flex items-center gap-3 focus:outline-none group"
             >
@@ -312,15 +323,7 @@ function Navbar() {
               </div>
             )}
           </div>
-        ) : (
-          <Link
-            href="/login"
-            className="flex items-center gap-2 bg-primary text-on-primary px-4 py-2 rounded-md font-label text-[10px] font-bold uppercase tracking-widest hover:bg-primary-dim transition-colors cursor-pointer"
-          >
-            <span className="material-symbols-outlined text-base">login</span>
-            <span className="hidden sm:inline">{t.login}</span>
-          </Link>
-        )}
+        ) : null}
       </div>
 
       {/* Mobile Menu Overlay */}
@@ -367,16 +370,7 @@ function Navbar() {
                     {t.logout}
                   </button>
                 </>
-              ) : (
-                <Link
-                  href="/login"
-                  onClick={() => setIsMenuOpen(false)}
-                  className="flex items-center justify-center gap-2 bg-primary text-on-primary px-4 py-3 rounded-md font-label text-sm font-bold uppercase tracking-widest"
-                >
-                  <span className="material-symbols-outlined text-lg">login</span>
-                  {t.login}
-                </Link>
-              )}
+              ) : null}
             </div>
           </div>
         </div>

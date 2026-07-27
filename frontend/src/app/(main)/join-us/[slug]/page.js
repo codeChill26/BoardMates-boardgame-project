@@ -5,11 +5,7 @@ import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { useLanguageStore } from '@/hooks/useLanguageStore';
 import { translations } from '@/data/translations';
-import { teams } from '@/data/teams';
-
-// TODO: điền email hoặc link form tuyển dụng, ví dụ:
-//   'mailto:hello@boardmates.vn'  hoặc  'https://forms.gle/...'
-const APPLY_URL = '';
+import { teams, APPLY_URL } from '@/data/teams';
 
 function FieldList({ label, items }) {
   return (
@@ -35,6 +31,19 @@ export default function JobDetailPage() {
   const params = useParams();
   const slug = Array.isArray(params?.slug) ? params.slug[0] : params?.slug;
   const team = teams.find((item) => item.slug === slug);
+
+  // Console ghi de duoc so luong -> phai hoi backend, khong thi the o /join-us va
+  // trang nay bao hai so khac nhau. Loi mang -> ve so mac dinh trong teams.js.
+  const [override, setOverride] = React.useState(null);
+  React.useEffect(() => {
+    if (!slug) return;
+    fetch('http://localhost:8080/api/positions')
+      .then((r) => r.json())
+      .then((j) => setOverride(j?.data?.[slug]?.headcount ?? null))
+      .catch(() => {});
+  }, [slug]);
+
+  const headcount = override ?? team?.headcount;
 
   if (!team) {
     return (
@@ -80,11 +89,21 @@ export default function JobDetailPage() {
 
         <div className="p-6 md:p-8 space-y-8">
           <div className="space-y-3">
-            <div className="inline-flex items-center gap-3">
-              <span className="material-symbols-outlined text-primary text-3xl">{team.icon}</span>
-              <h1 className="text-4xl md:text-5xl font-headline font-bold tracking-tight text-on-surface">
-                {team.name[language]}
-              </h1>
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+              <div className="inline-flex items-center gap-3">
+                <span className="material-symbols-outlined text-primary text-3xl">{team.icon}</span>
+                <h1 className="text-4xl md:text-5xl font-headline font-bold tracking-tight text-on-surface">
+                  {team.name[language]}
+                </h1>
+              </div>
+
+              {/* headcount = 0 hoac chua khai bao -> an han, khong hien "0 nguoi". */}
+              {headcount ? (
+                <span className="inline-flex items-center gap-1.5 border-2 border-outline-variant bg-surface-container px-3 py-1.5 rounded-md font-label text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">
+                  <span className="material-symbols-outlined text-sm" aria-hidden="true">group</span>
+                  {`${t.headcount}: ${headcount}${t.headcountUnit ? ` ${t.headcountUnit}` : ''}`}
+                </span>
+              ) : null}
             </div>
 
             <div className="space-y-2">
@@ -112,10 +131,12 @@ export default function JobDetailPage() {
             {APPLY_URL ? (
               <a
                 href={APPLY_URL}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 bg-primary text-on-primary px-6 py-3 rounded-md font-label font-bold uppercase tracking-widest text-[10px] hover:bg-primary-dim transition-colors"
               >
                 {t.applyCta}
-                <span className="material-symbols-outlined text-sm">arrow_forward</span>
+                <span className="material-symbols-outlined text-sm">open_in_new</span>
               </a>
             ) : (
               <button

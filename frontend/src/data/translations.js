@@ -14,6 +14,48 @@ export const translations = {
       login: 'Đăng nhập',
       profile: 'Hồ sơ người dùng',
     },
+    // Tour dan khach lan dau: key trong `steps` phai trung `key` cua STEPS
+    // trong components/common/NavbarTour.jsx.
+    tour: {
+      titleBar: 'huong_dan.exe',
+      step: 'Bước',
+      skip: 'Bỏ qua',
+      back: 'Quay lại',
+      next: 'Tiếp',
+      done: 'Bắt đầu khám phá',
+      // Chi hien tren man hinh hep, khi muc duoc noi toi dang nam trong menu.
+      inMenu: 'Nằm trong menu ☰',
+      steps: {
+        welcome: {
+          title: 'Chào mừng tới BoardMates',
+          body: 'Có vẻ đây là lần đầu bạn ghé qua. Để mình dẫn bạn đi một vòng thanh điều hướng, chỉ mất khoảng 30 giây.',
+        },
+        home: {
+          title: 'Trang chủ',
+          body: 'Điểm bắt đầu: BoardMates là gì và chúng mình đang xây dựng điều gì.',
+        },
+        community: {
+          title: 'Cộng đồng',
+          body: 'Nơi bạn tìm thấy những người cùng gu board game để chơi và chia sẻ. Phần này đang được xây, sẽ mở sớm.',
+        },
+        events: {
+          title: 'Sự kiện',
+          body: 'Board Game Night, workshop, giải đấu. Lịch sự kiện và đăng ký tham gia sẽ nằm ở đây.',
+        },
+        joinUs: {
+          title: 'Tham gia',
+          body: 'Chúng mình đang tuyển Core Team. Xem mô tả công việc của từng ban và nộp đơn ứng tuyển ngay tại đây.',
+        },
+        about: {
+          title: 'Giới thiệu',
+          body: 'Tầm nhìn, triết lý và lộ trình của BoardMates — kể qua sáu mặt xúc xắc. Cuối trang còn phần giới thiệu Youth+, đơn vị chủ quản của tụi mình.',
+        },
+        language: {
+          title: 'Đổi ngôn ngữ',
+          body: 'Chuyển qua lại giữa Tiếng Việt và English bất cứ lúc nào.',
+        },
+      },
+    },
     footer: {
       brand: 'BoardMates',
       copyright: '© 2026 BoardMates. Tất cả quyền được bảo lưu.',
@@ -37,13 +79,28 @@ export const translations = {
       diceHint: 'Bấm để đổ',
       diceRolling: 'Đang đổ...',
       of: 'trên',
+      // Khoi gioi thieu don vi chu quan, nam duoi cua so about.exe.
+      youth: {
+        badge: 'Đơn vị chủ quản',
+        title: 'Youth+',
+        body: 'Youth+ là hệ sinh thái giáo dục và cộng đồng phi lợi nhuận dành cho người trẻ Việt Nam, với sứ mệnh kết nối, định hướng và tạo cơ hội để giới trẻ phát triển bản thân thông qua học tập, trải nghiệm và các dự án cộng đồng.',
+        modelLabel: 'Mô hình kết nối',
+        modelNodes: ['Bạn trẻ', 'Bạn trẻ', 'Mentor', 'Doanh nghiệp'],
+        modelNote: 'Tạo môi trường để người trẻ học hỏi và cùng tạo ra những giá trị tích cực.',
+        stats: [
+          { value: '63K+', name: 'Người theo dõi Facebook' },
+          { value: '10+', name: 'Năm hoạt động' },
+        ],
+        cta: 'Xem fanpage Youth+',
+        ctaPending: 'Link fanpage sẽ được cập nhật',
+      },
       // 6 mat xuc xac = 6 muc noi dung. Moi muc mot "kind" rieng vi cach trinh bay khac nhau.
       sections: [
         {
           face: 1,
           kind: 'prose',
           label: 'Tầm nhìn',
-          body: 'BoardMates là nền tảng kết nối và sáng tạo thông qua board game. Board game chỉ là điểm khởi đầu. Điều BoardMates muốn xây dựng là một hệ sinh thái nơi mọi người có thể gặp gỡ, chia sẻ, học hỏi, hợp tác và cùng nhau phát triển.',
+          body: 'BoardMates là dự án trực thuộc YOUTH + COMMUNITY, là nền tảng cộng đồng kết nối và sáng tạo thông qua board game. Board game chỉ là điểm khởi đầu. Điều BoardMates muốn xây dựng là một hệ sinh thái nơi các người trẻ có thể gặp gỡ, chia sẻ, học hỏi, hợp tác và cùng nhau phát triển trong thời đại số hiện nay.',
         },
         {
           face: 2,
@@ -139,6 +196,8 @@ export const translations = {
       title: 'Tham gia cùng chúng mình',
       intro: 'BoardMates vẫn đang trong giai đoạn đầu. Chúng mình đang tìm kiếm những người muốn xây dựng cộng đồng từ con số 0.',
       openPositions: 'Vị trí đang mở',
+      headcount: 'Số lượng',
+      headcountUnit: 'người',
       mission: 'Sứ mệnh',
       responsibilities: 'Công việc',
       requirements: 'Yêu cầu',
@@ -275,6 +334,45 @@ export const translations = {
       login: 'Login',
       profile: 'Profile',
     },
+    tour: {
+      titleBar: 'quick_tour.exe',
+      step: 'Step',
+      skip: 'Skip',
+      back: 'Back',
+      next: 'Next',
+      done: 'Start exploring',
+      inMenu: 'Inside the ☰ menu',
+      steps: {
+        welcome: {
+          title: 'Welcome to BoardMates',
+          body: 'Looks like this is your first visit. Let us walk you through the navigation bar — it takes about 30 seconds.',
+        },
+        home: {
+          title: 'Home',
+          body: 'The starting point: what BoardMates is and what we are building.',
+        },
+        community: {
+          title: 'Community',
+          body: 'Where you find people who share your taste in board games. We are still building this one — it opens soon.',
+        },
+        events: {
+          title: 'Events',
+          body: 'Board Game Nights, workshops, tournaments. The schedule and sign-ups will live here.',
+        },
+        joinUs: {
+          title: 'Join Us',
+          body: 'We are recruiting our Core Team. Read each team’s job description and apply right here.',
+        },
+        about: {
+          title: 'About',
+          body: 'The vision, philosophy and roadmap of BoardMates — told across six faces of a die. At the bottom you will also find Youth+, the organisation we belong to.',
+        },
+        language: {
+          title: 'Switch language',
+          body: 'Move between Vietnamese and English whenever you like.',
+        },
+      },
+    },
     footer: {
       brand: 'BoardMates',
       copyright: '© 2026 BoardMates. All rights reserved.',
@@ -298,6 +396,20 @@ export const translations = {
       diceHint: 'Click to roll',
       diceRolling: 'Rolling...',
       of: 'of',
+      youth: {
+        badge: 'Parent organisation',
+        title: 'Youth+',
+        body: 'Youth+ is a non-profit education and community ecosystem for young people in Vietnam. Its mission is to connect, guide and open up opportunities for them to grow through learning, hands-on experience and community projects.',
+        modelLabel: 'Connection model',
+        modelNodes: ['Youth', 'Youth', 'Mentor', 'Business'],
+        modelNote: 'Building an environment where young people learn and create positive value together.',
+        stats: [
+          { value: '63K+', name: 'Facebook followers' },
+          { value: '10+', name: 'Years running' },
+        ],
+        cta: 'Visit the Youth+ fanpage',
+        ctaPending: 'Fanpage link coming soon',
+      },
       sections: [
         {
           face: 1,
@@ -399,6 +511,10 @@ export const translations = {
       title: 'Join us',
       intro: 'BoardMates is still in its early days. We are looking for people who want to build a community from zero.',
       openPositions: 'Open positions',
+      headcount: 'Openings',
+      // Tieng Anh khong can don vi ("Openings: 2" du roi). De rong thi cho hien
+      // so tu bo phan don vi — xem join-us/[slug]/page.js.
+      headcountUnit: '',
       mission: 'Mission',
       responsibilities: 'Responsibilities',
       requirements: 'Requirements',

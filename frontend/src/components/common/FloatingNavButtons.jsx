@@ -30,7 +30,9 @@ export default function FloatingNavButtons() {
         </button>
       </div>
 
-      <div className="fixed bottom-6 right-6 z-50">
+      {/* Xep tren huy hieu Youth+ (YouthBadge dang giu goc bottom-6 right-6).
+          Nut nay chi hien khi da cuon >200px nen khong lam nhay layout. */}
+      <div className="fixed bottom-26 right-6 z-50">
         {showScrollTop ? (
           <button
             type="button"

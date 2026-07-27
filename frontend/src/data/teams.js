@@ -1,17 +1,26 @@
 // Dữ liệu 7 ban cho trang /join-us.
 // Khung field theo Refactor.md: Mission, Responsibilities, Requirements, Benefits, Growth Path.
+//
+// headcount = số lượng cần tuyển của ban đó. TẤT CẢ đang để tạm là 2 — sửa lại
+// cho đúng trước khi công bố. Đặt 0 thì phần "Số lượng" tự ẩn (dùng khi chưa chốt).
 // Tách khỏi translations.js vì đây là mảng lồng nhau, không phải dictionary phẳng.
 //
 // NOTE: nội dung dưới đây là bản nháp, cần rà lại trước khi công bố.
+
+// Link form ứng tuyển (Google Form). Dùng chung cho nút "Ứng tuyển" ở cả
+// /join-us và /join-us/[slug] — sửa một chỗ này là đổi cả hai.
+// Để rỗng thì nút Ứng tuyển tự về trạng thái disabled + hiện dòng "sẽ sớm mở".
+export const APPLY_URL = 'https://forms.gle/oF8ZjH2jsp6WQFEs7';
 
 export const teams = [
   {
     slug: 'marketing',
     icon: 'campaign',
     name: { vi: 'Marketing', en: 'Marketing' },
+    headcount: 2,
     mission: {
-      vi: 'Đưa BoardMates đến đúng người: những ai đang tìm một cộng đồng board game tử tế.',
-      en: 'Bring BoardMates to the right people: those looking for a community built around board games.',
+      vi: 'Đưa BoardMates đến đúng người: nơi để mọi người dừng chân và kết nối trong thời đại số hiện nay.',
+      en: 'Bring BoardMates to the right people: a place where everyone can connect and belong in today\'s digital age.',
     },
     responsibilities: {
       vi: [
@@ -29,26 +38,26 @@ export const teams = [
     },
     requirements: {
       vi: [
-        'Viết được tiếng Việt tự nhiên, rõ ràng',
-        'Hiểu cách hoạt động của ít nhất một nền tảng social',
-        'Chủ động đề xuất ý tưởng, không chờ giao việc',
+        'Sẵn sàng học hỏi và thử nghiệm',
+        'Tinh thần trách nhiệm với sản phẩm và dự án.',
+        'Tích cực tương tác với cộng đồng và nội bộ.',
       ],
       en: [
-        'Write clear, natural Vietnamese',
-        'Understand how at least one social platform works',
-        'Propose ideas proactively rather than waiting for assignments',
+        'Eager to learn, explore new ideas, and experiment.',
+        'Demonstrate a strong sense of ownership and responsibility for the product and project.',
+        'Actively collaborate with both the community and internal team members.',
       ],
     },
     benefits: {
       vi: [
-        'Toàn quyền quyết định hướng nội dung ngay từ đầu',
-        'Được thử nghiệm và sai, không bị bó bởi quy trình có sẵn',
-        'Portfolio thật từ một dự án thật',
+        'Được đào tạo chuyên sâu về marketing và cách triển khai một cộng đồng',
+        'Được trải nghiệm với mentor có kinh nghiệm từ nhà Youth+ Community',
+        'Portfolio thật từ một dự án thật, và được chứng chỉ công nhận.',
       ],
       en: [
-        'Full ownership of content direction from day one',
-        'Room to experiment and fail, unconstrained by legacy process',
-        'A real portfolio from a real project',
+        'Receive hands-on training in marketing and community building.',
+        'Learn from experienced mentors at Youth+ Community.',
+        'Build a real portfolio through real projects and receive a certificate of completion.',
       ],
     },
     growthPath: {
@@ -60,6 +69,7 @@ export const teams = [
     slug: 'design',
     icon: 'palette',
     name: { vi: 'Design', en: 'Design' },
+    headcount: 2,
     mission: {
       vi: 'Định hình ngôn ngữ hình ảnh của BoardMates, để nhìn là nhận ra.',
       en: 'Shape the BoardMates visual language so it is recognizable at a glance.',
@@ -111,6 +121,7 @@ export const teams = [
     slug: 'community',
     icon: 'groups',
     name: { vi: 'Community', en: 'Community' },
+    headcount: 2,
     mission: {
       vi: 'Biến một nhóm người lạ thành một cộng đồng thật sự muốn quay lại.',
       en: 'Turn a group of strangers into a community that genuinely wants to come back.',
@@ -162,6 +173,7 @@ export const teams = [
     slug: 'event',
     icon: 'event',
     name: { vi: 'Event', en: 'Event' },
+    headcount: 2,
     mission: {
       vi: 'Tổ chức những buổi gặp mà người tham gia muốn kể lại cho bạn bè.',
       en: 'Run gatherings that attendees want to tell their friends about.',
@@ -213,6 +225,7 @@ export const teams = [
     slug: 'business-development',
     icon: 'handshake',
     name: { vi: 'Business Development', en: 'Business Development' },
+    headcount: 2,
     mission: {
       vi: 'Xây mạng lưới đối tác để BoardMates đi được đường dài.',
       en: 'Build the partner network that lets BoardMates last.',
@@ -264,6 +277,7 @@ export const teams = [
     slug: 'product',
     icon: 'lightbulb',
     name: { vi: 'Product', en: 'Product' },
+    headcount: 2,
     mission: {
       vi: 'Quyết định BoardMates nên làm gì tiếp theo, và quan trọng hơn là không nên làm gì.',
       en: 'Decide what BoardMates builds next — and more importantly, what it does not.',
@@ -315,6 +329,7 @@ export const teams = [
     slug: 'technology',
     icon: 'code',
     name: { vi: 'Technology', en: 'Technology' },
+    headcount: 2,
     mission: {
       vi: 'Xây và giữ nền tảng kỹ thuật để mọi thứ còn lại chạy được.',
       en: 'Build and keep the technical foundation everything else runs on.',
@@ -324,13 +339,11 @@ export const teams = [
         'Phát triển website và các tính năng của nền tảng',
         'Giữ hệ thống chạy ổn định, sửa lỗi khi phát sinh',
         'Phối hợp với Product và Design để hiện thực hoá ý tưởng',
-        'Ghi lại tài liệu để người sau tiếp nhận được',
       ],
       en: [
         'Build the website and platform features',
         'Keep the system running and fix issues as they surface',
         'Work with Product and Design to realize ideas',
-        'Document things so the next person can pick them up',
       ],
     },
     requirements: {
