@@ -2,7 +2,8 @@
 const nextConfig = {
   /* config options here */
   env: {
-    BACKEND_URL: process.env.BACKEND_URL,
+    LOCAL_URL: process.env.LOCAL_URL,
+    DEPLOY_URL: process.env.DEPLOY_URL
   },
 };
 
