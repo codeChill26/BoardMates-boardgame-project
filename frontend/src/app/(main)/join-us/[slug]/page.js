@@ -16,7 +16,7 @@ function FieldList({ label, items }) {
       <ul className="space-y-1">
         {items.map((item, idx) => (
           <li key={idx} className="font-body text-sm text-on-surface flex gap-2">
-            <span className="text-primary shrink-0">—</span>
+            <span className="token-ink shrink-0">—</span>
             <span>{item}</span>
           </li>
         ))}
@@ -59,7 +59,7 @@ export default function JobDetailPage() {
           </p>
           <Link
             href="/join-us"
-            className="inline-flex items-center gap-2 bg-primary text-on-primary px-5 py-3 rounded-md font-label font-bold uppercase tracking-widest text-[10px] hover:bg-primary-dim transition-colors"
+            className="inline-flex items-center gap-2 bg-tertiary text-on-tertiary px-5 py-3 rounded-md font-label font-bold uppercase tracking-widest text-[10px] hover:bg-tertiary-fixed-dim transition-colors"
           >
             <span className="material-symbols-outlined text-sm">arrow_back</span>
             {language === 'vi' ? 'Về trang Tham gia' : 'Back to Join Us'}
@@ -79,19 +79,25 @@ export default function JobDetailPage() {
         {language === 'vi' ? 'Quay lại Vị trí đang mở' : 'Back to Open Positions'}
       </Link>
 
-      <section className="window-border window-shadow bg-surface-container-lowest overflow-hidden">
-        <div className="retro-title-bar bg-surface-container-high px-4 py-2 flex justify-between items-center">
+      {/* --team: mau quan cua ban, mang tu the o /join-us sang de hai trang lien mach.
+          Dat o day thi ca cac .token-ink long ben trong (ke ca trong FieldList) deu doc duoc. */}
+      <section
+        style={{ '--team': team.color }}
+        className="window-border window-shadow bg-surface-container-lowest overflow-hidden"
+      >
+        <div className="retro-title-bar token-bar px-4 py-2 flex items-center gap-2.5">
+          <span className="token-dot w-2.5 h-2.5 rounded-full shrink-0" aria-hidden="true" />
           <span className="font-label text-[10px] md:text-xs font-bold uppercase tracking-widest text-on-surface truncate pr-2">
             {team.slug.replace(/-/g, '_')}.job
           </span>
-          <span className="material-symbols-outlined text-on-surface-variant text-sm">description</span>
+          <span className="material-symbols-outlined text-on-surface-variant text-sm ml-auto">description</span>
         </div>
 
         <div className="p-6 md:p-8 space-y-8">
           <div className="space-y-3">
             <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
               <div className="inline-flex items-center gap-3">
-                <span className="material-symbols-outlined text-primary text-3xl">{team.icon}</span>
+                <span className="material-symbols-outlined token-ink text-3xl">{team.icon}</span>
                 <h1 className="text-4xl md:text-5xl font-headline font-bold tracking-tight text-on-surface">
                   {team.name[language]}
                 </h1>
@@ -133,7 +139,7 @@ export default function JobDetailPage() {
                 href={APPLY_URL}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 bg-primary text-on-primary px-6 py-3 rounded-md font-label font-bold uppercase tracking-widest text-[10px] hover:bg-primary-dim transition-colors"
+                className="inline-flex items-center gap-2 bg-tertiary text-on-tertiary px-6 py-3 rounded-md font-label font-bold uppercase tracking-widest text-[10px] hover:bg-tertiary-fixed-dim transition-colors"
               >
                 {t.applyCta}
                 <span className="material-symbols-outlined text-sm">open_in_new</span>
@@ -142,7 +148,7 @@ export default function JobDetailPage() {
               <button
                 type="button"
                 disabled
-                className="inline-flex items-center gap-2 bg-primary text-on-primary px-6 py-3 rounded-md font-label font-bold uppercase tracking-widest text-[10px] opacity-50 cursor-not-allowed"
+                className="inline-flex items-center gap-2 bg-tertiary text-on-tertiary px-6 py-3 rounded-md font-label font-bold uppercase tracking-widest text-[10px] opacity-50 cursor-not-allowed"
               >
                 {t.applyCta}
               </button>

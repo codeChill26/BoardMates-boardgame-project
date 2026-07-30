@@ -137,7 +137,7 @@ function ProductCard({ item, onRefresh }) {
             <button
               type="button"
               onClick={handleViewDetails}
-              className="w-full bg-primary text-on-primary font-label text-[10px] uppercase tracking-widest py-3 rounded-xl font-bold shadow-xl shadow-primary/30"
+              className="w-full bg-tertiary text-on-tertiary font-label text-[10px] uppercase tracking-widest py-3 rounded-xl font-bold shadow-xl shadow-tertiary/40"
             >
               Xem chi tiết
             </button>

@@ -5,20 +5,25 @@ import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
 import { useReducedMotion } from 'framer-motion';
 
-// Palette logo
-const NAVY = '#182d45';
-const AMBER = '#cd8a30';
-const KEM = '#f5ede2';
-const KEM_DAM = '#e8ddcc';
+// Bam theo bang mau "Quan co" trong globals.css. Hai ben quan la muc va vang —
+// cung cap voi --color-on-surface / --color-tertiary, dung cap den/trang cua co
+// vua nhung ke lai theo bang mau.
+const MUC = '#1e1a15';
+// Quan muc de sang hon MUC mot bac: dung dung #1E1A15 thi duoi anh sang manh no
+// bet thanh bong den, khong con thay khoi non + cau.
+const QUAN_MUC = '#2f2820';
+const VANG = '#ffc531';
+const O_SANG = '#fffdf7';
+const O_DAM = '#f0dcbb';
 
 // Vai quan co dat san tren ban. [cot, hang] tren luoi 8x8 (0..7), mau, cao.
 const QUAN_CO = [
-  { pos: [1, 1], mau: NAVY, cao: 0.9 },
-  { pos: [3, 2], mau: AMBER, cao: 1.1 },
-  { pos: [5, 4], mau: NAVY, cao: 0.7 },
-  { pos: [2, 5], mau: AMBER, cao: 0.9 },
-  { pos: [6, 6], mau: NAVY, cao: 1.0 },
-  { pos: [4, 0], mau: AMBER, cao: 0.7 },
+  { pos: [1, 1], mau: QUAN_MUC, cao: 0.9 },
+  { pos: [3, 2], mau: VANG, cao: 1.1 },
+  { pos: [5, 4], mau: QUAN_MUC, cao: 0.7 },
+  { pos: [2, 5], mau: VANG, cao: 0.9 },
+  { pos: [6, 6], mau: QUAN_MUC, cao: 1.0 },
+  { pos: [4, 0], mau: VANG, cao: 0.7 },
 ];
 
 // Quan co: hinh non + cau tren dinh, dung dang quan tot
@@ -42,14 +47,14 @@ function QuanCo({ pos, mau, cao }) {
 }
 
 function BanCo() {
-  // Mat ban 8x8 xen ke kem sang / kem dam
+  // Mat ban 8x8 xen ke o trang / o vang cat
   const o = [];
   for (let r = 0; r < 8; r++) {
     for (let c = 0; c < 8; c++) {
       o.push(
         <mesh key={`${r}-${c}`} position={[c - 3.5, 0, r - 3.5]} receiveShadow>
           <boxGeometry args={[1, 0.2, 1]} />
-          <meshStandardMaterial color={(r + c) % 2 === 0 ? KEM : KEM_DAM} roughness={0.7} />
+          <meshStandardMaterial color={(r + c) % 2 === 0 ? O_SANG : O_DAM} roughness={0.7} />
         </mesh>
       );
     }
@@ -57,10 +62,10 @@ function BanCo() {
 
   return (
     <group>
-      {/* Vien ban navy */}
+      {/* Vien ban muc */}
       <mesh position={[0, -0.12, 0]} receiveShadow>
         <boxGeometry args={[8.6, 0.24, 8.6]} />
-        <meshStandardMaterial color={NAVY} roughness={0.6} />
+        <meshStandardMaterial color={MUC} roughness={0.6} />
       </mesh>
       {o}
       {QUAN_CO.map((q, i) => (

@@ -290,14 +290,14 @@ function ChatContent() {
                         <div
                           className={`max-w-[85%] rounded-2xl px-4 py-3 border ${
                             mine
-                              ? 'bg-primary text-on-primary border-primary/20'
+                              ? 'bg-secondary-container text-on-secondary-container border-on-secondary-container/20'
                               : 'bg-surface-container-high text-on-surface border-outline-variant/20'
                           }`}
                         >
                           <p className="font-body text-sm whitespace-pre-wrap break-words">{m.message}</p>
                           <div
                             className={`mt-2 font-label text-[10px] uppercase tracking-widest ${
-                              mine ? 'text-on-primary/80' : 'text-on-surface-variant'
+                              mine ? 'text-on-secondary-container/70' : 'text-on-surface-variant'
                             }`}
                           >
                             from {m.fromUserId} to {m.toUserId}
@@ -321,7 +321,7 @@ function ChatContent() {
               />
               <button
                 type="submit"
-                className="rounded-xl bg-primary px-5 py-3 font-label text-[10px] font-bold uppercase tracking-widest text-on-primary"
+                className="rounded-xl bg-tertiary px-5 py-3 font-label text-[10px] font-bold uppercase tracking-widest text-on-tertiary"
               >
                 Gửi
               </button>

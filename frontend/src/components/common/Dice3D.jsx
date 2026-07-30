@@ -5,10 +5,12 @@ import { Canvas, useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import { useReducedMotion } from 'framer-motion';
 
-// Mau lay tu palette logo (globals.css)
-const AMBER = '#cd8a30';
-const AMBER_SANG = '#e0a64f';
-const NAVY = '#182d45';
+// Mau lay tu bang mau "Quan co" (globals.css): --color-tertiary + --color-on-surface.
+// Canvas o duoi anh sang manh (ambient 1.15 + directional 2.4) nen texture phai ve
+// dam hon mot bac so voi --color-tertiary, an sang vao moi ra dung sac vang nghe.
+const VANG = '#d9980a';
+const VANG_SANG = '#ffc531';
+const MUC = '#1e1a15';
 
 // Bo cuc cham chuan, luoi 3x3, toa do [cot, hang] 0..2
 const PIPS = {
@@ -29,10 +31,10 @@ function taoTextureMat(so) {
   cv.height = S;
   const ctx = cv.getContext('2d');
 
-  // Nen amber, sang o goc tren trai cho ra khoi
+  // Nen vang, sang o goc tren trai cho ra khoi
   const g = ctx.createLinearGradient(0, 0, S, S);
-  g.addColorStop(0, AMBER_SANG);
-  g.addColorStop(1, AMBER);
+  g.addColorStop(0, VANG_SANG);
+  g.addColorStop(1, VANG);
   ctx.fillStyle = g;
   ctx.fillRect(0, 0, S, S);
 
@@ -41,7 +43,7 @@ function taoTextureMat(so) {
   // (drei RoundedBox la extrudeGeometry, chi co 2 nhom material chu khong phai 6).
   const vien = ctx.createRadialGradient(S / 2, S / 2, S * 0.28, S / 2, S / 2, S * 0.72);
   vien.addColorStop(0, 'rgba(0,0,0,0)');
-  vien.addColorStop(1, 'rgba(24,45,69,0.42)');
+  vien.addColorStop(1, 'rgba(30,26,21,0.42)');
   ctx.fillStyle = vien;
   ctx.fillRect(0, 0, S, S);
 
@@ -58,7 +60,7 @@ function taoTextureMat(so) {
 
     ctx.beginPath();
     ctx.arc(x, y, r, 0, Math.PI * 2);
-    ctx.fillStyle = NAVY;
+    ctx.fillStyle = MUC;
     ctx.fill();
   }
 
@@ -142,7 +144,7 @@ function KhoiXucXac({ face, reducedMotion }) {
 }
 
 /**
- * Xuc xac 3D that bang three.js. Cham ve bang canvas texture theo palette logo,
+ * Xuc xac 3D that bang three.js. Cham ve bang canvas texture theo bang mau,
  * khong dung anh: net o moi kich thuoc, khong ton byte tai ve, khong dinh ban quyen.
  *
  * Props:

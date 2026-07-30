@@ -112,7 +112,7 @@ function ProfileEditForm({
         <button
           type="submit"
           disabled={isSubmitting}
-          className="flex-1 rounded-xl bg-primary px-4 py-3 font-label text-xs font-bold uppercase tracking-widest text-on-primary disabled:opacity-50"
+          className="flex-1 rounded-xl bg-tertiary px-4 py-3 font-label text-xs font-bold uppercase tracking-widest text-on-tertiary disabled:opacity-50"
         >
           {isSubmitting ? (language === 'vi' ? 'Dang luu...' : 'Saving...') : (language === 'vi' ? 'Luu profile' : 'Save profile')}
         </button>
@@ -265,7 +265,7 @@ function ListingEditForm({
         <button
           type="submit"
           disabled={isSubmitting}
-          className="flex-1 rounded-xl bg-primary px-4 py-3 font-label text-xs font-bold uppercase tracking-widest text-on-primary disabled:opacity-50"
+          className="flex-1 rounded-xl bg-tertiary px-4 py-3 font-label text-xs font-bold uppercase tracking-widest text-on-tertiary disabled:opacity-50"
         >
           {isSubmitting ? (language === 'vi' ? 'Dang luu...' : 'Saving...') : (language === 'vi' ? 'Luu boardgame' : 'Save board game')}
         </button>
@@ -718,7 +718,7 @@ export default function ProfilePage() {
                     setSuccessMessage('');
                     setError('');
                   }}
-                  className="mt-8 w-full rounded-xl bg-primary px-4 py-4 font-label text-sm font-bold uppercase tracking-widest text-on-primary"
+                  className="mt-8 w-full rounded-xl bg-tertiary px-4 py-4 font-label text-sm font-bold uppercase tracking-widest text-on-tertiary"
                 >
                   {editingProfile ? (language === 'vi' ? 'Dong chinh sua' : 'Close editor') : t.editProfile}
                 </button>

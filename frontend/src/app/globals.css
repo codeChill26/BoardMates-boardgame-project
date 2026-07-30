@@ -1,73 +1,97 @@
 @import "tailwindcss";
 
+/* Bảng màu "Quân cờ": giấy sáng, mực nâu gần đen, và MỘT sắc vàng rực chỉ
+   xuất hiện ở chỗ bấm được (nút, badge, trạng thái đang mở). Vàng là DNA của
+   logo — nhưng là vàng dưới đèn, không phải giấy ố: nền đẩy gần trắng hẳn,
+   mực đẩy gần đen hẳn, chỉ chừa sắc vàng làm điểm sáng duy nhất.
+
+   Mỗi ban còn một màu quân riêng, KHÔNG khai báo ở đây mà ở data/teams.js
+   (cạnh dữ liệu ban), rồi đẩy vào CSS qua biến --team — xem .token-* cuối file.
+
+   Logo.png bị bake sẵn nền kem nên không dùng được trên nền sáng; Navbar đã
+   chuyển sang logo-mark.png (bản đã tách nền trong suốt). */
+
 @theme {
-  /* Surface — kem #F9F2EA lấy từ nền Logo.png */
-  --color-surface: #f9f2ea;
-  --color-background: #f9f2ea;
-  --color-surface-bright: #fffcf7;
+  /* Surface — giấy: trắng ám vàng rất nhẹ, thẻ nổi lên bằng trắng tinh.
+     Nhạt có chủ đích: đây là thứ tạo cảm giác "sáng". Đậm thêm một bậc là
+     rơi lại vào tông kem hoài cổ của bảng màu cũ. */
+  --color-surface: #fffbf3;
+  --color-background: #fffbf3;
+  --color-surface-bright: #ffffff;
   --color-surface-container-lowest: #ffffff;
-  --color-surface-container-low: #fcf7f0;
-  --color-surface-container: #f5ede2;
-  --color-surface-container-high: #efe6d8;
-  --color-surface-container-highest: #e8ddcc;
-  --color-surface-variant: #e8ddcc;
-  --color-surface-dim: #e4d9c7;
+  --color-surface-container-low: #fffdf9;
+  --color-surface-container: #fdf4e4;
+  --color-surface-container-high: #f9ebd5;
+  --color-surface-container-highest: #f3e0c2;
+  --color-surface-variant: #f3e0c2;
+  --color-surface-dim: #eed9b6;
 
-  /* Chữ — navy #182D45, 12.6:1 trên kem */
-  --color-on-surface: #182d45;
-  --color-on-background: #182d45;
-  --color-on-surface-variant: #4a5a70;
+  /* Chữ — mực nâu gần đen #1E1A15, 16.8:1 trên giấy. Ám nâu chứ không navy:
+     cạnh vàng thì mực lạnh trông như hai bảng màu dán vào nhau. */
+  --color-on-surface: #1e1a15;
+  --color-on-background: #1e1a15;
+  --color-on-surface-variant: #6b6154;
 
-  /* Viền — xám của logo */
-  --color-outline: #7c8698;
-  --color-outline-variant: #c7cdd6;
+  /* Viền — #776B5B đủ đậm để làm CHỮ, không chỉ làm viền: text-outline đang
+     được dùng cho nhãn form ở /profile nên không được nhạt hơn mức 4.6:1
+     (hiện 5.0:1). */
+  --color-outline: #776b5b;
+  --color-outline-variant: #eaddc4;
 
-  /* Primary — ochre #8F5D1E, 5.0:1 trên kem (an toàn cho chữ) */
-  --color-primary: #8f5d1e;
-  --color-primary-dim: #6f4715;
+  /* Primary — hổ phách đậm #A85B00. Phải gánh CẢ HAI vai: text-primary trên
+     giấy (4.9:1) và bg-primary với chữ trắng (5.0:1) — 65 chỗ dùng nó làm chữ
+     nên không được sáng hơn mức này. Muốn vàng RỰC thì dùng --color-tertiary. */
+  --color-primary: #a85b00;
+  --color-primary-dim: #874800;
   --color-on-primary: #ffffff;
-  --color-primary-container: #cd8a30;
-  --color-on-primary-container: #182d45;
-  --color-primary-fixed: #cd8a30;
-  --color-primary-fixed-dim: #b87a28;
-  --color-on-primary-fixed: #182d45;
-  --color-on-primary-fixed-variant: #4a3208;
-  --color-surface-tint: #8f5d1e;
-  --color-inverse-primary: #e0a64f;
+  --color-primary-container: #ffe6ac;
+  --color-on-primary-container: #4a2600;
+  --color-primary-fixed: #ffe6ac;
+  --color-primary-fixed-dim: #ffd27a;
+  --color-on-primary-fixed: #4a2600;
+  --color-on-primary-fixed-variant: #874800;
+  --color-surface-tint: #a85b00;
+  --color-inverse-primary: #ffc531;
 
-  /* Tertiary — amber #CD8A30 gốc từ logo.
-     CHỈ dùng làm nền/mảng đặc. KHÔNG dùng làm chữ trên kem: chỉ đạt 2.6:1, dưới WCAG AA. */
-  --color-tertiary: #cd8a30;
-  --color-tertiary-dim: #a96d22;
-  --color-on-tertiary: #182d45;
-  --color-tertiary-container: #f0d6a8;
-  --color-on-tertiary-container: #4a3208;
-  --color-tertiary-fixed: #f0d6a8;
-  --color-tertiary-fixed-dim: #e0a64f;
-  --color-on-tertiary-fixed: #4a3208;
-  --color-on-tertiary-fixed-variant: #664700;
+  /* Tertiary — cúc vạn thọ #FFC531, sắc vàng "ngôi sao" của bảng màu.
+     Trên nền sáng CHỈ dùng làm mảng đặc — chỉ đạt 1.6:1, dưới WCAG AA.
+     Chữ mực trên nó thì thoải mái: 10.9:1 (badge, mặt xúc xắc, thanh tiến độ).
+     Cần vàng ở dạng CHỮ trên nền sáng thì dùng --color-tertiary-dim (4.9:1). */
+  --color-tertiary: #ffc531;
+  --color-tertiary-dim: #a85b00;
+  --color-on-tertiary: #1e1a15;
+  --color-tertiary-container: #fff0cc;
+  --color-on-tertiary-container: #4a2600;
+  --color-tertiary-fixed: #fff0cc;
+  --color-tertiary-fixed-dim: #ffd75e;
+  --color-on-tertiary-fixed: #4a2600;
+  --color-on-tertiary-fixed-variant: #874800;
 
-  /* Secondary — navy nhạt (thay palette xanh lá cũ; logo không có xanh lá) */
-  --color-secondary: #2e4a6b;
-  --color-secondary-dim: #22384f;
+  /* Secondary — xanh lá đậm: chỉ còn dùng cho trạng thái "đang mở" ở
+     bm-console và viền thông báo. Container thì đi theo tông vàng mật để các
+     mảng nhấn (thẻ trích dẫn, chip, panel ứng tuyển) cùng họ với nút — nhạt
+     hơn tertiary một bậc vì nó phủ mảng lớn, để nguyên #FFC531 thì chói. */
+  --color-secondary: #15803d;
+  --color-secondary-dim: #10632f;
   --color-on-secondary: #ffffff;
-  --color-secondary-container: #d6dee9;
-  --color-on-secondary-container: #182d45;
-  --color-secondary-fixed: #d6dee9;
-  --color-secondary-fixed-dim: #b4c2d4;
-  --color-on-secondary-fixed: #182d45;
-  --color-on-secondary-fixed-variant: #2e4a6b;
+  --color-secondary-container: #ffd75e;
+  --color-on-secondary-container: #4a2600;
+  --color-secondary-fixed: #ffd75e;
+  --color-secondary-fixed-dim: #ffc531;
+  --color-on-secondary-fixed: #4a2600;
+  --color-on-secondary-fixed-variant: #874800;
 
   /* Inverse */
-  --color-inverse-surface: #182d45;
-  --color-inverse-on-surface: #f9f2ea;
+  --color-inverse-surface: #1e1a15;
+  --color-inverse-on-surface: #fffbf3;
 
-  /* Error — giữ đỏ quy ước */
-  --color-error: #c0262d;
-  --color-error-dim: #9f0519;
-  --color-error-container: #fb5151;
+  /* Error — đỏ ấm #C92A2A, 5.3:1 trên giấy. Ngả cam thay vì ngả hồng để
+     không cãi nhau với vàng. */
+  --color-error: #c92a2a;
+  --color-error-dim: #a11a1a;
+  --color-error-container: #ffdfd7;
   --color-on-error: #ffffff;
-  --color-on-error-container: #570008;
+  --color-on-error-container: #5c0f0b;
 
   --font-headline: "Newsreader", serif;
   --font-body: "Manrope", sans-serif;
@@ -83,16 +107,57 @@
     font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
   }
 
+  /* Bóng/viền cửa sổ ăn theo --color-on-surface thay vì hex cứng: đổi màu mực
+     một chỗ là đổi cả hệ. */
   .window-shadow {
-    box-shadow: 4px 4px 0px 0px #182d45;
+    box-shadow: 4px 4px 0px 0px var(--color-on-surface);
   }
 
   .window-border {
-    border: 2px solid #182d45;
+    border: 2px solid var(--color-on-surface);
   }
 
   .retro-title-bar {
-    border-bottom: 2px solid #182d45;
+    border-bottom: 2px solid var(--color-on-surface);
+  }
+
+  /* Màu quân cờ. Thẻ ban ở /join-us đặt --team = màu của ban đó (teams.js),
+     ba lớp dưới đây đọc lại biến đó:
+       .token-bar  thanh tiêu đề, pha loãng còn 18% để chữ mực vẫn đọc được
+       .token-ink  icon + gạch đầu dòng, giữ nguyên độ đặc
+       .token-dot  quân cờ đặc đánh dấu thẻ này là của ban nào
+
+     18% chứ không phải 12%: loãng hơn nữa thì lam của Business Development và
+     chàm của Technology tụ về cùng một sắc xanh nhạt, mất tác dụng phân biệt.
+     Đậm hơn nữa thì thanh tiêu đề át cả nội dung thẻ.
+     @supports viết tay chứ không để trình biên dịch tự thêm: gặp color-mix()
+     trần thì Lightning CSS tự chèn fallback là var(--team) NGUYÊN ĐỘ ĐẶC, thanh
+     tiêu đề thành đỏ/tím đặc và chữ mực rớt xuống 3.2:1 trên trình duyệt cũ.
+     Tự bọc sẵn thì nó thấy đã có guard và để yên, fallback là nền xám trung tính. */
+  .token-bar {
+    background-color: var(--color-surface-container-high);
+  }
+
+  .token-bar-link:hover {
+    background-color: var(--color-surface-container-highest);
+  }
+
+  @supports (color: color-mix(in oklab, red, red)) {
+    .token-bar {
+      background-color: color-mix(in oklab, var(--team) 18%, white);
+    }
+
+    .token-bar-link:hover {
+      background-color: color-mix(in oklab, var(--team) 30%, white);
+    }
+  }
+
+  .token-ink {
+    color: var(--team);
+  }
+
+  .token-dot {
+    background-color: var(--team);
   }
 }
 
@@ -100,6 +165,10 @@
   font-family: var(--font-body);
   color: var(--color-on-surface);
   background-color: var(--color-surface);
+  /* Checkbox/radio/range dựng sẵn của trình duyệt mặc định là xanh hệ thống —
+     mảng xanh duy nhất còn lại trên trang. Kéo nó về hổ phách chứ không phải
+     vàng rực: ô tick nhỏ, cần đủ tương phản với dấu tick trắng bên trong. */
+  accent-color: var(--color-primary);
 }
 
 body {

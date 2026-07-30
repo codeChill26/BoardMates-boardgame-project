@@ -172,7 +172,7 @@ export default function ListingDetailPage() {
               type="button"
               disabled={!canOrder}
               onClick={handleCreateOrder}
-              className="rounded-xl bg-primary px-5 py-3 font-label text-[10px] font-bold uppercase tracking-widest text-on-primary disabled:opacity-50"
+              className="rounded-xl bg-tertiary px-5 py-3 font-label text-[10px] font-bold uppercase tracking-widest text-on-tertiary disabled:opacity-50"
             >
               {listing?.type === 'RENT' ? 'Thuê' : 'Mua'}
             </button>

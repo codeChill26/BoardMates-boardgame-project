@@ -105,7 +105,7 @@ export default function MarketplacePage() {
           <div className="flex items-center gap-4">
             <button 
               onClick={() => setIsModalOpen(true)}
-              className={`font-label text-[10px] uppercase tracking-widest py-3 px-6 rounded-lg font-bold transition-all shadow-lg ${user ? 'bg-primary text-on-primary hover:translate-y-[-2px] shadow-primary/20 cursor-pointer' : 'bg-outline-variant/20 text-on-surface-variant opacity-50 cursor-not-allowed'}`}
+              className={`font-label text-[10px] uppercase tracking-widest py-3 px-6 rounded-lg font-bold transition-all shadow-lg ${user ? 'bg-tertiary text-on-tertiary hover:translate-y-[-2px] shadow-tertiary/40 cursor-pointer' : 'bg-outline-variant/20 text-on-surface-variant opacity-50 cursor-not-allowed'}`}
               title={user ? 'Đăng tin mới' : 'Vui lòng đăng nhập để đăng tin'}
             >
               + Đăng trò chơi

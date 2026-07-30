@@ -147,10 +147,13 @@ export default function ConsolePage() {
               return (
                 <li
                   key={team.slug}
+                  // --team: icon dung dung mau quan cua ban, khop voi the o /join-us
+                  // de doi chieu hai trang cho nhanh.
+                  style={{ '--team': team.color }}
                   className="window-border bg-surface-container-lowest p-4 flex flex-wrap items-center justify-between gap-4"
                 >
                   <div className="flex items-center gap-3 min-w-0">
-                    <span className="material-symbols-outlined text-primary text-2xl shrink-0">
+                    <span className="material-symbols-outlined token-ink text-2xl shrink-0">
                       {team.icon}
                     </span>
                     <div className="min-w-0">
@@ -191,7 +194,7 @@ export default function ConsolePage() {
                         type="button"
                         disabled={busy === team.slug}
                         onClick={() => saveHeadcount(team)}
-                        className="bg-primary text-on-primary px-3 py-1.5 rounded-md font-label text-[10px] font-bold uppercase tracking-widest disabled:opacity-50"
+                        className="bg-tertiary text-on-tertiary px-3 py-1.5 rounded-md font-label text-[10px] font-bold uppercase tracking-widest disabled:opacity-50"
                       >
                         Lưu
                       </button>

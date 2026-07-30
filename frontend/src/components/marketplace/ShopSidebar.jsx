@@ -56,7 +56,7 @@ function ShopSidebar({ categories }) {
         <div className="relative z-10 text-center sm:text-left">
           <p className="font-headline text-xl text-on-primary-container italic mb-2">{t.memberOffer}</p>
           <p className="text-xs font-body text-on-primary-container/80 mb-4">{t.memberDesc}</p>
-          <button className="w-full sm:w-auto bg-primary text-on-primary font-label text-[10px] uppercase tracking-widest py-2 px-6 rounded-full font-bold hover:bg-primary/90 transition-colors">{t.joinNow}</button>
+          <button className="w-full sm:w-auto bg-tertiary text-on-tertiary font-label text-[10px] uppercase tracking-widest py-2 px-6 rounded-full font-bold hover:bg-tertiary-fixed-dim transition-colors">{t.joinNow}</button>
         </div>
         <span className="material-symbols-outlined absolute -bottom-4 -right-4 text-7xl md:text-8xl text-primary/10 rotate-12 pointer-events-none">redeem</span>
       </div>

@@ -246,7 +246,7 @@ function YouthSection({ t, reducedMotion }) {
             href={YOUTH_FANPAGE_URL}
             target="_blank"
             rel="noopener noreferrer"
-            className="mt-auto inline-flex items-center justify-center gap-2 bg-primary text-on-primary px-4 py-3 rounded-md font-label font-bold uppercase tracking-widest text-[10px] hover:bg-primary-dim transition-colors"
+            className="mt-auto inline-flex items-center justify-center gap-2 bg-tertiary text-on-tertiary px-4 py-3 rounded-md font-label font-bold uppercase tracking-widest text-[10px] hover:bg-tertiary-fixed-dim transition-colors"
           >
             {y.cta}
             <span className="material-symbols-outlined text-sm">open_in_new</span>

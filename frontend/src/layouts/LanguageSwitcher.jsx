@@ -11,7 +11,7 @@ const LanguageSwitcher = () => {
       <button
         onClick={() => setLanguage('vi')}
         className={`px-3 py-1 font-label text-[10px] font-bold uppercase transition-colors cursor-pointer ${
-          language === 'vi' ? 'bg-primary text-on-primary' : 'bg-surface hover:bg-surface-container-high text-on-surface'
+          language === 'vi' ? 'bg-tertiary text-on-tertiary' : 'bg-surface hover:bg-surface-container-high text-on-surface'
         }`}
       >
         VI
@@ -19,7 +19,7 @@ const LanguageSwitcher = () => {
       <button
         onClick={() => setLanguage('en')}
         className={`px-3 py-1 font-label text-[10px] font-bold uppercase transition-colors cursor-pointer ${
-          language === 'en' ? 'bg-primary text-on-primary' : 'bg-surface hover:bg-surface-container-high text-on-surface'
+          language === 'en' ? 'bg-tertiary text-on-tertiary' : 'bg-surface hover:bg-surface-container-high text-on-surface'
         }`}
       >
         EN

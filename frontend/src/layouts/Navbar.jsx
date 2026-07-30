@@ -6,7 +6,9 @@ import Image from 'next/image';
 import { motion, useReducedMotion } from 'framer-motion';
 import { usePathname, useRouter } from 'next/navigation';
 import { ChessPawnIcon } from '@/components/common/Icons';
-import logo from '@/assets/Logo.png';
+// logo-mark.png = Logo.png da tach nen kem thanh trong suot. Ban goc co nen kem
+// bake san, dat len nen sang moi cua bang mau se lo ra mot o kem quanh logo.
+import logo from '@/assets/logo-mark.png';
 import logoName from '@/assets/wordmark.png';
 import { useAuthStore } from '@/hooks/useAuthStore';
 import { useLanguageStore } from '@/hooks/useLanguageStore';

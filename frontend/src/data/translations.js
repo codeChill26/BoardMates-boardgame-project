@@ -81,8 +81,6 @@ export const translations = {
       of: 'trên',
       // Khoi gioi thieu don vi chu quan, nam duoi cua so about.exe.
       youth: {
-        badge: 'Đơn vị chủ quản',
-        title: 'Youth+',
         body: 'Youth+ là hệ sinh thái giáo dục và cộng đồng phi lợi nhuận dành cho người trẻ Việt Nam, với sứ mệnh kết nối, định hướng và tạo cơ hội để giới trẻ phát triển bản thân thông qua học tập, trải nghiệm và các dự án cộng đồng.',
         modelLabel: 'Mô hình kết nối',
         modelNodes: ['Bạn trẻ', 'Bạn trẻ', 'Mentor', 'Doanh nghiệp'],
@@ -100,7 +98,7 @@ export const translations = {
           face: 1,
           kind: 'prose',
           label: 'Tầm nhìn',
-          body: 'BoardMates là dự án trực thuộc YOUTH + COMMUNITY, là nền tảng cộng đồng kết nối và sáng tạo thông qua board game. Board game chỉ là điểm khởi đầu. Điều BoardMates muốn xây dựng là một hệ sinh thái nơi các người trẻ có thể gặp gỡ, chia sẻ, học hỏi, hợp tác và cùng nhau phát triển trong thời đại số hiện nay.',
+          body: 'BoardMates là dự án thuộc YOUTH + COMMUNITY, là nền tảng cộng đồng kết nối và sáng tạo thông qua board game. Board game chỉ là điểm khởi đầu. Điều BoardMates muốn xây dựng là một hệ sinh thái nơi các người trẻ có thể gặp gỡ, chia sẻ, học hỏi, hợp tác và cùng nhau phát triển trong thời đại số hiện nay.',
         },
         {
           face: 2,
@@ -133,10 +131,10 @@ export const translations = {
           kind: 'roadmap',
           label: 'Lộ trình',
           phases: [
-            { phase: 'Phase 1', name: 'Cộng đồng', percent: 100 },
-            { phase: 'Phase 2', name: 'Sự kiện', percent: 60 },
-            { phase: 'Phase 3', name: 'Marketplace', percent: 20 },
-            { phase: 'Phase 4', name: 'Nền tảng', percent: 0 },
+            { phase: 'Phase 1', name: 'Cộng đồng', percent: 50 },
+            { phase: 'Phase 2', name: 'Sự kiện', percent: 30 },
+            { phase: 'Phase 3', name: 'Nền tảng', percent: 20 },
+            { phase: 'Phase 4', name: 'Văn hóa', percent: 50 },
           ],
         },
         {
@@ -210,11 +208,11 @@ export const translations = {
     },
     hero: {
       welcome: 'Chào mừng đến với',
-      subtitle: 'Một thư viện số hóa các trò chơi cờ bàn cổ điển, nơi lưu trữ những kỷ niệm và những chiến thuật vượt thời gian.',
+      subtitle: 'Kết nối sinh viên, lan tỏa văn hóa board game và tạo nên những trải nghiệm thật ngoài đời thực.',
       explore: 'Khám phá ngay',
       quickLinks: 'Liên kết nhanh',
-      featured: 'Lưu trữ không chỉ là giữ lại vật phẩm, mà là bảo tồn cả một nền văn hóa chơi.',
-      collector: 'Nhà sưu tầm tiêu điểm',
+      featured: 'Xây dựng cộng đồng - nơi mọi người có thể dừng chân, kết nối và học hỏi lẫn nhau qua Board Games trong thời đại số.',
+      collector: 'Sứ mệnh',
     },
     home: {
       blog: {

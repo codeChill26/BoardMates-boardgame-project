@@ -26,7 +26,7 @@ const STEPS = [
 const HOLE_PAD = 8; // khoang ho ra quanh muc duoc xoi sang
 const CARD_MAX = 320;
 const EDGE = 16; // le toi thieu tinh tu mep man hinh
-const DIM = 'rgba(24, 45, 69, 0.72)'; // navy --color-on-surface, do trong
+const DIM = 'rgba(30, 26, 21, 0.72)'; // muc --color-on-surface, do trong
 
 function rectOf(selector) {
   const el = document.querySelector(selector);
@@ -288,7 +288,7 @@ function NavbarTour() {
             <button
               type="button"
               onClick={goNext}
-              className="inline-flex items-center gap-1.5 bg-primary text-on-primary px-4 py-2 rounded-md font-label text-[10px] font-bold uppercase tracking-widest whitespace-nowrap hover:bg-primary-dim transition-colors cursor-pointer"
+              className="inline-flex items-center gap-1.5 bg-tertiary text-on-tertiary px-4 py-2 rounded-md font-label text-[10px] font-bold uppercase tracking-widest whitespace-nowrap hover:bg-tertiary-fixed-dim transition-colors cursor-pointer"
             >
               {isLast ? t.done : t.next}
               <span className="material-symbols-outlined text-sm">

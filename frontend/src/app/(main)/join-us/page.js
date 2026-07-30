@@ -27,9 +27,10 @@ const item = {
   },
 };
 
-// Bong cung cua .window-shadow la 4px. Hover thi day len va keo bong dai ra 8px,
-// nhu the ngoi cua so nhac khoi mat ban. Mau navy = #182d45, trung --color-on-surface.
-const hoverNang = { y: -4, x: -4, boxShadow: '8px 8px 0px 0px #182d45' };
+// Bong cung cua .window-shadow la 4px muc navy. Hover thi day len, keo bong dai
+// ra 8px VA doi bong sang mau quan cua ban do — luc nghi ca luoi deu mot mau muc
+// cho gon, chi the dang tro toi moi hien mau cua no.
+const hoverNang = (color) => ({ y: -4, x: -4, boxShadow: `8px 8px 0px 0px ${color}` });
 
 function TeamWindow({ team, t, language, reducedMotion, isOpen, headcount }) {
   // Vi tri da dong: to xam, khong bam duoc (pointer-events-none chan moi click),
@@ -47,26 +48,30 @@ function TeamWindow({ team, t, language, reducedMotion, isOpen, headcount }) {
       // vi nhay cai rup.
       layout={!reducedMotion}
       variants={reducedMotion ? undefined : item}
-      whileHover={reducedMotion || !isOpen ? undefined : hoverNang}
+      whileHover={reducedMotion || !isOpen ? undefined : hoverNang(team.color)}
       aria-disabled={!isOpen}
+      // --team: mau quan cua ban, cac lop .token-* trong globals.css doc lai bien nay.
+      style={{ '--team': team.color }}
       className={`window-border window-shadow bg-surface-container-lowest overflow-hidden flex flex-col h-full ${closedCls}`}
     >
       {isOpen ? (
         <Link
           href={`/join-us/${team.slug}`}
-          className="w-full retro-title-bar bg-surface-container-high px-4 py-2 flex justify-between items-center cursor-pointer hover:bg-surface-container-highest transition-colors"
+          className="w-full retro-title-bar token-bar token-bar-link px-4 py-2 flex items-center gap-2.5 cursor-pointer transition-colors"
         >
+          <span className="token-dot w-2.5 h-2.5 rounded-full shrink-0" aria-hidden="true" />
           <span className="font-label text-[10px] md:text-xs font-bold uppercase tracking-widest text-on-surface truncate pr-2">
             {team.slug.replace(/-/g, '_')}.exe
           </span>
-          <span className="material-symbols-outlined text-on-surface-variant text-sm">open_in_new</span>
+          <span className="material-symbols-outlined text-on-surface-variant text-sm ml-auto">open_in_new</span>
         </Link>
       ) : (
-        <div className="w-full retro-title-bar bg-surface-container-high px-4 py-2 flex justify-between items-center">
+        <div className="w-full retro-title-bar token-bar px-4 py-2 flex items-center gap-2.5">
+          <span className="token-dot w-2.5 h-2.5 rounded-full shrink-0" aria-hidden="true" />
           <span className="font-label text-[10px] md:text-xs font-bold uppercase tracking-widest text-on-surface truncate pr-2">
             {team.slug.replace(/-/g, '_')}.exe
           </span>
-          <span className="font-label text-[9px] font-bold uppercase tracking-widest text-on-surface-variant">
+          <span className="font-label text-[9px] font-bold uppercase tracking-widest text-on-surface-variant ml-auto shrink-0">
             {language === 'vi' ? 'Đã đóng' : 'Closed'}
           </span>
         </div>
@@ -77,7 +82,7 @@ function TeamWindow({ team, t, language, reducedMotion, isOpen, headcount }) {
       <div className="p-6 flex flex-col flex-1 gap-4">
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-center gap-3 min-w-0">
-            <span className="material-symbols-outlined text-primary text-2xl shrink-0">{team.icon}</span>
+            <span className="material-symbols-outlined token-ink text-2xl shrink-0">{team.icon}</span>
             <h3 className="font-headline text-2xl md:text-3xl font-bold text-on-surface">
               {team.name[language]}
             </h3>
@@ -110,7 +115,7 @@ function TeamWindow({ team, t, language, reducedMotion, isOpen, headcount }) {
           <ul className="space-y-1">
             {team.responsibilities[language].slice(0, 2).map((item, idx) => (
               <li key={idx} className="font-body text-sm text-on-surface flex gap-2">
-                <span className="text-primary shrink-0">-</span>
+                <span className="token-ink shrink-0">-</span>
                 <span className="line-clamp-1">{item}</span>
               </li>
             ))}
@@ -120,7 +125,7 @@ function TeamWindow({ team, t, language, reducedMotion, isOpen, headcount }) {
         {isOpen ? (
           <Link
             href={`/join-us/${team.slug}`}
-            className="mt-auto self-start inline-flex items-center gap-2 bg-primary text-on-primary px-4 py-2 rounded-md font-label font-bold uppercase tracking-widest text-[10px] hover:bg-primary-dim transition-colors"
+            className="mt-auto self-start inline-flex items-center gap-2 bg-tertiary text-on-tertiary px-4 py-2 rounded-md font-label font-bold uppercase tracking-widest text-[10px] hover:bg-tertiary-fixed-dim transition-colors"
           >
             {language === 'vi' ? 'Xem Job Description' : 'View Job Description'}
             <span className="material-symbols-outlined text-sm">arrow_forward</span>
@@ -228,7 +233,9 @@ export default function JoinUsPage() {
             href={APPLY_URL}
             target="_blank"
             rel="noopener noreferrer"
-            className="mt-2 inline-flex items-center gap-2 bg-primary text-on-primary px-8 py-4 rounded-md font-label font-bold uppercase tracking-widest window-shadow hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all cursor-pointer"
+            // Nut nay nam TREN panel vang mat (bg-secondary-container) — vang tren
+            // vang thi chim, nen dao lai: khoi muc, chu giay.
+            className="mt-2 inline-flex items-center gap-2 bg-on-surface text-surface px-8 py-4 rounded-md font-label font-bold uppercase tracking-widest window-shadow hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all cursor-pointer"
           >
             {t.applyCta}
             <span className="material-symbols-outlined text-base">open_in_new</span>
@@ -238,7 +245,7 @@ export default function JoinUsPage() {
             <button
               type="button"
               disabled
-              className="mt-2 bg-primary text-on-primary px-8 py-4 rounded-md font-label font-bold uppercase tracking-widest opacity-50 cursor-not-allowed"
+              className="mt-2 bg-on-surface text-surface px-8 py-4 rounded-md font-label font-bold uppercase tracking-widest opacity-50 cursor-not-allowed"
             >
               {t.applyCta}
             </button>

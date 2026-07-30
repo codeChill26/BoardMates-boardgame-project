@@ -11,9 +11,7 @@ import logoName from '@/assets/wordmark.png';
 
 // useLayoutEffect tren client (chay truoc khi ve), useEffect tren server (tranh warning SSR)
 const useIsoLayoutEffect = typeof window !== 'undefined' ? React.useLayoutEffect : React.useEffect;
-import iconMeeple from '@/assets/icons/meeple.png';
-import iconChest from '@/assets/icons/chest.png';
-import iconLaurel from '@/assets/icons/laurel.png';
+import { MeepleArt, ChestArt, MedalArt } from '@/components/common/GameArt';
 
 // three.js chi tai o trinh duyet + la mieng nang nhat. Tai dong, tat SSR: khong
 // nem WebGL vao bundle server, khong chan lan render dau. Dung chung chunk voi
@@ -55,7 +53,7 @@ const HeroSection = () => {
             <p className="text-base md:text-lg text-on-surface-variant font-body max-w-md mx-auto md:mx-0">
               {t.subtitle}
             </p>
-            <button className="w-full md:w-auto bg-primary text-on-primary px-8 py-4 rounded-md font-label font-bold uppercase tracking-widest window-shadow hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all cursor-pointer">
+            <button className="w-full md:w-auto bg-tertiary text-on-tertiary px-8 py-4 rounded-md font-label font-bold uppercase tracking-widest window-shadow hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all cursor-pointer">
               {t.explore}
             </button>
           </div>
@@ -99,17 +97,17 @@ const LinkButton = ({ icon, label }) => (
   </Link>
 );
 
-const GameCard = ({ id, title, description, category, players, isHighHeader, icon }) => {
+const GameCard = ({ id, title, description, category, players, isHighHeader, Art }) => {
   const { language } = useLanguageStore();
   return (
     <div className="window-border window-shadow bg-surface-container-lowest flex flex-col">
-      <div className={`retro-title-bar px-3 py-1 flex justify-between items-center ${isHighHeader ? 'bg-primary text-on-primary' : 'bg-surface-container-high'}`}>
+      <div className={`retro-title-bar px-3 py-1 flex justify-between items-center ${isHighHeader ? 'bg-tertiary text-on-tertiary' : 'bg-surface-container-high'}`}>
         <span className="font-label text-[10px] font-bold uppercase tracking-widest">board_game_{id}.img</span>
         <span className="material-symbols-outlined text-xs cursor-pointer">close</span>
       </div>
       <div className="p-4 flex-1">
         <div className="w-full aspect-square window-border bg-surface-container-high mb-4 flex items-center justify-center p-6 overflow-hidden">
-          <Image src={icon} alt="" className="w-3/4 h-3/4 object-contain drop-shadow-sm" />
+          <Art className="w-3/4 h-3/4" />
         </div>
         <h4 className="font-headline text-2xl font-bold mb-2">{title}</h4>
         <p className="font-body text-sm text-on-surface-variant line-clamp-2 mb-4">
@@ -219,7 +217,7 @@ export default function HomePage() {
             description={language === 'vi' ? "Một bản phục dựng kỹ thuật số của trò chơi chiến thuật thế kỷ 19 với đồ họa pixel tinh tế." : "A digital restoration of a 19th-century strategy game with exquisite pixel graphics."}
             category={language === 'vi' ? "Chiến thuật" : "Strategy"}
             players="2"
-            icon={iconMeeple}
+            Art={MeepleArt}
           />
           <GameCard 
             id="02" 
@@ -228,7 +226,7 @@ export default function HomePage() {
             category={language === 'vi' ? "Nhập vai" : "RPG"}
             players="4-6"
             isHighHeader
-            icon={iconChest}
+            Art={ChestArt}
           />
           <GameCard 
             id="03" 
@@ -236,7 +234,7 @@ export default function HomePage() {
             description={language === 'vi' ? "Sự kết hợp giữa toán học và may mắn trong một thiết kế bàn cờ theo phong cách Bauhaus." : "A combination of mathematics and luck in a Bauhaus-style board design."}
             category={language === 'vi' ? "Toán học" : "Math"}
             players="2-4"
-            icon={iconLaurel}
+            Art={MedalArt}
           />
         </div>
       </section>

@@ -43,7 +43,7 @@ function ComingSoon({ section }) {
 
           <Link
             href="/join-us"
-            className="mt-2 bg-primary text-on-primary px-8 py-4 rounded-md font-label font-bold uppercase tracking-widest window-shadow hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all cursor-pointer"
+            className="mt-2 bg-tertiary text-on-tertiary px-8 py-4 rounded-md font-label font-bold uppercase tracking-widest window-shadow hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all cursor-pointer"
           >
             {t.cta}
           </Link>

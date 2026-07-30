@@ -154,7 +154,7 @@ const AddBoardgameModal = ({ isOpen, onClose, onAdded }) => {
     <div className="fixed inset-0 z-100 flex items-center justify-center p-4 md:p-6 bg-black/40 backdrop-blur-sm overflow-y-auto">
       <div className="bg-surface-container-low w-full max-w-2xl window-border window-shadow animate-in fade-in zoom-in duration-300 my-auto">
         {/* Title Bar */}
-        <div className="retro-title-bar bg-primary text-on-primary px-4 py-2 flex justify-between items-center sticky top-0 z-10">
+        <div className="retro-title-bar bg-tertiary text-on-tertiary px-4 py-2 flex justify-between items-center sticky top-0 z-10">
           <span className="font-label text-xs font-bold uppercase tracking-widest leading-none">add_new_archive.exe</span>
           <button onClick={onClose} className="material-symbols-outlined text-sm hover:opacity-70 transition-opacity cursor-pointer leading-none">close</button>
         </div>
@@ -413,7 +413,7 @@ const AddBoardgameModal = ({ isOpen, onClose, onAdded }) => {
             <button 
               disabled={isSubmitting}
               type="submit"
-              className="w-full sm:w-auto px-10 py-3 font-label text-xs uppercase tracking-widest font-bold bg-primary text-on-primary window-shadow hover:translate-x-1 hover:translate-y-1 hover:shadow-none disabled:opacity-50 disabled:translate-x-0 disabled:translate-y-0 disabled:shadow-none transition-all cursor-pointer"
+              className="w-full sm:w-auto px-10 py-3 font-label text-xs uppercase tracking-widest font-bold bg-tertiary text-on-tertiary window-shadow hover:translate-x-1 hover:translate-y-1 hover:shadow-none disabled:opacity-50 disabled:translate-x-0 disabled:translate-y-0 disabled:shadow-none transition-all cursor-pointer"
             >
               {isSubmitting ? t.submitting : t.submit}
             </button>

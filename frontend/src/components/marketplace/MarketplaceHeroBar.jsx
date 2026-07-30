@@ -13,14 +13,10 @@ function MarketplaceHeroBar({ chips, onPostClick }) {
               sellers across Vietnam.
             </p>
           </div>
-          <button 
-            type="button" 
+          <button
+            type="button"
             onClick={onPostClick}
-            style={{
-              padding: '10px 20px', backgroundColor: '#ef6b2f', color: '#fff', 
-              border: 'none', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer',
-              whiteSpace: 'nowrap'
-            }}
+            className="bg-tertiary text-on-tertiary hover:bg-tertiary-fixed-dim transition-colors px-5 py-2.5 rounded-lg font-bold whitespace-nowrap cursor-pointer"
           >
             Post your Boardgame
           </button>

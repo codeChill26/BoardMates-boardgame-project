@@ -6,6 +6,12 @@
 // Tách khỏi translations.js vì đây là mảng lồng nhau, không phải dictionary phẳng.
 //
 // NOTE: nội dung dưới đây là bản nháp, cần rà lại trước khi công bố.
+//
+// color = "màu quân cờ" của ban, dùng ở /join-us và /join-us/[slug]: thanh tiêu
+// đề pha loãng màu này, icon + gạch đầu dòng dùng nguyên độ đặc, hover thì bóng
+// đổ của thẻ đổi sang màu này. Bảy màu trải đều vòng màu như một bộ quân bảy
+// người chơi, và đều đạt >= 4:1 trên nền trắng để icon còn phân biệt được.
+// Đổi thì đổi ở đây, đừng viết hex thẳng vào JSX.
 
 // Link form ứng tuyển (Google Form). Dùng chung cho nút "Ứng tuyển" ở cả
 // /join-us và /join-us/[slug] — sửa một chỗ này là đổi cả hai.
@@ -16,6 +22,7 @@ export const teams = [
   {
     slug: 'marketing',
     icon: 'campaign',
+    color: '#e11d48',
     name: { vi: 'Marketing', en: 'Marketing' },
     headcount: 2,
     mission: {
@@ -68,6 +75,7 @@ export const teams = [
   {
     slug: 'design',
     icon: 'palette',
+    color: '#7c3aed',
     name: { vi: 'Design', en: 'Design' },
     headcount: 2,
     mission: {
@@ -120,6 +128,7 @@ export const teams = [
   {
     slug: 'community',
     icon: 'groups',
+    color: '#15803d',
     name: { vi: 'Community', en: 'Community' },
     headcount: 2,
     mission: {
@@ -172,6 +181,7 @@ export const teams = [
   {
     slug: 'event',
     icon: 'event',
+    color: '#d9480f',
     name: { vi: 'Event', en: 'Event' },
     headcount: 2,
     mission: {
@@ -224,6 +234,7 @@ export const teams = [
   {
     slug: 'business-development',
     icon: 'handshake',
+    color: '#0e7490',
     name: { vi: 'Business Development', en: 'Business Development' },
     headcount: 2,
     mission: {
@@ -276,6 +287,7 @@ export const teams = [
   {
     slug: 'product',
     icon: 'lightbulb',
+    color: '#c026d3',
     name: { vi: 'Product', en: 'Product' },
     headcount: 2,
     mission: {
@@ -328,6 +340,7 @@ export const teams = [
   {
     slug: 'technology',
     icon: 'code',
+    color: '#4f46e5',
     name: { vi: 'Technology', en: 'Technology' },
     headcount: 2,
     mission: {

@@ -146,7 +146,7 @@ export default function RegisterPage() {
 
             {/* Action Button */}
             <button 
-              className="w-full bg-primary hover:bg-primary-dim disabled:bg-primary/50 text-on-primary font-label font-bold py-4 rounded-lg shadow-sm transform active:scale-[0.98] transition-all duration-200 tracking-widest text-sm mt-4 uppercase" 
+              className="w-full bg-tertiary hover:bg-tertiary-fixed-dim disabled:bg-tertiary/50 text-on-tertiary font-label font-bold py-4 rounded-lg shadow-sm transform active:scale-[0.98] transition-all duration-200 tracking-widest text-sm mt-4 uppercase"
               type="submit"
               disabled={isLoading}
             >
