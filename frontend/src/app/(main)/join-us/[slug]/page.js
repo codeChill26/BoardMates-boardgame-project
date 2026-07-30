@@ -6,6 +6,7 @@ import { useParams } from 'next/navigation';
 import { useLanguageStore } from '@/hooks/useLanguageStore';
 import { translations } from '@/data/translations';
 import { teams, APPLY_URL } from '@/data/teams';
+import { getBackendUrl } from '@/lib/apiConfig';
 
 function FieldList({ label, items }) {
   return (
@@ -37,7 +38,7 @@ export default function JobDetailPage() {
   const [override, setOverride] = React.useState(null);
   React.useEffect(() => {
     if (!slug) return;
-    fetch('http://localhost:8080/api/positions')
+    fetch(`${getBackendUrl()}/api/positions`)
       .then((r) => r.json())
       .then((j) => setOverride(j?.data?.[slug]?.headcount ?? null))
       .catch(() => {});

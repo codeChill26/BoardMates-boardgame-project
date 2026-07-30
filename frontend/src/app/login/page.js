@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { useAuthStore } from '@/hooks/useAuthStore';
 import { FacebookIcon, InstagramIcon, TikTokIcon } from '@/components/common/Icons';
+import { getBackendUrl } from '@/lib/apiConfig';
 
 // Tạo component Client chứa logic gọi searchParams để bọc trong Suspense (Next.js yêu cầu)
 function LoginContent() {
@@ -54,7 +55,7 @@ function LoginContent() {
     setError(null);
 
     try {
-      const response = await fetch('http://localhost:8080/api/auth/login', {
+      const response = await fetch(`${getBackendUrl()}/api/auth/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -189,7 +190,7 @@ function LoginContent() {
                 className="w-full flex items-center justify-center gap-3 bg-surface border border-outline-variant py-4 px-6 rounded-lg hover:bg-surface-variant/50 transition-colors shadow-sm font-label font-bold text-on-surface uppercase tracking-wider text-sm"
                 type="button"
                 onClick={() => {
-                  window.location.href = 'http://localhost:8080/api/auth/google';
+                  window.location.href = `${getBackendUrl()}/api/auth/google`;
                 }}
               >
                 <svg className="w-5 h-5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">

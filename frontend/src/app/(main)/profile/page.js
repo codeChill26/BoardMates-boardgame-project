@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { useAuthStore } from '@/hooks/useAuthStore';
 import { useLanguageStore } from '@/hooks/useLanguageStore';
 import { translations } from '@/data/translations';
+import { getBackendUrl } from '@/lib/apiConfig';
 
 const formatCurrency = (value, language) => {
   if (value == null || value === '') {
@@ -451,7 +452,7 @@ export default function ProfilePage() {
         setIsLoading(true);
         setError('');
 
-        const response = await fetch('http://localhost:8080/api/users/me/dashboard', {
+        const response = await fetch(`${getBackendUrl()}/api/users/me/dashboard`, {
           headers: {
             Authorization: `Bearer ${user.token}`
           }
@@ -520,7 +521,7 @@ export default function ProfilePage() {
     setSuccessMessage('');
 
     try {
-      const response = await fetch('http://localhost:8080/api/users/me', {
+      const response = await fetch(`${getBackendUrl()}/api/users/me`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -586,7 +587,7 @@ export default function ProfilePage() {
     setSuccessMessage('');
 
     try {
-      const response = await fetch(`http://localhost:8080/api/listings/${editingListingId}`, {
+      const response = await fetch(`${getBackendUrl()}/api/listings/${editingListingId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -626,7 +627,7 @@ export default function ProfilePage() {
       setError('');
       setSuccessMessage('');
 
-      const response = await fetch(`http://localhost:8080/api/orders/${transaction.id}`,
+      const response = await fetch(`${getBackendUrl()}/api/orders/${transaction.id}`,
         {
           method: 'DELETE',
           headers: {
@@ -653,8 +654,8 @@ export default function ProfilePage() {
       if (isNetwork) {
         setError(
           language === 'vi'
-            ? 'Không kết nối được backend (http://localhost:8080). Hãy chạy backend trước.'
-            : 'Cannot reach backend (http://localhost:8080). Please start the backend first.'
+            ? `Không kết nối được backend (${getBackendUrl()}). Hãy chạy backend trước.`
+            : `Cannot reach backend (${getBackendUrl()}). Please start the backend first.`
         );
       } else {
         setError(rawMessage || (language === 'vi' ? 'Xóa lịch sử thất bại.' : 'Failed to delete history.'));

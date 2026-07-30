@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useLanguageStore } from '@/hooks/useLanguageStore';
 import { useAuthStore } from '@/hooks/useAuthStore';
 import { translations } from '@/data/translations';
+import { getBackendUrl } from '@/lib/apiConfig';
 
 const CATEGORY_OPTIONS = [
   { value: 'Strategy', vi: 'Chiến thuật', en: 'Strategy' },
@@ -111,7 +112,7 @@ const AddBoardgameModal = ({ isOpen, onClose, onAdded }) => {
       payload.append('categories', JSON.stringify(formData.categories || []));
       if (imageFile) payload.append('image', imageFile);
 
-      const response = await fetch('http://localhost:8080/api/listings', {
+      const response = await fetch(`${getBackendUrl()}/api/listings`, {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${user.token}`,

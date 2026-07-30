@@ -6,6 +6,7 @@ import { motion, useReducedMotion } from 'framer-motion';
 import { useLanguageStore } from '@/hooks/useLanguageStore';
 import { translations } from '@/data/translations';
 import { teams, APPLY_URL } from '@/data/teams';
+import { getBackendUrl } from '@/lib/apiConfig';
 
 // Chia bai: moi cua so ban duoc "chia" ra lan luot nhu chia bai tu co bai —
 // bay len, xoay tu -8deg ve 0, phong tu 0.86 len 1, spring nay nhe khi dap.
@@ -149,7 +150,7 @@ export default function JoinUsPage() {
   // Loi mang -> map rong -> coi nhu tat ca dang mo, so luong lay tu teams.js.
   const [positions, setPositions] = React.useState({});
   React.useEffect(() => {
-    fetch('http://localhost:8080/api/positions')
+    fetch(`${getBackendUrl()}/api/positions`)
       .then((r) => r.json())
       .then((j) => setPositions(j?.data || {}))
       .catch(() => {});

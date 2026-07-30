@@ -5,6 +5,7 @@ import { useSearchParams } from 'next/navigation';
 import { useAuthStore } from '@/hooks/useAuthStore';
 import { getSocket } from '@/lib/socketClient';
 import Loading from '@/components/Loading';
+import { getBackendUrl } from '@/lib/apiConfig';
 
 // Tach phan goi useSearchParams ra component rieng de boc trong Suspense.
 // Docs: node_modules/next/dist/docs/01-app/03-api-reference/04-functions/use-search-params.md:179
@@ -49,7 +50,7 @@ function ChatContent() {
       }
 
       try {
-        const response = await fetch(`http://localhost:8080/api/listings/${id}`);
+        const response = await fetch(`${getBackendUrl()}/api/listings/${id}`);
         const result = await response.json().catch(() => null);
         if (!response.ok || !result?.success) return;
 

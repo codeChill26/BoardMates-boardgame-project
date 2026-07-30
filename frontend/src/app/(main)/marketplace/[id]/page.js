@@ -3,6 +3,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useAuthStore } from '@/hooks/useAuthStore';
+import { getBackendUrl } from '@/lib/apiConfig';
 
 function formatPrice(listing) {
   if (!listing) return '';
@@ -35,7 +36,7 @@ export default function ListingDetailPage() {
         setIsLoading(true);
         setError('');
 
-        const response = await fetch(`http://localhost:8080/api/listings/${listingId}`);
+        const response = await fetch(`${getBackendUrl()}/api/listings/${listingId}`);
         const result = await response.json().catch(() => null);
         if (!response.ok || !result?.success) {
           throw new Error(result?.message || 'Không thể tải chi tiết');
@@ -65,7 +66,7 @@ export default function ListingDetailPage() {
     if (!canOrder) return;
 
     try {
-      const response = await fetch('http://localhost:8080/api/orders', {
+      const response = await fetch(`${getBackendUrl()}/api/orders`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

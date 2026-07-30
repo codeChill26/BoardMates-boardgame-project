@@ -1,6 +1,7 @@
 import React from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/hooks/useAuthStore';
+import { getBackendUrl } from '@/lib/apiConfig';
 
 function ProductCard({ item, onRefresh }) {
   const { user } = useAuthStore();
@@ -17,7 +18,7 @@ function ProductCard({ item, onRefresh }) {
     if (!canOrder) return;
 
     try {
-      const response = await fetch('http://localhost:8080/api/orders', {
+      const response = await fetch(`${getBackendUrl()}/api/orders`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -63,7 +64,7 @@ function ProductCard({ item, onRefresh }) {
     if (!confirm('Bạn có chắc chắn muốn xóa tin đăng này?')) return;
 
     try {
-      const response = await fetch(`http://localhost:8080/api/listings/${item.id}`, {
+      const response = await fetch(`${getBackendUrl()}/api/listings/${item.id}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${user.token}`

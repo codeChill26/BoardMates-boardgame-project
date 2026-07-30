@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { useAuthStore } from '@/hooks/useAuthStore';
+import { getBackendUrl } from '@/lib/apiConfig';
 
 export default function AdminPage() {
   const user = useAuthStore((state) => state.user);
@@ -20,7 +21,7 @@ export default function AdminPage() {
           return;
         }
 
-        const response = await fetch('http://localhost:8080/api/admin/stats', {
+        const response = await fetch(`${getBackendUrl()}/api/admin/stats`, {
           headers: {
             Authorization: `Bearer ${user.token}`,
           },

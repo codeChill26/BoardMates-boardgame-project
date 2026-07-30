@@ -5,6 +5,7 @@ import ShopSidebar from '@/components/marketplace/ShopSidebar';
 import ProductCard from '@/components/marketplace/ProductCard';
 import AddBoardgameModal from '@/components/marketplace/AddBoardgameModal';
 import { useAuthStore } from '@/hooks/useAuthStore';
+import { getBackendUrl } from '@/lib/apiConfig';
 
 const placeholderFilters = [
   {
@@ -66,7 +67,7 @@ export default function MarketplacePage() {
 
   const fetchListings = async () => {
     try {
-      const response = await fetch('http://localhost:8080/api/listings');
+      const response = await fetch(`${getBackendUrl()}/api/listings`);
       
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);

@@ -2,8 +2,9 @@
 
 import React from 'react';
 import { teams } from '@/data/teams';
+import { getBackendUrl } from '@/lib/apiConfig';
 
-const API = 'http://localhost:8080/api/positions';
+const getAPI = () => `${getBackendUrl()}/api/positions`;
 
 // Trang quan tri AN — dat o duong dan kho doan, khong link tu dau, khong co navbar.
 // Bat/tat tung vi tri tuyen dung. Can nhap khoa quan tri (khop ADMIN_SECRET o backend).
@@ -25,12 +26,12 @@ export default function ConsolePage() {
   const load = React.useCallback(async () => {
     try {
       setLoading(true);
-      const res = await fetch(API);
+      const res = await fetch(getAPI());
       const json = await res.json();
       setStatus(json.data || {});
       setMsg('');
     } catch (e) {
-      setMsg('Không kết nối được backend (localhost:8080). Hãy chạy backend trước.');
+      setMsg(`Không kết nối được backend (${getBackendUrl()}). Hãy chạy backend trước.`);
     } finally {
       setLoading(false);
     }
@@ -45,7 +46,7 @@ export default function ConsolePage() {
     setBusy(slug);
     setMsg('');
     try {
-      const res = await fetch(`${API}/${slug}`, {
+      const res = await fetch(`${getAPI()}/${slug}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json', 'x-admin-key': key },
         body: JSON.stringify(body),

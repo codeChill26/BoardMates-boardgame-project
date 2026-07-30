@@ -1,8 +1,7 @@
 'use client';
 
 import { io } from 'socket.io-client';
-
-const SOCKET_URL = 'http://localhost:8080';
+import { getBackendUrl } from './apiConfig';
 
 let socket;
 let socketToken;
@@ -21,7 +20,7 @@ export function getSocket(token) {
   }
 
   socketToken = token;
-  socket = io(SOCKET_URL, {
+  socket = io(getBackendUrl(), {
     auth: { token },
     transports: ['websocket'],
   });
