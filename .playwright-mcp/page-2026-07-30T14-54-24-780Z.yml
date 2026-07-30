@@ -1,0 +1,260 @@
+- generic [active] [ref=f9e1]:
+  - generic [ref=f9e4]:
+    - navigation [ref=f9e5]:
+      - link [ref=f9e7] [cursor=pointer]:
+        - /url: /
+        - img "BoardMates" [ref=f9e8]
+      - generic [ref=f9e9]:
+        - link "Trang chủ" [ref=f9e10] [cursor=pointer]:
+          - /url: /
+        - link "Cộng đồng Sắp ra mắt" [ref=f9e11] [cursor=pointer]:
+          - /url: /community
+          - text: Cộng đồng
+          - generic [ref=f9e12]: Sắp ra mắt
+        - link "Sự kiện Sắp ra mắt" [ref=f9e13] [cursor=pointer]:
+          - /url: /events
+          - text: Sự kiện
+          - generic [ref=f9e14]: Sắp ra mắt
+        - link "Tham gia" [ref=f9e15] [cursor=pointer]:
+          - /url: /join-us
+        - link "Giới thiệu" [ref=f9e16] [cursor=pointer]:
+          - /url: /about
+      - generic [ref=f9e19]:
+        - button "VI" [ref=f9e20] [cursor=pointer]
+        - button "EN" [ref=f9e21] [cursor=pointer]
+    - main [ref=f9e22]:
+      - generic [ref=f9e23]:
+        - generic [ref=f9e24]:
+          - generic [ref=f9e25]: join_us.exe
+          - generic [ref=f9e30]:
+            - heading "Tham gia cùng chúng mình" [level=1] [ref=f9e31]
+            - paragraph [ref=f9e32]: BoardMates vẫn đang trong giai đoạn đầu. Chúng mình đang tìm kiếm những người muốn xây dựng cộng đồng từ con số 0.
+        - generic [ref=f9e33]:
+          - heading "Vị trí đang mở" [level=2] [ref=f9e34]
+          - generic [ref=f9e35]:
+            - article [ref=f9e36]:
+              - link "marketing.exe open_in_new" [ref=f9e37] [cursor=pointer]:
+                - /url: /join-us/marketing
+                - generic [ref=f9e39]: marketing.exe
+                - generic [ref=f9e40]: open_in_new
+              - generic [ref=f9e41]:
+                - generic [ref=f9e42]:
+                  - generic [ref=f9e43]:
+                    - generic [ref=f9e44]: campaign
+                    - heading "Marketing" [level=3] [ref=f9e45]
+                  - 'generic "Số lượng: 2 người" [ref=f9e46]':
+                    - generic [ref=f9e47]: group
+                    - text: "2"
+                - generic [ref=f9e48]:
+                  - heading "Sứ mệnh" [level=4] [ref=f9e49]
+                  - paragraph [ref=f9e50]: "Đưa BoardMates đến đúng người: nơi để mọi người dừng chân và kết nối trong thời đại số hiện nay."
+                - generic [ref=f9e51]:
+                  - heading "Công việc" [level=4] [ref=f9e52]
+                  - list [ref=f9e53]:
+                    - listitem [ref=f9e54]:
+                      - generic [ref=f9e55]: "-"
+                      - generic [ref=f9e56]: Lên kế hoạch và triển khai nội dung trên các kênh social của BoardMates
+                    - listitem [ref=f9e57]:
+                      - generic [ref=f9e58]: "-"
+                      - generic [ref=f9e59]: Xây dựng câu chuyện thương hiệu, giữ giọng nói nhất quán
+                - link "Xem Job Description arrow_forward" [ref=f9e60] [cursor=pointer]:
+                  - /url: /join-us/marketing
+                  - text: Xem Job Description
+                  - generic [ref=f9e61]: arrow_forward
+            - article [ref=f9e62]:
+              - link "design.exe open_in_new" [ref=f9e63] [cursor=pointer]:
+                - /url: /join-us/design
+                - generic [ref=f9e65]: design.exe
+                - generic [ref=f9e66]: open_in_new
+              - generic [ref=f9e67]:
+                - generic [ref=f9e68]:
+                  - generic [ref=f9e69]:
+                    - generic [ref=f9e70]: palette
+                    - heading "Design" [level=3] [ref=f9e71]
+                  - 'generic "Số lượng: 2 người" [ref=f9e72]':
+                    - generic [ref=f9e73]: group
+                    - text: "2"
+                - generic [ref=f9e74]:
+                  - heading "Sứ mệnh" [level=4] [ref=f9e75]
+                  - paragraph [ref=f9e76]: Định hình ngôn ngữ hình ảnh của BoardMates, để nhìn là nhận ra.
+                - generic [ref=f9e77]:
+                  - heading "Công việc" [level=4] [ref=f9e78]
+                  - list [ref=f9e79]:
+                    - listitem [ref=f9e80]:
+                      - generic [ref=f9e81]: "-"
+                      - generic [ref=f9e82]: Thiết kế ấn phẩm cho social, sự kiện và website
+                    - listitem [ref=f9e83]:
+                      - generic [ref=f9e84]: "-"
+                      - generic [ref=f9e85]: Giữ và phát triển hệ thống nhận diện đã có
+                - link "Xem Job Description arrow_forward" [ref=f9e86] [cursor=pointer]:
+                  - /url: /join-us/design
+                  - text: Xem Job Description
+                  - generic [ref=f9e87]: arrow_forward
+            - article [ref=f9e88]:
+              - link "community.exe open_in_new" [ref=f9e89] [cursor=pointer]:
+                - /url: /join-us/community
+                - generic [ref=f9e91]: community.exe
+                - generic [ref=f9e92]: open_in_new
+              - generic [ref=f9e93]:
+                - generic [ref=f9e94]:
+                  - generic [ref=f9e95]:
+                    - generic [ref=f9e96]: groups
+                    - heading "Community" [level=3] [ref=f9e97]
+                  - 'generic "Số lượng: 2 người" [ref=f9e98]':
+                    - generic [ref=f9e99]: group
+                    - text: "2"
+                - generic [ref=f9e100]:
+                  - heading "Sứ mệnh" [level=4] [ref=f9e101]
+                  - paragraph [ref=f9e102]: Biến một nhóm người lạ thành một cộng đồng thật sự muốn quay lại.
+                - generic [ref=f9e103]:
+                  - heading "Công việc" [level=4] [ref=f9e104]
+                  - list [ref=f9e105]:
+                    - listitem [ref=f9e106]:
+                      - generic [ref=f9e107]: "-"
+                      - generic [ref=f9e108]: Vận hành và giữ nhịp các kênh cộng đồng (Discord, Facebook Group)
+                    - listitem [ref=f9e109]:
+                      - generic [ref=f9e110]: "-"
+                      - generic [ref=f9e111]: Chào đón thành viên mới, tạo không khí để người mới dám lên tiếng
+                - link "Xem Job Description arrow_forward" [ref=f9e112] [cursor=pointer]:
+                  - /url: /join-us/community
+                  - text: Xem Job Description
+                  - generic [ref=f9e113]: arrow_forward
+            - article [ref=f9e114]:
+              - link "event.exe open_in_new" [ref=f9e115] [cursor=pointer]:
+                - /url: /join-us/event
+                - generic [ref=f9e117]: event.exe
+                - generic [ref=f9e118]: open_in_new
+              - generic [ref=f9e119]:
+                - generic [ref=f9e120]:
+                  - generic [ref=f9e121]:
+                    - generic [ref=f9e122]: event
+                    - heading "Event" [level=3] [ref=f9e123]
+                  - 'generic "Số lượng: 2 người" [ref=f9e124]':
+                    - generic [ref=f9e125]: group
+                    - text: "2"
+                - generic [ref=f9e126]:
+                  - heading "Sứ mệnh" [level=4] [ref=f9e127]
+                  - paragraph [ref=f9e128]: Tổ chức những buổi gặp mà người tham gia muốn kể lại cho bạn bè.
+                - generic [ref=f9e129]:
+                  - heading "Công việc" [level=4] [ref=f9e130]
+                  - list [ref=f9e131]:
+                    - listitem [ref=f9e132]:
+                      - generic [ref=f9e133]: "-"
+                      - generic [ref=f9e134]: Lên ý tưởng và tổ chức Board Game Night, Workshop, Tournament
+                    - listitem [ref=f9e135]:
+                      - generic [ref=f9e136]: "-"
+                      - generic [ref=f9e137]: Làm việc với board game café và các địa điểm đối tác
+                - link "Xem Job Description arrow_forward" [ref=f9e138] [cursor=pointer]:
+                  - /url: /join-us/event
+                  - text: Xem Job Description
+                  - generic [ref=f9e139]: arrow_forward
+            - article [ref=f9e140]:
+              - link "business_development.exe open_in_new" [ref=f9e141] [cursor=pointer]:
+                - /url: /join-us/business-development
+                - generic [ref=f9e143]: business_development.exe
+                - generic [ref=f9e144]: open_in_new
+              - generic [ref=f9e145]:
+                - generic [ref=f9e146]:
+                  - generic [ref=f9e147]:
+                    - generic [ref=f9e148]: handshake
+                    - heading "Business Development" [level=3] [ref=f9e149]
+                  - 'generic "Số lượng: 2 người" [ref=f9e150]':
+                    - generic [ref=f9e151]: group
+                    - text: "2"
+                - generic [ref=f9e152]:
+                  - heading "Sứ mệnh" [level=4] [ref=f9e153]
+                  - paragraph [ref=f9e154]: Xây mạng lưới đối tác để BoardMates đi được đường dài.
+                - generic [ref=f9e155]:
+                  - heading "Công việc" [level=4] [ref=f9e156]
+                  - list [ref=f9e157]:
+                    - listitem [ref=f9e158]:
+                      - generic [ref=f9e159]: "-"
+                      - generic [ref=f9e160]: "Tìm và tiếp cận đối tác: café, cửa hàng, nhà xuất bản, nhà sáng tạo"
+                    - listitem [ref=f9e161]:
+                      - generic [ref=f9e162]: "-"
+                      - generic [ref=f9e163]: Đàm phán hợp tác đôi bên cùng có lợi
+                - link "Xem Job Description arrow_forward" [ref=f9e164] [cursor=pointer]:
+                  - /url: /join-us/business-development
+                  - text: Xem Job Description
+                  - generic [ref=f9e165]: arrow_forward
+            - article [ref=f9e166]:
+              - link "product.exe open_in_new" [ref=f9e167] [cursor=pointer]:
+                - /url: /join-us/product
+                - generic [ref=f9e169]: product.exe
+                - generic [ref=f9e170]: open_in_new
+              - generic [ref=f9e171]:
+                - generic [ref=f9e172]:
+                  - generic [ref=f9e173]:
+                    - generic [ref=f9e174]: lightbulb
+                    - heading "Product" [level=3] [ref=f9e175]
+                  - 'generic "Số lượng: 2 người" [ref=f9e176]':
+                    - generic [ref=f9e177]: group
+                    - text: "2"
+                - generic [ref=f9e178]:
+                  - heading "Sứ mệnh" [level=4] [ref=f9e179]
+                  - paragraph [ref=f9e180]: Quyết định BoardMates nên làm gì tiếp theo, và quan trọng hơn là không nên làm gì.
+                - generic [ref=f9e181]:
+                  - heading "Công việc" [level=4] [ref=f9e182]
+                  - list [ref=f9e183]:
+                    - listitem [ref=f9e184]:
+                      - generic [ref=f9e185]: "-"
+                      - generic [ref=f9e186]: Thu thập nhu cầu từ cộng đồng và chuyển thành yêu cầu cụ thể
+                    - listitem [ref=f9e187]:
+                      - generic [ref=f9e188]: "-"
+                      - generic [ref=f9e189]: Sắp thứ tự ưu tiên, quyết định làm gì trước
+                - link "Xem Job Description arrow_forward" [ref=f9e190] [cursor=pointer]:
+                  - /url: /join-us/product
+                  - text: Xem Job Description
+                  - generic [ref=f9e191]: arrow_forward
+            - article [ref=f9e192]:
+              - link "technology.exe open_in_new" [ref=f9e193] [cursor=pointer]:
+                - /url: /join-us/technology
+                - generic [ref=f9e195]: technology.exe
+                - generic [ref=f9e196]: open_in_new
+              - generic [ref=f9e197]:
+                - generic [ref=f9e198]:
+                  - generic [ref=f9e199]:
+                    - generic [ref=f9e200]: code
+                    - heading "Technology" [level=3] [ref=f9e201]
+                  - 'generic "Số lượng: 2 người" [ref=f9e202]':
+                    - generic [ref=f9e203]: group
+                    - text: "2"
+                - generic [ref=f9e204]:
+                  - heading "Sứ mệnh" [level=4] [ref=f9e205]
+                  - paragraph [ref=f9e206]: Xây và giữ nền tảng kỹ thuật để mọi thứ còn lại chạy được.
+                - generic [ref=f9e207]:
+                  - heading "Công việc" [level=4] [ref=f9e208]
+                  - list [ref=f9e209]:
+                    - listitem [ref=f9e210]:
+                      - generic [ref=f9e211]: "-"
+                      - generic [ref=f9e212]: Phát triển website và các tính năng của nền tảng
+                    - listitem [ref=f9e213]:
+                      - generic [ref=f9e214]: "-"
+                      - generic [ref=f9e215]: Giữ hệ thống chạy ổn định, sửa lỗi khi phát sinh
+                - link "Xem Job Description arrow_forward" [ref=f9e216] [cursor=pointer]:
+                  - /url: /join-us/technology
+                  - text: Xem Job Description
+                  - generic [ref=f9e217]: arrow_forward
+        - generic [ref=f9e218]:
+          - heading "Thấy mình phù hợp?" [level=2] [ref=f9e219]
+          - paragraph [ref=f9e220]: Chúng mình quan tâm tới tinh thần xây dựng hơn là kinh nghiệm. Nếu bạn muốn cùng làm từ con số 0, hãy nói chuyện với chúng mình.
+          - link "Ứng tuyển open_in_new" [ref=f9e221] [cursor=pointer]:
+            - /url: https://forms.gle/oF8ZjH2jsp6WQFEs7
+            - text: Ứng tuyển
+            - generic [ref=f9e222]: open_in_new
+    - button "arrow_back" [ref=f9e224]
+    - 'link "Đơn vị chủ quản: Youth+" [ref=f9e226] [cursor=pointer]':
+      - /url: https://www.facebook.com/YouthPlusxHCM
+      - img "Youth+" [ref=f9e227]
+    - contentinfo [ref=f9e228]:
+      - generic [ref=f9e229]:
+        - img "BoardMates" [ref=f9e230]
+        - generic [ref=f9e231]: © 2026 BoardMates. Bảo lưu mọi quyền.
+      - generic [ref=f9e232]:
+        - link "Facebook" [ref=f9e233] [cursor=pointer]:
+          - /url: https://www.facebook.com/profile.php?id=61591971322796
+        - link "Instagram" [ref=f9e238] [cursor=pointer]:
+          - /url: "#"
+        - link "TikTok" [ref=f9e245] [cursor=pointer]:
+          - /url: "#"
+  - button "Open Next.js Dev Tools" [ref=f9e255] [cursor=pointer]

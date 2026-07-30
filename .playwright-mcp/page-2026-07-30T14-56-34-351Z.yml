@@ -1,0 +1,43 @@
+- generic [active] [ref=f14e1]:
+  - generic [ref=f14e4]:
+    - navigation [ref=f14e5]:
+      - link [ref=f14e7] [cursor=pointer]:
+        - /url: /
+        - img "BoardMates" [ref=f14e8]
+      - generic [ref=f14e9]:
+        - link "Trang chủ" [ref=f14e10] [cursor=pointer]:
+          - /url: /
+        - link "Cộng đồng Sắp ra mắt" [ref=f14e11] [cursor=pointer]:
+          - /url: /community
+          - text: Cộng đồng
+          - generic [ref=f14e12]: Sắp ra mắt
+        - link "Sự kiện Sắp ra mắt" [ref=f14e13] [cursor=pointer]:
+          - /url: /events
+          - text: Sự kiện
+          - generic [ref=f14e14]: Sắp ra mắt
+        - link "Tham gia" [ref=f14e15] [cursor=pointer]:
+          - /url: /join-us
+        - link "Giới thiệu" [ref=f14e16] [cursor=pointer]:
+          - /url: /about
+      - generic [ref=f14e19]:
+        - button "VI" [ref=f14e20] [cursor=pointer]
+        - button "EN" [ref=f14e21] [cursor=pointer]
+    - main [ref=f14e22]:
+      - main [ref=f14e23]:
+        - paragraph [ref=f14e25]: Vui lòng đăng nhập để chat.
+    - button "arrow_back" [ref=f14e27]
+    - 'link "Đơn vị chủ quản: Youth+" [ref=f14e29] [cursor=pointer]':
+      - /url: https://www.facebook.com/YouthPlusxHCM
+      - img "Youth+" [ref=f14e30]
+    - contentinfo [ref=f14e31]:
+      - generic [ref=f14e32]:
+        - img "BoardMates" [ref=f14e33]
+        - generic [ref=f14e34]: © 2026 BoardMates. Bảo lưu mọi quyền.
+      - generic [ref=f14e35]:
+        - link "Facebook" [ref=f14e36] [cursor=pointer]:
+          - /url: https://www.facebook.com/profile.php?id=61591971322796
+        - link "Instagram" [ref=f14e41] [cursor=pointer]:
+          - /url: "#"
+        - link "TikTok" [ref=f14e48] [cursor=pointer]:
+          - /url: "#"
+  - button "Open Next.js Dev Tools" [ref=f14e58] [cursor=pointer]

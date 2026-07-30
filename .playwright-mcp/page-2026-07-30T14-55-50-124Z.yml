@@ -1,0 +1,112 @@
+- generic [active] [ref=f12e1]:
+  - generic [ref=f12e4]:
+    - navigation [ref=f12e5]:
+      - link [ref=f12e7] [cursor=pointer]:
+        - /url: /
+        - img "BoardMates" [ref=f12e8]
+      - generic [ref=f12e9]:
+        - link "Trang chủ" [ref=f12e10] [cursor=pointer]:
+          - /url: /
+        - link "Cộng đồng Sắp ra mắt" [ref=f12e11] [cursor=pointer]:
+          - /url: /community
+          - text: Cộng đồng
+          - generic [ref=f12e12]: Sắp ra mắt
+        - link "Sự kiện Sắp ra mắt" [ref=f12e13] [cursor=pointer]:
+          - /url: /events
+          - text: Sự kiện
+          - generic [ref=f12e14]: Sắp ra mắt
+        - link "Tham gia" [ref=f12e15] [cursor=pointer]:
+          - /url: /join-us
+        - link "Giới thiệu" [ref=f12e16] [cursor=pointer]:
+          - /url: /about
+      - generic [ref=f12e19]:
+        - button "VI" [ref=f12e20] [cursor=pointer]
+        - button "EN" [ref=f12e21] [cursor=pointer]
+    - main [ref=f12e22]:
+      - generic [ref=f12e23]:
+        - link "arrow_back Quay lại Vị trí đang mở" [ref=f12e24] [cursor=pointer]:
+          - /url: /join-us
+          - generic [ref=f12e25]: arrow_back
+          - text: Quay lại Vị trí đang mở
+        - generic [ref=f12e26]:
+          - generic [ref=f12e27]:
+            - generic [ref=f12e29]: marketing.job
+            - generic [ref=f12e30]: description
+          - generic [ref=f12e31]:
+            - generic [ref=f12e32]:
+              - generic [ref=f12e33]:
+                - generic [ref=f12e34]:
+                  - generic [ref=f12e35]: campaign
+                  - heading "Marketing" [level=1] [ref=f12e36]
+                - generic [ref=f12e37]:
+                  - generic [ref=f12e38]: group
+                  - text: "Số lượng: 2 người"
+              - generic [ref=f12e39]:
+                - heading "Sứ mệnh" [level=3] [ref=f12e40]
+                - paragraph [ref=f12e41]: "Đưa BoardMates đến đúng người: nơi để mọi người dừng chân và kết nối trong thời đại số hiện nay."
+            - generic [ref=f12e42]:
+              - generic [ref=f12e43]:
+                - heading "Công việc" [level=4] [ref=f12e44]
+                - list [ref=f12e45]:
+                  - listitem [ref=f12e46]:
+                    - generic [ref=f12e47]: —
+                    - generic [ref=f12e48]: Lên kế hoạch và triển khai nội dung trên các kênh social của BoardMates
+                  - listitem [ref=f12e49]:
+                    - generic [ref=f12e50]: —
+                    - generic [ref=f12e51]: Xây dựng câu chuyện thương hiệu, giữ giọng nói nhất quán
+                  - listitem [ref=f12e52]:
+                    - generic [ref=f12e53]: —
+                    - generic [ref=f12e54]: Phối hợp với ban Design để sản xuất hình ảnh, video
+                  - listitem [ref=f12e55]:
+                    - generic [ref=f12e56]: —
+                    - generic [ref=f12e57]: Theo dõi số liệu và điều chỉnh nội dung theo phản hồi thật
+              - generic [ref=f12e58]:
+                - heading "Yêu cầu" [level=4] [ref=f12e59]
+                - list [ref=f12e60]:
+                  - listitem [ref=f12e61]:
+                    - generic [ref=f12e62]: —
+                    - generic [ref=f12e63]: Sẵn sàng học hỏi và thử nghiệm
+                  - listitem [ref=f12e64]:
+                    - generic [ref=f12e65]: —
+                    - generic [ref=f12e66]: Tinh thần trách nhiệm với sản phẩm và dự án.
+                  - listitem [ref=f12e67]:
+                    - generic [ref=f12e68]: —
+                    - generic [ref=f12e69]: Tích cực tương tác với cộng đồng và nội bộ.
+              - generic [ref=f12e70]:
+                - heading "Quyền lợi" [level=4] [ref=f12e71]
+                - list [ref=f12e72]:
+                  - listitem [ref=f12e73]:
+                    - generic [ref=f12e74]: —
+                    - generic [ref=f12e75]: Được đào tạo chuyên sâu về marketing và cách triển khai một cộng đồng
+                  - listitem [ref=f12e76]:
+                    - generic [ref=f12e77]: —
+                    - generic [ref=f12e78]: Được trải nghiệm với mentor có kinh nghiệm từ nhà Youth+ Community
+                  - listitem [ref=f12e79]:
+                    - generic [ref=f12e80]: —
+                    - generic [ref=f12e81]: Portfolio thật từ một dự án thật, và được chứng chỉ công nhận.
+              - generic [ref=f12e82]:
+                - heading "Lộ trình phát triển" [level=4] [ref=f12e83]
+                - paragraph [ref=f12e84]: Content Contributor → Marketing Lead → định hình toàn bộ chiến lược thương hiệu.
+            - generic [ref=f12e85]:
+              - link "Ứng tuyển open_in_new" [ref=f12e86] [cursor=pointer]:
+                - /url: https://forms.gle/oF8ZjH2jsp6WQFEs7
+                - text: Ứng tuyển
+                - generic [ref=f12e87]: open_in_new
+              - link "Xem vị trí khác" [ref=f12e88] [cursor=pointer]:
+                - /url: /join-us
+    - button "arrow_back" [ref=f12e90]
+    - 'link "Đơn vị chủ quản: Youth+" [ref=f12e92] [cursor=pointer]':
+      - /url: https://www.facebook.com/YouthPlusxHCM
+      - img "Youth+" [ref=f12e93]
+    - contentinfo [ref=f12e94]:
+      - generic [ref=f12e95]:
+        - img "BoardMates" [ref=f12e96]
+        - generic [ref=f12e97]: © 2026 BoardMates. Bảo lưu mọi quyền.
+      - generic [ref=f12e98]:
+        - link "Facebook" [ref=f12e99] [cursor=pointer]:
+          - /url: https://www.facebook.com/profile.php?id=61591971322796
+        - link "Instagram" [ref=f12e104] [cursor=pointer]:
+          - /url: "#"
+        - link "TikTok" [ref=f12e111] [cursor=pointer]:
+          - /url: "#"
+  - button "Open Next.js Dev Tools" [ref=f12e121] [cursor=pointer]

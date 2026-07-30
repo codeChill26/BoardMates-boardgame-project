@@ -1,0 +1,52 @@
+- generic [active] [ref=f13e1]:
+  - generic [ref=f13e4]:
+    - navigation [ref=f13e5]:
+      - link [ref=f13e7] [cursor=pointer]:
+        - /url: /
+        - img "BoardMates" [ref=f13e8]
+      - generic [ref=f13e9]:
+        - link "Trang chủ" [ref=f13e10] [cursor=pointer]:
+          - /url: /
+        - link "Cộng đồng Sắp ra mắt" [ref=f13e11] [cursor=pointer]:
+          - /url: /community
+          - text: Cộng đồng
+          - generic [ref=f13e12]: Sắp ra mắt
+        - link "Sự kiện Sắp ra mắt" [ref=f13e13] [cursor=pointer]:
+          - /url: /events
+          - text: Sự kiện
+          - generic [ref=f13e14]: Sắp ra mắt
+        - link "Tham gia" [ref=f13e15] [cursor=pointer]:
+          - /url: /join-us
+        - link "Giới thiệu" [ref=f13e16] [cursor=pointer]:
+          - /url: /about
+      - generic [ref=f13e19]:
+        - button "VI" [ref=f13e20] [cursor=pointer]
+        - button "EN" [ref=f13e21] [cursor=pointer]
+    - main [ref=f13e22]:
+      - generic [ref=f13e24]:
+        - generic [ref=f13e25]: community.exe
+        - generic [ref=f13e30]:
+          - generic [ref=f13e31]: Sắp ra mắt
+          - heading "Cộng đồng" [level=1] [ref=f13e32]
+          - paragraph [ref=f13e33]: Nơi bạn tìm thấy những người cùng sở thích, chia sẻ và cùng nhau phát triển qua board game. Chúng mình đang xây dựng phần này.
+          - generic [ref=f13e34]:
+            - generic [ref=f13e35]: hourglass_empty
+            - generic [ref=f13e36]: COMMUNITY_MODULE.IMG
+          - link "Muốn cùng xây dựng? Tham gia Core Team" [ref=f13e37] [cursor=pointer]:
+            - /url: /join-us
+    - button "arrow_back" [ref=f13e39]
+    - 'link "Đơn vị chủ quản: Youth+" [ref=f13e41] [cursor=pointer]':
+      - /url: https://www.facebook.com/YouthPlusxHCM
+      - img "Youth+" [ref=f13e42]
+    - contentinfo [ref=f13e43]:
+      - generic [ref=f13e44]:
+        - img "BoardMates" [ref=f13e45]
+        - generic [ref=f13e46]: © 2026 BoardMates. Bảo lưu mọi quyền.
+      - generic [ref=f13e47]:
+        - link "Facebook" [ref=f13e48] [cursor=pointer]:
+          - /url: https://www.facebook.com/profile.php?id=61591971322796
+        - link "Instagram" [ref=f13e53] [cursor=pointer]:
+          - /url: "#"
+        - link "TikTok" [ref=f13e60] [cursor=pointer]:
+          - /url: "#"
+  - button "Open Next.js Dev Tools" [ref=f13e70] [cursor=pointer]

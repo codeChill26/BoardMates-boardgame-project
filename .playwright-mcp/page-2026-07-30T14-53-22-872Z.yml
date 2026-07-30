@@ -1,0 +1,148 @@
+- generic [active] [ref=f7e1]:
+  - generic [ref=f7e4]:
+    - navigation [ref=f7e5]:
+      - link [ref=f7e7] [cursor=pointer]:
+        - /url: /
+        - img "BoardMates" [ref=f7e8]
+      - generic [ref=f7e9]:
+        - link "Trang chủ" [ref=f7e10] [cursor=pointer]:
+          - /url: /
+        - link "Cộng đồng Sắp ra mắt" [ref=f7e11] [cursor=pointer]:
+          - /url: /community
+          - text: Cộng đồng
+          - generic [ref=f7e12]: Sắp ra mắt
+        - link "Sự kiện Sắp ra mắt" [ref=f7e13] [cursor=pointer]:
+          - /url: /events
+          - text: Sự kiện
+          - generic [ref=f7e14]: Sắp ra mắt
+        - link "Tham gia" [ref=f7e15] [cursor=pointer]:
+          - /url: /join-us
+        - link "Giới thiệu" [ref=f7e16] [cursor=pointer]:
+          - /url: /about
+      - generic [ref=f7e19]:
+        - button "VI" [ref=f7e20] [cursor=pointer]
+        - button "EN" [ref=f7e21] [cursor=pointer]
+    - main [ref=f7e22]:
+      - main [ref=f7e24]:
+        - generic [ref=f7e25]:
+          - generic [ref=f7e26]:
+            - generic [ref=f7e27]: system_welcome.exe
+            - generic [ref=f7e33]:
+              - generic [ref=f7e34]: v.2024.archive
+              - heading "Chào mừng đến với" [level=1] [ref=f7e35]
+              - img "BoardMates" [ref=f7e36]
+              - paragraph [ref=f7e37]: Một thư viện số hóa các trò chơi cờ bàn cổ điển, nơi lưu trữ những kỷ niệm và những chiến thuật vượt thời gian.
+              - button "Khám phá ngay" [ref=f7e38] [cursor=pointer]
+          - generic [ref=f7e42]:
+            - generic [ref=f7e43]:
+              - heading "Liên kết nhanh" [level=3] [ref=f7e44]
+              - generic [ref=f7e45]:
+                - link "article Blog" [ref=f7e46] [cursor=pointer]:
+                  - /url: /marketplace
+                  - generic [ref=f7e47]: article
+                  - generic [ref=f7e48]: Blog
+                - link "folder_open Dự án" [ref=f7e49] [cursor=pointer]:
+                  - /url: /marketplace
+                  - generic [ref=f7e50]: folder_open
+                  - generic [ref=f7e51]: Dự án
+                - link "info Thông tin" [ref=f7e52] [cursor=pointer]:
+                  - /url: /marketplace
+                  - generic [ref=f7e53]: info
+                  - generic [ref=f7e54]: Thông tin
+                - link "mail Liên hệ" [ref=f7e55] [cursor=pointer]:
+                  - /url: /marketplace
+                  - generic [ref=f7e56]: mail
+                  - generic [ref=f7e57]: Liên hệ
+            - generic [ref=f7e58]:
+              - generic [ref=f7e59]:
+                - generic [ref=f7e60]: stars
+                - generic [ref=f7e61]: Nhà sưu tầm tiêu điểm
+              - paragraph [ref=f7e62]: "\"Lưu trữ không chỉ là giữ lại vật phẩm, mà là bảo tồn cả một nền văn hóa chơi.\""
+        - generic [ref=f7e63]:
+          - generic [ref=f7e64]:
+            - generic [ref=f7e65]:
+              - text: Bộ sưu tập mới
+              - heading "Dự án mới" [level=2] [ref=f7e66]
+            - button "Xem thêm" [ref=f7e67] [cursor=pointer]
+          - generic [ref=f7e68]:
+            - generic [ref=f7e69]:
+              - generic [ref=f7e70]:
+                - generic [ref=f7e71]: board_game_01.img
+                - generic [ref=f7e72] [cursor=pointer]: close
+              - generic [ref=f7e73]:
+                - heading "Cờ Thế Kỷ" [level=4] [ref=f7e82]
+                - paragraph [ref=f7e83]: Một bản phục dựng kỹ thuật số của trò chơi chiến thuật thế kỷ 19 với đồ họa pixel tinh tế.
+                - generic [ref=f7e84]:
+                  - generic [ref=f7e85]: Chiến thuật
+                  - generic [ref=f7e86]: 2 Người
+              - generic [ref=f7e87]:
+                - generic [ref=f7e88]: "#01"
+                - button "arrow_forward" [ref=f7e89] [cursor=pointer]
+            - generic [ref=f7e90]:
+              - generic [ref=f7e91]:
+                - generic [ref=f7e92]: board_game_02.img
+                - generic [ref=f7e93] [cursor=pointer]: close
+              - generic [ref=f7e94]:
+                - heading "Huyền Thoại Xưa" [level=4] [ref=f7e106]
+                - paragraph [ref=f7e107]: Khám phá những thẻ bài ma thuật được vẽ tay thủ công theo phong cách kiến trúc Đông Dương.
+                - generic [ref=f7e108]:
+                  - generic [ref=f7e109]: Nhập vai
+                  - generic [ref=f7e110]: 4-6 Người
+              - generic [ref=f7e111]:
+                - generic [ref=f7e112]: "#02"
+                - button "arrow_forward" [ref=f7e113] [cursor=pointer]
+            - generic [ref=f7e114]:
+              - generic [ref=f7e115]:
+                - generic [ref=f7e116]: board_game_03.img
+                - generic [ref=f7e117] [cursor=pointer]: close
+              - generic [ref=f7e118]:
+                - heading "Mê Cung Số" [level=4] [ref=f7e168]
+                - paragraph [ref=f7e169]: Sự kết hợp giữa toán học và may mắn trong một thiết kế bàn cờ theo phong cách Bauhaus.
+                - generic [ref=f7e170]:
+                  - generic [ref=f7e171]: Toán học
+                  - generic [ref=f7e172]: 2-4 Người
+              - generic [ref=f7e173]:
+                - generic [ref=f7e174]: "#03"
+                - button "arrow_forward" [ref=f7e175] [cursor=pointer]
+        - generic [ref=f7e176]:
+          - generic [ref=f7e177]:
+            - generic [ref=f7e178]:
+              - generic [ref=f7e179]: Blog / 12.05.2024
+              - heading "Nghệ thuật thiết kế quân cờ" [level=5] [ref=f7e180]
+              - paragraph [ref=f7e181]: Khám phá quá trình chế tác những quân cờ từ gỗ mun tại các làng nghề truyền thống...
+              - link "Đọc tiếp" [ref=f7e182] [cursor=pointer]:
+                - /url: /marketplace
+            - generic [ref=f7e183]:
+              - generic [ref=f7e184]: News / 10.05.2024
+              - heading "Tương lai của Board Game Số" [level=5] [ref=f7e185]
+              - paragraph [ref=f7e186]: Khi công nghệ AR mang những bàn cờ cổ điển vào không gian phòng khách của bạn...
+              - link "Đọc tiếp" [ref=f7e187] [cursor=pointer]:
+                - /url: /marketplace
+            - generic [ref=f7e188]:
+              - generic [ref=f7e189]: Editor / 08.05.2024
+              - heading "Phỏng vấn Nghệ sĩ Minh Quân" [level=5] [ref=f7e190]
+              - paragraph [ref=f7e191]: Về dự án BoardMates và mong muốn lưu giữ giá trị của những trò chơi dân gian...
+              - link "Đọc tiếp" [ref=f7e192] [cursor=pointer]:
+                - /url: /marketplace
+          - generic [ref=f7e193]:
+            - generic [ref=f7e194]:
+              - text: Tin tức mới nhất
+              - heading "Từ Blog" [level=2] [ref=f7e195]
+            - paragraph [ref=f7e196]: Chúng tôi không chỉ lưu trữ trò chơi, chúng tôi kể những câu chuyện đằng sau chúng. Theo dõi những bài viết mới nhất về văn hóa, lịch sử và thiết kế board game.
+            - button "Xem tất cả bài viết" [ref=f7e198] [cursor=pointer]
+    - button "arrow_back" [ref=f7e200]
+    - 'link "Đơn vị chủ quản: Youth+" [ref=f7e202] [cursor=pointer]':
+      - /url: https://www.facebook.com/YouthPlusxHCM
+      - img "Youth+" [ref=f7e203]
+    - contentinfo [ref=f7e204]:
+      - generic [ref=f7e205]:
+        - img "BoardMates" [ref=f7e206]
+        - generic [ref=f7e207]: © 2026 BoardMates. Bảo lưu mọi quyền.
+      - generic [ref=f7e208]:
+        - link "Facebook" [ref=f7e209] [cursor=pointer]:
+          - /url: https://www.facebook.com/profile.php?id=61591971322796
+        - link "Instagram" [ref=f7e214] [cursor=pointer]:
+          - /url: "#"
+        - link "TikTok" [ref=f7e221] [cursor=pointer]:
+          - /url: "#"
+  - button "Open Next.js Dev Tools" [ref=f7e231] [cursor=pointer]

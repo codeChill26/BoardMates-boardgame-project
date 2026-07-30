@@ -1,0 +1,18 @@
+- generic [active] [ref=f11e1]:
+  - main [ref=f11e4]:
+    - generic [ref=f11e5]:
+      - generic [ref=f11e6]:
+        - text: console.exe
+        - heading "Quản trị vị trí" [level=1] [ref=f11e7]
+        - paragraph [ref=f11e8]: Bật/tắt việc nhận ứng tuyển và chỉnh số lượng tuyển cho từng ban. Vị trí đã tắt sẽ bị tô xám, dồn xuống cuối và không mở được ở trang Tham gia.
+        - paragraph [ref=f11e9]:
+          - text: Ô
+          - strong [ref=f11e10]: Số lượng
+          - text: để trống rồi bấm Lưu sẽ xoá ghi đè, quay về số mặc định khai báo trong
+          - code [ref=f11e11]: teams.js
+          - text: .
+      - generic [ref=f11e12]:
+        - generic [ref=f11e13]: Khoá quản trị
+        - textbox "Nhập khoá để bật/tắt" [ref=f11e14]
+      - paragraph [ref=f11e15]: Đang tải...
+  - button "Open Next.js Dev Tools" [ref=f11e21] [cursor=pointer]

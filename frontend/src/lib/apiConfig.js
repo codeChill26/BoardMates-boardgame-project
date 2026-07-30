@@ -1,10 +1,8 @@
-const LOCAL_URL = 'http://localhost:8080';
-const DEPLOY_URL = 'https://boardmates-boardgame-project.onrender.com';
-
 // 1. Get base url from env variable if available (exposed via next.config.mjs env)
-const ENV_BACKEND_URL = process.env.BACKEND_URL;
+const LOCAL_URL = process.env.LOCAL_URL;
+const DEPLOY_URL = process.env.DEPLOY_URL;
 
-let backendUrl = ENV_BACKEND_URL || LOCAL_URL;
+let backendUrl = LOCAL_URL || DEPLOY_URL;
 
 // Normalize trailing slash
 if (backendUrl.endsWith('/')) {

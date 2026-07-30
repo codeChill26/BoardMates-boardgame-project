@@ -8,11 +8,19 @@ A boardgame marketplace ("Dicero" in code, "BoardMates" in the newer vision doc 
 
 | Service | Stack | Port | Env file |
 |---|---|---|---|
-| [frontend/](frontend/) | Next.js 16 App Router, React 19, JavaScript (not TS), Tailwind v4, zustand | 3000 | none |
+| [frontend/](frontend/) | Next.js 16 App Router, React 19, JavaScript (not TS), Tailwind v4, zustand | 3007 | none |
 | [backend/](backend/) | Express 4, Prisma 7 + PostgreSQL, JWT, Socket.IO | 8080 | `backend/.env` |
 | [ai/](ai/) | FastAPI, Ollama, ChromaDB, sentence-transformers | 8001 | `ai/.env` |
 
 Ollama runs on the host at 11434 and is a separate prerequisite (`ollama pull <model>`).
+
+## Current phase: core-team recruitment
+
+The public site is currently a recruitment landing site, not a marketplace. The navbar ([Navbar.jsx](frontend/src/layouts/Navbar.jsx)) exposes only Home / Community *(coming soon)* / Events *(coming soon)* / Join Us / About. The marketplace, chat, profile and admin pages still exist and still work, but nothing links to them.
+
+**The login/register entry points are hidden on purpose.** The navbar renders the account area only when `user` is truthy; the logged-out branch that used to render a "Đăng nhập" button was deliberately removed, and `handleLogout` sends you to `/` rather than `/login`. Admins reach the app by typing `/login` themselves. Don't "fix" the missing button — restoring it is a one-line change when the phase ends (the `t.login` key is still in [translations.js](frontend/src/data/translations.js)).
+
+This is UI-level hiding only, not access control: `/login` and `/register` are still routable and `POST /api/auth/register` still accepts signups. Closing registration for real means gating it in [auth.controller.js](backend/src/controller/auth.controller.js).
 
 ## Commands
 
@@ -20,7 +28,7 @@ Each service runs from its own directory; there is no root-level script.
 
 ```bash
 # frontend/
-npm run dev        # dev server on :3000
+npm run dev        # dev server on :3007 (port is pinned in package.json, not 3000)
 npm run build
 npm run lint       # eslint — the only lint/check in the repo
 
@@ -30,6 +38,8 @@ npx prisma db push          # push schema without a migration (design phase)
 npx prisma migrate dev --name <name>
 npx prisma generate         # after any schema change
 npx prisma studio           # data browser on :5555
+node prisma/seed.js         # create the ADMIN account (admin@bg.com / admin123;
+                            # override with ADMIN_EMAIL / ADMIN_PASSWORD / ADMIN_USERNAME)
 
 # ai/  (run from repo root, PowerShell)
 powershell -ExecutionPolicy Bypass -File ai/scripts/setup.ps1     # creates ai/venv + installs deps
@@ -65,13 +75,25 @@ i18n is a hand-rolled dictionary: `translations[language].<section>` from [front
 
 ### Backend
 
-Express-generator layout under `src/`: `routes/` (thin, carry the `@swagger` JSDoc that builds `/api-docs`) → `controller/` (all logic + Prisma calls) → `middleware/`. Mounted at `/api/auth`, `/api/listings`, `/api/orders`, `/api/admin`, `/api/users`.
+Express-generator layout under `src/`: `routes/` (thin, carry the `@swagger` JSDoc that builds `/api-docs`) → `controller/` (all logic + Prisma calls) → `middleware/`. Mounted at `/api/auth`, `/api/listings`, `/api/orders`, `/api/admin`, `/api/positions`, `/api/users`.
 
 Every JSON response follows `{ success: true, data }` or `{ success: false, message }`. The error handler in [backend/app.js](backend/app.js) only returns JSON for URLs starting with `/api` — the non-API branch still calls `res.render('error')`, but the jade views were deleted and the configured views dir doesn't exist. This app is JSON-only; don't add server-rendered pages without restoring that setup.
 
 Auth is JWT Bearer with payload `{ userId, email, role }`, expiring in 1d. [`authenticate`](backend/src/middleware/authenticate.js) sets `req.user = { id, email, role }` — note `userId` in the token becomes `id` on the request. Role gates go through `requireRole('ADMIN')`. Google OAuth (passport) lives alongside password auth; users may have a null `password`.
 
 Prisma 7 specifics that differ from older versions: `DATABASE_URL` is supplied by [backend/prisma.config.ts](backend/prisma.config.ts), **not** by a `url` in the `datasource` block of [schema.prisma](backend/prisma/schema.prisma). The client is instantiated with the `PrismaPg` adapter over a `pg` Pool in [prismaClient.js](backend/src/middleware/prismaClient.js), and when `DATABASE_URL` is missing it exports a Proxy that throws on first use — the server boots fine and fails only when a query runs, so "server started" doesn't mean the DB is connected.
+
+`DATABASE_URL` points at a **hosted Supabase instance**, not a local Postgres — `db push` and seeds hit a shared remote database, so treat schema changes as shared state.
+
+**Schema drift presents as a generic 500, not as a schema error.** The generated client selects every scalar field in the model, so if the database is missing a column that [schema.prisma](backend/prisma/schema.prisma) declares, any bare `findUnique`/`findFirst` throws — and controllers catch it and return `{ success: false, message: 'Lỗi server' }`. A 500 on login that should have been a 404 or 400 means the `User` table is behind the schema, not that credentials are wrong. Confirm with a raw `information_schema.columns` query before touching auth code. (`count()` and `findMany` with an explicit `select` keep working, which makes the drift look intermittent.)
+
+### The recruitment console is a second, separate auth system
+
+`/api/positions` ([positionsController.js](backend/src/controller/positionsController.js)) does **not** touch Prisma, JWT, or `requireRole('ADMIN')`. It stores open/closed flags for recruitment slots in a plain JSON file at `backend/src/data/positions.json` — a path that doesn't exist until the first write, and a missing file or missing key means *open*. Writes are authorized by an `x-admin-key` header compared against `process.env.ADMIN_SECRET`, which falls back to a hardcoded default when the env var is unset (set `ADMIN_SECRET` in `backend/.env` before this is public). Working with the database down is the point — that's why it doesn't use Prisma.
+
+Its UI is [frontend/src/app/bm-console-7k29x/page.js](frontend/src/app/bm-console-7k29x/page.js) — deliberately outside the `(main)` route group, so it has no navbar or footer, and nothing links to it. The obscure path *is* the access model; don't add it to navigation or rename it casually.
+
+Gotcha: `KNOWN_SLUGS` in the controller is hand-synced with the `slug` values in [frontend/src/data/teams.js](frontend/src/data/teams.js). Add a team on one side only and the API answers 404 for it.
 
 ### Domain model
 
