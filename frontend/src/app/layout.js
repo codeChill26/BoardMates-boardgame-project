@@ -1,4 +1,5 @@
 import "./globals.css";
+import { Agentation } from "agentation";
 import CursorFollower from "@/components/common/CursorFollower";
 
 export const metadata = {
@@ -22,6 +23,7 @@ export default function RootLayout({ children }) {
           {children}
         </div>
         <CursorFollower />
+        {process.env.NODE_ENV === "development" && <Agentation />}
       </body>
     </html>
   );
