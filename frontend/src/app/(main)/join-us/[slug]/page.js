@@ -33,18 +33,23 @@ export default function JobDetailPage() {
   const slug = Array.isArray(params?.slug) ? params.slug[0] : params?.slug;
   const team = teams.find((item) => item.slug === slug);
 
-  // Console ghi de duoc so luong -> phai hoi backend, khong thi the o /join-us va
-  // trang nay bao hai so khac nhau. Loi mang -> ve so mac dinh trong teams.js.
-  const [override, setOverride] = React.useState(null);
+  // Console ghi de duoc so luong VA bat/tat nhan ho so -> phai hoi backend, khong
+  // thi the o /join-us va trang nay bao hai kieu khac nhau. Loi mang -> giu nguyen
+  // null: coi nhu dang mo, so luong ve mac dinh trong teams.js (giong /join-us).
+  const [entry, setEntry] = React.useState(null);
   React.useEffect(() => {
     if (!slug) return;
     fetch(`${getBackendUrl()}/api/positions`)
       .then((r) => r.json())
-      .then((j) => setOverride(j?.data?.[slug]?.headcount ?? null))
+      .then((j) => setEntry(j?.data?.[slug] ?? null))
       .catch(() => {});
   }, [slug]);
 
-  const headcount = override ?? team?.headcount;
+  const headcount = entry?.headcount ?? team?.headcount;
+
+  // The o /join-us da chan click, nhung trang nay con vao duoc bang URL go tay,
+  // link cu hoac ket qua tim kiem -> van cho doc JD, chi khoa nut Ung tuyen.
+  const isOpen = entry?.isOpen !== false;
 
   if (!team) {
     return (
@@ -91,7 +96,13 @@ export default function JobDetailPage() {
           <span className="font-label text-[10px] md:text-xs font-bold uppercase tracking-widest text-on-surface truncate pr-2">
             {team.slug.replace(/-/g, '_')}.job
           </span>
-          <span className="material-symbols-outlined text-on-surface-variant text-sm ml-auto">description</span>
+          {isOpen ? (
+            <span className="material-symbols-outlined text-on-surface-variant text-sm ml-auto">description</span>
+          ) : (
+            <span className="font-label text-[9px] font-bold uppercase tracking-widest text-on-surface-variant ml-auto shrink-0">
+              {language === 'vi' ? 'Đã đóng' : 'Closed'}
+            </span>
+          )}
         </div>
 
         <div className="p-6 md:p-8 space-y-8">
@@ -135,7 +146,7 @@ export default function JobDetailPage() {
           </div>
 
           <div className="border-t-2 border-outline-variant pt-6 flex flex-wrap gap-3">
-            {APPLY_URL ? (
+            {APPLY_URL && isOpen ? (
               <a
                 href={APPLY_URL}
                 target="_blank"
@@ -163,7 +174,15 @@ export default function JobDetailPage() {
             </Link>
           </div>
 
-          {!APPLY_URL ? (
+          {/* Da dong thi bao ly do truoc — nut bi khoa vi ban nay dong, khong phai
+              vi chua co form. Con mo ma thieu APPLY_URL thi moi la "sap mo". */}
+          {!isOpen ? (
+            <p className="font-label text-[10px] uppercase tracking-widest text-on-surface-variant">
+              {language === 'vi'
+                ? 'Ban này đã đóng nhận ứng tuyển'
+                : 'This team is no longer accepting applications'}
+            </p>
+          ) : !APPLY_URL ? (
             <p className="font-label text-[10px] uppercase tracking-widest text-on-surface-variant">
               {t.applyPending}
             </p>
