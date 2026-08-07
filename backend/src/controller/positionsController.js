@@ -19,8 +19,10 @@ const KNOWN_SLUGS = [
 const DATA_DIR = path.join(__dirname, '..', '..', 'data');
 const DATA_FILE = path.join(DATA_DIR, 'positions.json');
 
-// Khoa cho thao tac ghi. Doc tu env; neu chua dat thi dung mac dinh (nen doi trong .env).
-const ADMIN_SECRET = process.env.ADMIN_SECRET || 'boardmates-admin-2026';
+// Khoa cho thao tac ghi. Bat buoc dat ADMIN_SECRET trong .env — truoc day co mot
+// gia tri mac dinh hardcode, nhung no nam trong repo nen khong bao ve duoc gi.
+// Chua dat => khoa luon duong ghi, con hon la mo bang khoa ai cung biet.
+const ADMIN_SECRET = process.env.ADMIN_SECRET;
 
 function readStore() {
   try {
@@ -82,6 +84,13 @@ const getPositions = (req, res) => {
 // Gui rieng tung truong cung duoc — truong khong gui thi giu nguyen gia tri cu.
 // headcount = null de xoa ghi de, quay ve so mac dinh trong teams.js.
 const setPosition = (req, res) => {
+  if (!ADMIN_SECRET) {
+    return res.status(503).json({
+      success: false,
+      message: 'Server chua cau hinh ADMIN_SECRET — khong the cap nhat',
+    });
+  }
+
   const key = req.headers['x-admin-key'];
   if (key !== ADMIN_SECRET) {
     return res.status(401).json({ success: false, message: 'Sai khoa quan tri' });
