@@ -56,6 +56,7 @@ model User {
   createdAt DateTime @default(now())
 
   listings  Listing[]
+  shelfGames ShelfGame[]
 }
 
 model BoardGame {
@@ -71,6 +72,7 @@ model BoardGame {
   imageUrl    String?
 
   listings    Listing[]
+  shelfItems  ShelfGame[]
 }
 
 model Listing {
@@ -113,4 +115,24 @@ model Order {
   createdAt       DateTime @default(now())
 
   listing         Listing @relation(fields: [listingId], references: [id])
+}
+
+model ShelfGame {
+  id                 Int       @id @default(autoincrement())
+  userId             Int
+  gameId             Int
+  condition          String?   @default("Like New") // Like New, Mới 100%, Đã bọc bài (Sleeved), Đã qua sử dụng
+  status             String    @default("ON_SHELF") // ON_SHELF (Trên kệ), LENT_OUT (Đang cho mượn), FOR_SALE (Muốn bán), WISHLIST (Yêu thích)
+  borrower           String?   // Tên người mượn
+  borrowedDate       DateTime? // Ngày cho mượn
+  expectedReturnDate DateTime? // Ngày hẹn trả
+  personalNotes      String?   // Ghi chú cá nhân (kèm bản mở rộng, phụ kiện...)
+  personalRating     Float?    // Đánh giá cá nhân (1 - 5)
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+
+  user               User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  game               BoardGame @relation(fields: [gameId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, gameId])
 }

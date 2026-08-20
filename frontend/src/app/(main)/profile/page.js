@@ -764,7 +764,7 @@ export default function ProfilePage() {
 
             {!isLoading && !error ? (
               <>
-                <div className="rounded-xl bg-surface">
+                <div id="games" className="rounded-xl bg-surface scroll-mt-24">
                   <div className="mb-8">
                     <h3 className="font-headline text-3xl font-bold text-on-surface">
                       {language === 'vi' ? 'Boardgame da dang' : 'Posted board games'}

@@ -63,6 +63,10 @@ const login = async (req, res) => {
     }
 
     // 2. So sánh password nhập vào với password đã mã hóa trong DB
+    if (!user.password) {
+      return res.status(400).json({ success: false, message: 'Tài khoản này được đăng ký qua Google. Vui lòng chọn Đăng nhập bằng Google.' });
+    }
+
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       return res.status(400).json({ success: false, message: 'Mật khẩu không chính xác' });

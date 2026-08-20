@@ -16,6 +16,7 @@ var listingsRouter = require('./src/routes/listings');
 var ordersRouter = require('./src/routes/orders');
 var adminRouter = require('./src/routes/admin');
 var positionsRouter = require('./src/routes/positions');
+var shelfRouter = require('./src/routes/shelf');
 
 const passport = require('./src/config/passport'); // Khởi tạo passport cấu hình
 
@@ -41,6 +42,7 @@ app.use('/api/listings', listingsRouter);
 app.use('/api/orders', ordersRouter);
 app.use('/api/admin', adminRouter);
 app.use('/api/positions', positionsRouter);
+app.use('/api/shelf', shelfRouter);
 app.use('/api/users', usersRouter);
 app.use('/api', indexRouter);
 
@@ -51,25 +53,15 @@ app.use(function(req, res, next) {
 
 // error handler
 app.use(function(err, req, res, next) {
-  // set locals, only providing error in development
-  const message = err.message;
-  const error = req.app.get('env') === 'development' ? err : {};
+  const status = err.status || 500;
+  const message = err.message || 'Internal Server Error';
+  const isDev = req.app.get('env') === 'development';
 
-  // If it's an API request, return JSON
-  if (req.originalUrl.startsWith('/api')) {
-    return res.status(err.status || 500).json({
-      success: false,
-      message: message,
-      error: error
-    });
-  }
-
-  res.locals.message = message;
-  res.locals.error = error;
-
-  // render the error page
-  res.status(err.status || 500);
-  res.render('error');
+  return res.status(status).json({
+    success: false,
+    message: message,
+    error: isDev ? err : undefined
+  });
 });
 
 module.exports = app;

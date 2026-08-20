@@ -22,7 +22,13 @@ router.get('/google', passport.authenticate('google', { scope: ['profile', 'emai
 
 // Google gọi lại (Callback) sau khi người dùng xác thực thành công
 router.get('/google/callback', 
-  passport.authenticate('google', { session: false, failureRedirect: 'http://localhost:3000/login?error=GoogleAuthFailed' }),
+  (req, res, next) => {
+    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3007';
+    passport.authenticate('google', { 
+      session: false, 
+      failureRedirect: `${frontendUrl}/login?error=GoogleAuthFailed` 
+    })(req, res, next);
+  },
   (req, res) => {
     // Đăng nhập thành công, tạo JWT token
     const user = req.user;

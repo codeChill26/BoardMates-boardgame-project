@@ -28,14 +28,19 @@ passport.use("google",
               data: { googleId: profile.id, avatarUrl: profile.photos[0]?.value || user.avatarUrl },
             });
           } else {
+            const crypto = require('crypto');
+            const bcrypt = require('bcryptjs');
+            const randomPassword = crypto.randomBytes(32).toString('hex');
+            const hashedPassword = await bcrypt.hash(randomPassword, 10);
+
             // Tạo tài khoản mới hoàn toàn qua Google
             user = await prisma.user.create({
               data: {
-                username: profile.displayName,
+                username: profile.displayName || email.split('@')[0] || 'User',
                 email: email,
                 googleId: profile.id,
-                avatarUrl: profile.photos[0]?.value,
-                password: null, // Không có password cho google auth
+                avatarUrl: profile.photos && profile.photos[0]?.value ? profile.photos[0].value : null,
+                password: hashedPassword,
                 role: 'USER',
                 status: 'ACTIVE'
               },
@@ -44,6 +49,7 @@ passport.use("google",
         }
         return done(null, user);
       } catch (error) {
+        console.error('Google Auth Strategy Error:', error);
         return done(error, null);
       }
     }

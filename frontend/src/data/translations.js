@@ -12,7 +12,8 @@ export const translations = {
       shop: 'Cửa hàng',
       logout: 'Đăng xuất',
       login: 'Đăng nhập',
-      profile: 'Hồ sơ người dùng',
+      profile: 'Profile',
+      gameVault: 'Kho Game',
     },
     // Tour dan khach lan dau: key trong `steps` phai trung `key` cua STEPS
     // trong components/common/NavbarTour.jsx.
@@ -331,6 +332,7 @@ export const translations = {
       logout: 'Logout',
       login: 'Login',
       profile: 'Profile',
+      gameVault: 'Game Vault',
     },
     tour: {
       titleBar: 'quick_tour.exe',
