@@ -10,7 +10,7 @@ const options = {
     },
     servers: [
       {
-        url: 'https://board-mates-boardgame-project-v45x-ax6pwse1m.vercel.app',
+        url: 'https://board-mates-boardgame-project-v45x.vercel.app',
         description: 'Môi trường Production (Vercel)',
       },
       {
