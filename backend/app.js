@@ -22,10 +22,6 @@ const passport = require('./src/config/passport'); // Khởi tạo passport cấ
 
 var app = express();
 
-// view engine setup
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'jade');
-
 app.use(cors()); // KÍCH HOẠT CORS CHO TOÀN BỘ PROJECT
 app.use(logger('dev'));
 app.use(express.json());
