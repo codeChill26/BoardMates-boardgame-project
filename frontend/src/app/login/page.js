@@ -25,6 +25,11 @@ function LoginContent() {
     const token = searchParams.get('token');
     const emailParam = searchParams.get('email');
     const errorParam = searchParams.get('error');
+    const sessionParam = searchParams.get('session');
+
+    if (sessionParam === 'expired' && !error) {
+      setError('Phiên đăng nhập của bạn đã hết hạn do không tương tác trong 2 tiếng. Vui lòng đăng nhập lại.');
+    }
 
     if (handledRedirectRef.current) {
       return;
@@ -47,7 +52,7 @@ function LoginContent() {
       // Xoá param khỏi URL và chuyển hướng về trang chủ
       router.replace('/');
     }
-  }, [searchParams, router, setUser]);
+  }, [searchParams, router, setUser, error]);
 
   const handleLogin = async (e) => {
     e.preventDefault();

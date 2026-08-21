@@ -216,11 +216,21 @@ async function searchBggGames(query) {
 
   const cleanQ = removeVietnameseTones(q);
 
-  // Nếu là số ID (ví dụ: 13, 224517, 15987...)
-  const numericId = parseInt(q, 10);
-  if (!isNaN(numericId) && numericId > 0 && String(numericId) === q) {
+  // 1. Trích xuất nếu người dùng dán Link BGG (ví dụ: https://boardgamegeek.com/boardgame/218179) hoặc nhập ID trực tiếp (218179)
+  let extractedId = null;
+  const urlMatch = q.match(/boardgame\/(\d+)/i) || q.match(/objectid=(\d+)/i) || q.match(/thing\/(\d+)/i);
+  if (urlMatch && urlMatch[1]) {
+    extractedId = parseInt(urlMatch[1], 10);
+  } else {
+    const numericId = parseInt(q, 10);
+    if (!isNaN(numericId) && numericId > 0 && String(numericId) === q) {
+      extractedId = numericId;
+    }
+  }
+
+  if (extractedId) {
     try {
-      const directGame = await getBggGameById(numericId);
+      const directGame = await getBggGameById(extractedId);
       return [
         {
           bggId: directGame.bggId,

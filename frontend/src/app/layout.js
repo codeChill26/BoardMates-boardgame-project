@@ -1,6 +1,7 @@
 import "./globals.css";
 import { Agentation } from "agentation";
 import CursorFollower from "@/components/common/CursorFollower";
+import SessionTimeoutManager from "@/components/common/SessionTimeoutManager";
 
 export const metadata = {
   title: "BoardMates — Kết nối và sáng tạo qua board game",
@@ -23,6 +24,7 @@ export default function RootLayout({ children }) {
           {children}
         </div>
         <CursorFollower />
+        <SessionTimeoutManager />
         {process.env.NODE_ENV === "development" && <Agentation />}
       </body>
     </html>

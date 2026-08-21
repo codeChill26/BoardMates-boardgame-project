@@ -1,4 +1,5 @@
 const prisma = require('../middleware/prismaClient');
+const bggService = require('../services/bgg.service');
 
 /**
  * Lấy danh sách game trên kệ của user hiện tại (có phân trang, tìm kiếm, lọc)
@@ -407,16 +408,18 @@ const deleteShelfGame = async (req, res) => {
 
 /**
  * Tải file CSV Template mẫu chuẩn có UTF-8 BOM để mở tiếng Việt trên Excel
+ * Chỉ cần: Link BGG / BGG ID, Tên BoardGame, Ghi chú cá nhân
  */
 const downloadCsvTemplate = async (req, res) => {
   try {
-    const csvHeader = 'Tên BoardGame,Thể loại,Số người tối thiểu,Số người tối đa,Thời gian chơi (phút),Độ tuổi,Nhà phát hành,Link ảnh URL,Mô tả,Tình trạng box,Trạng thái,Người mượn,Ngày mượn,Ngày hẹn trả,Đánh giá cá nhân,Ghi chú';
+    const csvHeader = 'Link BGG / BGG ID,Tên BoardGame,Ghi chú cá nhân';
     
     const sampleRows = [
-      '"Catan","Chiến thuật;Kinh tế;Gia đình",3,4,75,10,"KOSMOS","https://images.unsplash.com/photo-1610890716171-6b1bb98ffd09?auto=format&fit=crop&w=800&q=80","Thu thập và giao dịch tài nguyên để xây dựng đường sá làng mạc trên đảo Catan","Like New 99%","ON_SHELF","","","",5.0,"Bản tiếng Anh đã bọc bài sleeves đầy đủ"',
-      '"Wingspan","Xây dựng động cơ;Động vật;Thẻ bài",1,5,70,10,"Stonemaier Games","https://images.unsplash.com/photo-1552728089-57bdde30beb3?auto=format&fit=crop&w=800&q=80","Khám phá thế giới chim muông và xây dựng chuỗi bảo tồn sinh thái","Mới 100%","ON_SHELF","","","",4.5,"Hộp nguyên seal chưa khui"',
-      '"Codenames","Giải đố;Party;Từ vựng",2,8,15,10,"Czech Games Edition","https://images.unsplash.com/photo-1610890716171-6b1bb98ffd09?auto=format&fit=crop&w=800&q=80","Hai đội điệp viên giải mã từ ngữ bí mật","Đã qua sử dụng","LENT_OUT","Hoàng Nam","2026-08-15","2026-08-30",4.0,"Cho nhóm bạn mượn đi dã ngoại"',
-      '"Terraforming Mars","Khoa học viễn tưởng;Kinh tế;Không gian",1,5,120,12,"FryxGames","https://images.unsplash.com/photo-1614728894747-a83421e2b9c9?auto=format&fit=crop&w=800&q=80","Cải tạo Sao Hỏa thành nơi sinh sống cho nhân loại","Like New 99%","FOR_SALE","","","",4.8,"Muốn bán lại 850k do ít nhóm chơi cùng"',
+      '"https://boardgamegeek.com/boardgame/13/catan","Catan","Bản tiếng Anh, đã bọc bài sleeves đầy đủ"',
+      '"https://boardgamegeek.com/boardgame/266192/wingspan","Wingspan","Hộp nguyên seal chưa khui, kèm xúc xắc gỗ"',
+      '"https://boardgamegeek.com/boardgame/218179/princess-jing","Princess Jing","Bản sưu tầm limited edition"',
+      '"174430","Gloomhaven","Hộp to nặng 10kg, tình trạng 98%"',
+      '"","Tam Cúc","Game dân gian truyền thống"',
     ];
 
     const csvContent = '\uFEFF' + [csvHeader, ...sampleRows].join('\r\n');
@@ -436,8 +439,7 @@ const downloadCsvTemplate = async (req, res) => {
 
 /**
  * Nhập hàng loạt boardgame từ danh sách CSV vào kho game
- * Tự động tạo bản ghi BoardGame nếu chưa có trong cơ sở dữ liệu
- * Đồng thời tạo bản ghi ShelfGame cho người chơi
+ * Tự động phân tích Link BGG / BGG ID để nạp toàn bộ ảnh HD & thông số từ BGG!
  */
 const batchImportShelfGames = async (req, res) => {
   try {
@@ -458,73 +460,99 @@ const batchImportShelfGames = async (req, res) => {
 
     for (let i = 0; i < games.length; i++) {
       const item = games[i];
-      const rawName = item.name || item.title || item['Tên BoardGame'] || item['Tên game'];
+      const rawName = item.name || item.title || item['Tên BoardGame'] || item['Tên game'] || '';
+      const rawBgg = item.bggLink || item.bggId || item['Link BGG / BGG ID'] || item['Link BGG'] || item['BGG ID'] || item.link || '';
 
-      if (!rawName || typeof rawName !== 'string' || rawName.trim() === '') {
-        errors.push(`Dòng ${i + 1}: Thiếu tên boardgame`);
+      // 1. Trích xuất BGG ID từ Link hoặc ID số
+      let extractedBggId = null;
+      if (typeof rawBgg === 'number' && !isNaN(rawBgg)) {
+        extractedBggId = rawBgg;
+      } else if (typeof rawBgg === 'string' && rawBgg.trim() !== '') {
+        const trimmedBgg = rawBgg.trim();
+        const match = trimmedBgg.match(/boardgame\/(\d+)/i) || trimmedBgg.match(/^(\d+)$/);
+        if (match) {
+          extractedBggId = parseInt(match[1], 10);
+        }
+      }
+
+      if (!extractedBggId && (!rawName || typeof rawName !== 'string' || rawName.trim() === '')) {
+        errors.push(`Dòng ${i + 1}: Thiếu cả Link BGG và Tên boardgame`);
         continue;
       }
 
-      const cleanName = rawName.trim();
-
       try {
-        // 1. Tìm hoặc tạo master BoardGame
-        let masterGame = await prisma.boardGame.findFirst({
-          where: {
-            name: {
-              equals: cleanName,
-              mode: 'insensitive',
-            },
-          },
-        });
+        let masterGame = null;
 
-        if (!masterGame) {
-          // Xử lý danh sách thể loại (hỗ trợ mảng, chuỗi phân tách bởi dấu ; hoặc ,)
-          let categories = [];
-          const rawCategories = item.categories || item.category || item['Thể loại'];
-          if (Array.isArray(rawCategories)) {
-            categories = rawCategories.map((c) => String(c).trim()).filter(Boolean);
-          } else if (typeof rawCategories === 'string' && rawCategories.trim() !== '') {
-            categories = rawCategories
-              .split(/[;,]/)
-              .map((c) => c.trim())
-              .filter(Boolean);
+        // 2. Nếu có BGG ID -> Tự động nạp trực tiếp toàn bộ dữ liệu xịn từ BGG
+        if (extractedBggId) {
+          try {
+            const bggImport = await bggService.importBggGameToDatabase(extractedBggId);
+            masterGame = bggImport.game;
+            if (bggImport.isNew) newMasterCreated++;
+          } catch (bggErr) {
+            console.warn(`[Batch Import] Không thể nạp BGG #${extractedBggId}:`, bggErr.message);
           }
-
-          if (categories.length === 0) {
-            categories = ['Board Game'];
-          }
-
-          const rawImageUrl = item.imageUrl || item.image || item['Link ảnh URL'] || item['Ảnh'];
-          const cleanImageUrl =
-            rawImageUrl && typeof rawImageUrl === 'string' && rawImageUrl.startsWith('http')
-              ? rawImageUrl.trim()
-              : 'https://images.unsplash.com/photo-1610890716171-6b1bb98ffd09?auto=format&fit=crop&w=800&q=80';
-
-          const minPlayers = parseInt(item.minPlayers || item['Số người tối thiểu'], 10) || 1;
-          const maxPlayers = parseInt(item.maxPlayers || item['Số người tối đa'], 10) || 4;
-          const playTime = parseInt(item.playTime || item['Thời gian chơi (phút)'] || item['Thời gian chơi'], 10) || 45;
-          const age = parseInt(item.age || item['Độ tuổi'], 10) || 10;
-          const publisher = item.publisher || item['Nhà phát hành'] || 'Tự do';
-          const description = item.description || item['Mô tả'] || '';
-
-          masterGame = await prisma.boardGame.create({
-            data: {
-              name: cleanName,
-              description: description.trim(),
-              categories,
-              minPlayers,
-              maxPlayers,
-              playTime,
-              age,
-              publisher: publisher.trim(),
-              imageUrl: cleanImageUrl,
-            },
-          });
-          newMasterCreated++;
         }
 
-        // 2. Chuẩn bị dữ liệu ShelfGame cho người chơi
+        // 3. Nếu chưa có masterGame nhưng có tên -> Tìm trong DB hoặc tạo mới
+        if (!masterGame && rawName && rawName.trim() !== '') {
+          const cleanName = rawName.trim();
+          masterGame = await prisma.boardGame.findFirst({
+            where: {
+              name: {
+                equals: cleanName,
+                mode: 'insensitive',
+              },
+            },
+          });
+
+          if (!masterGame) {
+            // Xử lý danh sách thể loại
+            let categories = [];
+            const rawCategories = item.categories || item.category || item['Thể loại'];
+            if (Array.isArray(rawCategories)) {
+              categories = rawCategories.map((c) => String(c).trim()).filter(Boolean);
+            } else if (typeof rawCategories === 'string' && rawCategories.trim() !== '') {
+              categories = rawCategories.split(/[;,]/).map((c) => c.trim()).filter(Boolean);
+            }
+            if (categories.length === 0) categories = ['Board Game'];
+
+            const rawImageUrl = item.imageUrl || item.image || item['Link ảnh URL'] || item['Ảnh'];
+            const cleanImageUrl =
+              rawImageUrl && typeof rawImageUrl === 'string' && rawImageUrl.startsWith('http')
+                ? rawImageUrl.trim()
+                : 'https://images.unsplash.com/photo-1610890716171-6b1bb98ffd09?auto=format&fit=crop&w=800&q=80';
+
+            const minPlayers = parseInt(item.minPlayers || item['Số người tối thiểu'], 10) || 1;
+            const maxPlayers = parseInt(item.maxPlayers || item['Số người tối đa'], 10) || 4;
+            const playTime = parseInt(item.playTime || item['Thời gian chơi (phút)'] || item['Thời gian chơi'], 10) || 45;
+            const age = parseInt(item.age || item['Độ tuổi'], 10) || 10;
+            const publisher = item.publisher || item['Nhà phát hành'] || 'Tự do';
+            const description = item.description || item['Mô tả'] || '';
+
+            masterGame = await prisma.boardGame.create({
+              data: {
+                name: cleanName,
+                description: description.trim(),
+                categories,
+                minPlayers,
+                maxPlayers,
+                playTime,
+                age,
+                publisher: publisher.trim(),
+                imageUrl: cleanImageUrl,
+              },
+            });
+            newMasterCreated++;
+          }
+        }
+
+        if (!masterGame) {
+          errors.push(`Dòng ${i + 1}: Không thể khởi tạo boardgame "${rawName || rawBgg}"`);
+          continue;
+        }
+
+        // 4. Chuẩn bị dữ liệu ShelfGame cho người chơi
         const rawCondition = item.condition || item['Tình trạng box'] || item['Tình trạng'] || 'Like New 99%';
         const rawStatus = (item.status || item['Trạng thái'] || 'ON_SHELF').toUpperCase();
         const validStatuses = ['ON_SHELF', 'LENT_OUT', 'FOR_SALE', 'WISHLIST'];
@@ -533,10 +561,10 @@ const batchImportShelfGames = async (req, res) => {
         const borrower = finalStatus === 'LENT_OUT' ? (item.borrower || item['Người mượn'] || null) : null;
         const borrowedDate = finalStatus === 'LENT_OUT' ? parseSafeDate(item.borrowedDate || item['Ngày mượn']) : null;
         const expectedReturnDate = finalStatus === 'LENT_OUT' ? parseSafeDate(item.expectedReturnDate || item['Ngày hẹn trả']) : null;
-        const personalNotes = item.personalNotes || item['Ghi chú'] || item.notes || '';
+        const personalNotes = item.personalNotes || item['Ghi chú cá nhân'] || item['Ghi chú'] || item.notes || '';
         const personalRating = parseSafeFloat(item.personalRating || item['Đánh giá cá nhân'] || item.rating);
 
-        // 3. Upsert vào ShelfGame
+        // 5. Upsert vào ShelfGame
         const existingShelf = await prisma.shelfGame.findUnique({
           where: {
             userId_gameId: {
@@ -555,7 +583,7 @@ const batchImportShelfGames = async (req, res) => {
               borrower,
               borrowedDate,
               expectedReturnDate,
-              personalNotes,
+              personalNotes: personalNotes || existingShelf.personalNotes,
               personalRating: personalRating ?? existingShelf.personalRating,
             },
           });
@@ -571,20 +599,20 @@ const batchImportShelfGames = async (req, res) => {
               borrowedDate,
               expectedReturnDate,
               personalNotes,
-              personalRating,
+              personalRating: personalRating ?? 5,
             },
           });
           createdCount++;
         }
-      } catch (rowError) {
-        console.error(`Error importing row ${i + 1} (${cleanName}):`, rowError);
-        errors.push(`Game "${cleanName}": ${rowError.message}`);
+      } catch (rowErr) {
+        console.error(`Error processing row ${i + 1}:`, rowErr);
+        errors.push(`Dòng ${i + 1} (${rawName || rawBgg}): ${rowErr.message}`);
       }
     }
 
     return res.status(200).json({
       success: true,
-      message: `Đã nhập thành công ${createdCount + updatedCount} boardgame vào kho (${createdCount} thêm mới, ${updatedCount} cập nhật, ${newMasterCreated} game mới thêm vào hệ thống).`,
+      message: `Đã xử lý xong: Thêm mới ${createdCount} game, cập nhật ${updatedCount} game trên kệ.`,
       data: {
         totalReceived: games.length,
         createdCount,
@@ -602,8 +630,6 @@ const batchImportShelfGames = async (req, res) => {
     });
   }
 };
-
-const bggService = require('../services/bgg.service');
 
 /**
  * Tìm kiếm BoardGame từ BGG theo Tên hoặc BGG ID

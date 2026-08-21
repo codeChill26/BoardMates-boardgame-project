@@ -30,12 +30,12 @@ router.get('/google/callback',
     })(req, res, next);
   },
   (req, res) => {
-    // Đăng nhập thành công, tạo JWT token
+    // Đăng nhập thành công, tạo JWT token có hiệu lực 2 tiếng (2 hours session)
     const user = req.user;
     const token = jwt.sign(
       { userId: user.id, email: user.email, role: user.role },
       process.env.JWT_SECRET,
-      { expiresIn: '1d' }
+      { expiresIn: '2h' }
     );
 
     // Chuyển hướng người dùng về trang Frontend React kèm theo token

@@ -72,10 +72,9 @@ const login = async (req, res) => {
       return res.status(400).json({ success: false, message: 'Mật khẩu không chính xác' });
     }
 
-    // 3. Tạo JSON Web Token (JWT)
-    // Token này sẽ dùng để phân quyền (Auth) cho các API sau này
+    // 3. Tạo JSON Web Token (JWT) với thời hạn 2 tiếng (2 hours session)
     const payload = { userId: user.id, email: user.email, role: user.role };
-    const token = jwt.sign(payload, JWT_SECRET, { expiresIn: '1d' });
+    const token = jwt.sign(payload, JWT_SECRET, { expiresIn: '2h' });
 
     // 4. Trả về token kèm thông tin user (loại bỏ password)
     res.status(200).json({
