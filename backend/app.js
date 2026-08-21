@@ -18,8 +18,6 @@ var adminRouter = require('./src/routes/admin');
 var positionsRouter = require('./src/routes/positions');
 var shelfRouter = require('./src/routes/shelf');
 
-const passport = require('./src/config/passport'); // Khởi tạo passport cấu hình
-
 var app = express();
 
 app.use(cors()); // KÍCH HOẠT CORS CHO TOÀN BỘ PROJECT
@@ -28,7 +26,6 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(passport.initialize());
 
 // Gắn giao diện Swagger UI
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));

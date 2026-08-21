@@ -1,7 +1,5 @@
 const express = require('express');
 const router = express.Router();
-const passport = require('passport');
-const jwt = require('jsonwebtoken');
 const authController = require('../controller/auth.controller');
 const hashPassword = require('../middleware/hashPassword');
 const { validateRegister, validateLogin } = require('../middleware/validateAuth');
@@ -14,38 +12,11 @@ const { validateRegister, validateLogin } = require('../middleware/validateAuth'
  */
 
 // ==============================================================
-//                    GOOGLE OAUTH 2.0 / FIREBASE
+//                    GOOGLE / FIREBASE AUTH
 // ==============================================================
 
-// Đăng nhập Google qua Firebase / Client ID Token (Khuyên dùng)
+// Đăng nhập Google qua Firebase / Client ID Token
 router.post('/google', authController.googleLogin);
-
-// Khởi chạy quá trình đăng nhập qua Google Redirect (Legacy Passport)
-router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'], session: false }));
-
-// Google gọi lại (Callback) sau khi người dùng xác thực thành công
-router.get('/google/callback', 
-  (req, res, next) => {
-    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3007';
-    passport.authenticate('google', { 
-      session: false, 
-      failureRedirect: `${frontendUrl}/login?error=GoogleAuthFailed` 
-    })(req, res, next);
-  },
-  (req, res) => {
-    // Đăng nhập thành công, tạo JWT token có hiệu lực 2 tiếng (2 hours session)
-    const user = req.user;
-    const token = jwt.sign(
-      { userId: user.id, email: user.email, role: user.role },
-      process.env.JWT_SECRET,
-      { expiresIn: '2h' }
-    );
-
-    // Chuyển hướng người dùng về trang Frontend React kèm theo token
-    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3007';
-    res.redirect(`${frontendUrl}/login?token=${token}&email=${encodeURIComponent(user.email)}`);
-  }
-);
 
 
 /**
