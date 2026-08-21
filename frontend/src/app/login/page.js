@@ -98,7 +98,10 @@ function LoginContent() {
       const idToken = await fbUser.getIdToken();
 
       // 2. Gửi ID Token về Backend để nhận JWT Token
-      const res = await fetch(`${getBackendUrl()}/api/auth/google`, {
+      const targetUrl = `${getBackendUrl()}/api/auth/google`;
+      console.log('Sending Google ID Token to backend:', targetUrl);
+
+      const res = await fetch(targetUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -116,7 +119,7 @@ function LoginContent() {
 
       const data = await res.json().catch(() => null);
       if (!res.ok || !data?.success) {
-        throw new Error(data?.message || 'Đăng nhập Google thất bại');
+        throw new Error(data?.message || `Lỗi phản hồi từ máy chủ (${res.status}: ${res.statusText})`);
       }
 
       // 3. Lưu phiên đăng nhập
