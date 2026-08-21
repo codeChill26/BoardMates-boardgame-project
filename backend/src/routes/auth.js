@@ -39,7 +39,7 @@ router.get('/google/callback',
     );
 
     // Chuyển hướng người dùng về trang Frontend React kèm theo token
-    const frontendUrl = process.env.FRONTEND_URL;
+    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3007';
     res.redirect(`${frontendUrl}/login?token=${token}&email=${encodeURIComponent(user.email)}`);
   }
 );

@@ -2,12 +2,18 @@ const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const prisma = require('../middleware/prismaClient');
 
+const getGoogleCallbackUrl = () => {
+  if (process.env.GOOGLE_CALLBACK_URL) return process.env.GOOGLE_CALLBACK_URL;
+  if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}/api/auth/google/callback`;
+  return 'https://board-mates-boardgame-project-v45x-ax6pwse1m.vercel.app/api/auth/google/callback';
+};
+
 passport.use("google",
   new GoogleStrategy(
     {
       clientID: process.env.GOOGLE_CLIENT_ID, 
       clientSecret: process.env.GOOGLE_CLIENT_SECRET, 
-      callbackURL: process.env.GOOGLE_CALLBACK_URL
+      callbackURL: getGoogleCallbackUrl()
     },
     async (accessToken, refreshToken, profile, done) => {
       try {
