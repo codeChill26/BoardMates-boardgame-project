@@ -10,6 +10,10 @@ const options = {
     },
     servers: [
       {
+        url: 'https://board-mates-boardgame-project-v45x-ax6pwse1m.vercel.app',
+        description: 'Môi trường Production (Vercel)',
+      },
+      {
         url: 'http://localhost:8080',
         description: 'Môi trường Local (Development)',
       },

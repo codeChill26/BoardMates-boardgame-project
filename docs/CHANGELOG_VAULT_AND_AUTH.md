@@ -75,3 +75,19 @@ Tài liệu này ghi lại toàn bộ các tính năng, nâng cấp và tinh ch�
    - Nút **`🔍 Tìm trên BGG ↗`**: Mở tab Google tìm kiếm chính xác game trên BGG để người dùng copy link trong 1 click.
    - Nút **`📋 Dán link & Tải Game`**: Tự động đọc clipboard, dán link BGG và nạp game ngay lập tức.
    - Bảng xem trước Excel/CSV hiển thị rõ trạng thái `⚡ Tự tải từ BGG` trước khi nạp.
+
+---
+
+## 🚀 5. Deploy Backend Lên Vercel & Cơ Chế Tự Động Chuyển Đổi URL (Smart Backend Failover)
+
+1. **Deploy Thành Công Backend Lên Vercel:**
+   - URL Backend Production: `https://board-mates-boardgame-project-v45x-ax6pwse1m.vercel.app`
+   - Gỡ bỏ hoàn toàn `jade` và các phụ thuộc cũ để tương thích 100% với môi trường Vercel Serverless Function.
+   - Thêm `api/index.js` và `vercel.json` phục vụ điều hướng Serverless.
+2. **Loại Bỏ Hoàn Toàn Link Render Cũ & Đồng Bộ Môi Trường:**
+   - Cập nhật `DEPLOY_URL` trong `frontend/.env` trỏ về Vercel.
+   - Cập nhật danh sách Server trong `backend/src/config/swagger.js`.
+3. **Cơ Chế Tự Động Chuyển Đổi Thông Minh (Smart Failover in `frontend/src/lib/apiConfig.js`):**
+   - Khi chạy Local: Hệ thống kiểm tra (`ping /api`) xem Backend Local (`http://localhost:8080`) có đang mở hay không.
+   - **Nếu Local đang tắt hoặc lỗi $\rightarrow$ Tự động chuyển toàn bộ request sang Backend Vercel** mà không làm gián đoạn trải nghiệm người dùng.
+   - Khi chạy HTTPS (Production): Tự động dùng Backend Vercel HTTPS để tránh lỗi Mixed-Content.
