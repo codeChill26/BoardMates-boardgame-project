@@ -91,3 +91,16 @@ Tài liệu này ghi lại toàn bộ các tính năng, nâng cấp và tinh ch�
    - Khi chạy Local: Hệ thống kiểm tra (`ping /api`) xem Backend Local (`http://localhost:8080`) có đang mở hay không.
    - **Nếu Local đang tắt hoặc lỗi $\rightarrow$ Tự động chuyển toàn bộ request sang Backend Vercel** mà không làm gián đoạn trải nghiệm người dùng.
    - Khi chạy HTTPS (Production): Tự động dùng Backend Vercel HTTPS để tránh lỗi Mixed-Content.
+
+---
+
+## 🔥 6. Tích Hợp Firebase Authentication Cho Google Sign-In
+
+1. **Frontend Firebase Popup Authentication:**
+   - Cài đặt thư viện `firebase` SDK ở Client.
+   - Khởi tạo [firebase.js](file:///d:/FPT%20MATERIALS/MyOwn/BG-Project/frontend/src/lib/firebase.js) với `GoogleAuthProvider` và `signInWithPopup`.
+   - Khi bấm **"Tiếp tục với Google"**, mở cửa sổ popup đăng nhập nhanh chóng, mượt mà, không bị load lại trang hay dính lỗi chuyển hướng redirect callback.
+2. **Backend Verify ID Token API (`POST /api/auth/google`):**
+   - Tiếp nhận `idToken` từ Frontend, xác thực với `google-auth-library` và `jsonwebtoken`.
+   - Tự động tra cứu hoặc khởi tạo User trong cơ sở dữ liệu Supabase/Prisma.
+   - Ký và trả về session JWT Token 2 giờ chuẩn mực.
