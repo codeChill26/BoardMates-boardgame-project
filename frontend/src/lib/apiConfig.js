@@ -1,7 +1,7 @@
 // Base Backend URLs
 const FALLBACK_DEPLOY_URL = 'https://board-mates-boardgame-project-v45x.vercel.app';
-const LOCAL_URL = process.env.LOCAL_URL || 'http://localhost:8080';
-const DEPLOY_URL = process.env.DEPLOY_URL || FALLBACK_DEPLOY_URL;
+const LOCAL_URL = process.env.NEXT_PUBLIC_LOCAL_URL || process.env.LOCAL_URL || 'http://localhost:8080';
+const DEPLOY_URL = process.env.NEXT_PUBLIC_DEPLOY_URL || process.env.DEPLOY_URL || FALLBACK_DEPLOY_URL;
 
 let backendUrl = LOCAL_URL || DEPLOY_URL;
 
