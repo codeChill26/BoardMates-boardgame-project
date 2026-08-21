@@ -44,6 +44,9 @@ function stripHtmlTags(html) {
     .trim();
 }
 
+// In-memory cache cho chi tiết BGG
+const BGG_DETAILS_CACHE = new Map();
+
 /**
  * Lấy thông tin chi tiết một BoardGame từ BGG bằng BGG Object ID (ví dụ: 13 cho Catan, 224517 cho Brass: Birmingham)
  */
@@ -52,6 +55,10 @@ async function getBggGameById(bggId) {
 
   const cleanId = parseInt(bggId, 10);
   if (isNaN(cleanId)) throw new Error('BGG ID phải là số nguyên hợp lệ');
+
+  if (BGG_DETAILS_CACHE.has(cleanId)) {
+    return BGG_DETAILS_CACHE.get(cleanId);
+  }
 
   const url = `https://api.geekdo.com/api/geekitems?objectid=${cleanId}&objecttype=thing`;
 
@@ -83,14 +90,16 @@ async function getBggGameById(bggId) {
 
   // Trích xuất ảnh gốc chất lượng cao
   const imageUrl =
+    item.images?.square200 ||
+    item.images?.previewthumb ||
+    item.images?.thumb ||
     item.images?.original ||
-    item.images?.medium ||
     item.imageurl ||
     'https://images.unsplash.com/photo-1610890716171-6b1bb98ffd09?auto=format&fit=crop&w=800&q=80';
 
   const cleanDescription = stripHtmlTags(item.description);
 
-  return {
+  const result = {
     bggId: cleanId,
     name: item.name,
     yearPublished: item.yearpublished ? parseInt(item.yearpublished, 10) : null,
@@ -104,6 +113,9 @@ async function getBggGameById(bggId) {
     description: cleanDescription,
     bggLink: item.canonical_link || `https://boardgamegeek.com/boardgame/${cleanId}`,
   };
+
+  BGG_DETAILS_CACHE.set(cleanId, result);
+  return result;
 }
 
 /**
@@ -183,41 +195,6 @@ async function importBggGameToDatabase(bggId) {
   }
 }
 
-// Danh sách game nổi tiếng với BGG ID tương ứng để tìm kiếm nhanh
-const POPULAR_BGG_MAP = [
-  { bggId: 13, name: 'Catan', year: 1995, imageUrl: 'https://cf.geekdo-images.com/W3Bsga_uLP9YO91gZVa3fQ__original/img/b_Bh3kO9y_2J6W7_6xZ_7k_8q_0=/0x0/filters:format(jpeg)/pic2419375.jpg' },
-  { bggId: 224517, name: 'Brass: Birmingham', year: 2018, imageUrl: 'https://cf.geekdo-images.com/x3zxjr-Vw5iU4yDPg70Jgw__original/img/FpyxH41Y6_ROoePAilPNEhXnzO8=/0x0/filters:format(jpeg)/pic3490053.jpg' },
-  { bggId: 174430, name: 'Gloomhaven', year: 2017, imageUrl: 'https://cf.geekdo-images.com/sZYp_3BTDGjh2unaZfZmuA__original/img/7m4w-4t1gDvd6jDq1fI5J6_K6kU=/0x0/filters:format(jpeg)/pic2437871.jpg' },
-  { bggId: 266192, name: 'Wingspan', year: 2019, imageUrl: 'https://cf.geekdo-images.com/yLZJCVLlIx4c7eJEWUNJ7w__original/img/cBP4bKkY9QpY_Yk_2zG_9x_7g0U=/0x0/filters:format(jpeg)/pic4458123.jpg' },
-  { bggId: 167791, name: 'Terraforming Mars', year: 2016, imageUrl: 'https://cf.geekdo-images.com/wg9oOLcsKvDesSUdZQ4rxw__original/img/F-lZJqE9vjT0U1A-F5S6mF9t7-s=/0x0/filters:format(jpeg)/pic3536616.jpg' },
-  { bggId: 316554, name: 'Dune: Imperium', year: 2020, imageUrl: 'https://cf.geekdo-images.com/PhjygpTw0ECP384EBtZ8dQ__original/img/M6f-fU5S7M5tGgZ7xP1d2W5a9kU=/0x0/filters:format(jpeg)/pic5666597.jpg' },
-  { bggId: 342942, name: 'Ark Nova', year: 2021, imageUrl: 'https://cf.geekdo-images.com/SoU8CSBp3doj5OIY2eC-bg__original/img/c1s-2Jk_5R4p7vW3oN3eD3hA9tU=/0x0/filters:format(jpeg)/pic6293412.jpg' },
-  { bggId: 177302, name: 'Nemesis', year: 2018, imageUrl: 'https://cf.geekdo-images.com/wKGkNuT1vH80Y2qj9M5fDg__original/img/P9A9dK5vG1xQ_Y6m3eG0L5m7t1U=/0x0/filters:format(jpeg)/pic4431802.jpg' },
-  { bggId: 230802, name: 'Azul', year: 2017, imageUrl: 'https://cf.geekdo-images.com/tz19Pf9whnOfMw5rJOT01w__original/img/2j7h8u_4yK_w7V2m3zT4pX2lq9U=/0x0/filters:format(jpeg)/pic3718275.jpg' },
-  { bggId: 237182, name: 'Root', year: 2018, imageUrl: 'https://cf.geekdo-images.com/JUAUWaVUzeBWTNU4FLPlKg__original/img/o2H5Wq2K2hX_G9k3vP2zX5L4u2U=/0x0/filters:format(jpeg)/pic4254509.jpg' },
-  { bggId: 169786, name: 'Scythe', year: 2016, imageUrl: 'https://cf.geekdo-images.com/7k_nOxWgYjvMRLrjngSnsw__original/img/tYv6yR2D2mZ5yJ9xX1uQ4o8q3mU=/0x0/filters:format(jpeg)/pic3163924.jpg' },
-  { bggId: 148228, name: 'Splendor', year: 2014, imageUrl: 'https://cf.geekdo-images.com/rwOMxx4qVuFotzbAagIZQU__original/img/7G0p4_K6jY8uX1o5vT2k3Z7xG4U=/0x0/filters:format(jpeg)/pic1904079.jpg' },
-  { bggId: 822, name: 'Carcassonne', year: 2000, imageUrl: 'https://cf.geekdo-images.com/okM0dq_bEXnbyQTOvHZwRw__original/img/G1s-2Jk_5R4p7vW3oN3eD3hA9tU=/0x0/filters:format(jpeg)/pic6544250.jpg' },
-  { bggId: 9209, name: 'Ticket to Ride', year: 2004, imageUrl: 'https://cf.geekdo-images.com/ZWJg0dCdrWHxVnc0eFVvgA__original/img/2zK9fP1bX5gR_3xW2tQ7eL9y8oU=/0x0/filters:format(jpeg)/pic38668.jpg' },
-  { bggId: 30549, name: 'Pandemic', year: 2008, imageUrl: 'https://cf.geekdo-images.com/S-K5qB-K3J_a0b2x1wX3yQ__original/img/4t9g5mQ3vE_7Yk2wP5zL1m8xO3U=/0x0/filters:format(jpeg)/pic1534148.jpg' },
-  { bggId: 199792, name: 'Everdell', year: 2018, imageUrl: 'https://cf.geekdo-images.com/fjE6V52UnuFdNqKH8bUOGg__original/img/3f_3yP5X2rW_6zG9m8tL1k7o4yU=/0x0/filters:format(jpeg)/pic3918905.jpg' },
-  { bggId: 295947, name: 'Cascadia', year: 2021, imageUrl: 'https://cf.geekdo-images.com/MJEggEWn1b000BWg1p5Vsw__original/img/e1s-2Jk_5R4p7vW3oN3eD3hA9tU=/0x0/filters:format(jpeg)/pic5100691.jpg' },
-  { bggId: 68448, name: '7 Wonders', year: 2010, imageUrl: 'https://cf.geekdo-images.com/RvFVmgEZTsbDeD5e669-gQ__original/img/1k9zY_7zL_6m3vP2zX5L4u2U=/0x0/filters:format(jpeg)/pic860217.jpg' },
-  { bggId: 162886, name: 'Spirit Island', year: 2017, imageUrl: 'https://cf.geekdo-images.com/aVOiP6kLpyP-L5WnQpGg_g__original/img/4t9g5mQ3vE_7Yk2wP5zL1m8xO3U=/0x0/filters:format(jpeg)/pic3615731.jpg' },
-  { bggId: 284083, name: 'The Crew: Mission Deep Sea', year: 2021, imageUrl: 'https://cf.geekdo-images.com/39wHn8s8eR7E5K9q1f5g_A__original/img/1k9zY_7zL_6m3vP2zX5L4u2U=/0x0/filters:format(jpeg)/pic5499840.jpg' },
-  { bggId: 366013, name: 'Heat: Pedal to the Metal', year: 2022, imageUrl: 'https://cf.geekdo-images.com/inYrgg98n_1sO5t8yK2mAg__original/img/4t9g5mQ3vE_7Yk2wP5zL1m8xO3U=/0x0/filters:format(jpeg)/pic6884813.jpg' },
-  { bggId: 178900, name: 'Codenames', year: 2015, imageUrl: 'https://cf.geekdo-images.com/F_KDEu0GjdclmlIlFgyfMQ__original/img/2j7h8u_4yK_w7V2m3zT4pX2lq9U=/0x0/filters:format(jpeg)/pic2582929.jpg' },
-  { bggId: 36218, name: 'Dixit', year: 2008, imageUrl: 'https://cf.geekdo-images.com/7f_52N_8v1m2z3X4yP5wLg__original/img/e1s-2Jk_5R4p7vW3oN3eD3hA9tU=/0x0/filters:format(jpeg)/pic3483909.jpg' },
-  { bggId: 188834, name: 'Secret Hitler', year: 2016, imageUrl: 'https://cf.geekdo-images.com/rAQ9mE_w1K2z3X4yP5wLg__original/img/4t9g5mQ3vE_7Yk2wP5zL1m8xO3U=/0x0/filters:format(jpeg)/pic5164305.jpg' },
-  { bggId: 131357, name: 'Coup', year: 2012, imageUrl: 'https://cf.geekdo-images.com/M5f-fU5S7M5tGgZ7xP1d2W5a9kU=/0x0/filters:format(jpeg)/pic2012143.jpg' },
-  { bggId: 129622, name: 'Love Letter', year: 2012, imageUrl: 'https://cf.geekdo-images.com/T1s-2Jk_5R4p7vW3oN3eD3hA9tU=/0x0/filters:format(jpeg)/pic1401448.jpg' },
-  { bggId: 201808, name: 'Clank!: A Deck-Building Adventure', year: 2016, imageUrl: 'https://cf.geekdo-images.com/I3s-2Jk_5R4p7vW3oN3eD3hA9tU=/0x0/filters:format(jpeg)/pic4449302.jpg' },
-  { bggId: 170216, name: 'Blood Rage', year: 2015, imageUrl: 'https://cf.geekdo-images.com/E1s-2Jk_5R4p7vW3oN3eD3hA9tU=/0x0/filters:format(jpeg)/pic2439223.jpg' },
-  { bggId: 163412, name: 'Patchwork', year: 2014, imageUrl: 'https://cf.geekdo-images.com/O1s-2Jk_5R4p7vW3oN3eD3hA9tU=/0x0/filters:format(jpeg)/pic2270492.jpg' },
-  { bggId: 180263, name: 'Viticulture Essential Edition', year: 2015, imageUrl: 'https://cf.geekdo-images.com/U1s-2Jk_5R4p7vW3oN3eD3hA9tU=/0x0/filters:format(jpeg)/pic2622982.jpg' },
-  { bggId: 124361, name: 'Concordia', year: 2013, imageUrl: 'https://cf.geekdo-images.com/K1s-2Jk_5R4p7vW3oN3eD3hA9tU=/0x0/filters:format(jpeg)/pic1760499.jpg' },
-];
-
 function removeVietnameseTones(str) {
   if (!str) return '';
   return str
@@ -266,22 +243,7 @@ async function searchBggGames(query) {
   const seenIds = new Set();
   const seenNames = new Set();
 
-  // 1. Tìm trong POPULAR_BGG_MAP
-  for (const item of POPULAR_BGG_MAP) {
-    const itemNorm = removeVietnameseTones(item.name);
-    if (itemNorm.includes(cleanQ) || item.name.toLowerCase().includes(q)) {
-      results.push({
-        bggId: item.bggId,
-        name: item.name,
-        imageUrl: item.imageUrl,
-        year: item.year,
-      });
-      seenIds.add(item.bggId);
-      seenNames.add(item.name.toLowerCase());
-    }
-  }
-
-  // 2. Tìm trong TOP_JSON_GAMES
+  // 1. Tìm trong TOP_JSON_GAMES
   for (const g of TOP_JSON_GAMES) {
     const nameNorm = removeVietnameseTones(g.name);
     const descNorm = removeVietnameseTones(g.description || '');
@@ -306,7 +268,7 @@ async function searchBggGames(query) {
     }
   }
 
-  // 3. Tìm trong BGG 72K Index (Toàn bộ 72,000 game thế giới)
+  // 2. Tìm trong BGG 72K Index (Toàn bộ 72,000 game thế giới)
   let count72k = 0;
   for (let i = 0; i < BGG_72K_INDEX.length; i++) {
     const [bggId, bggName] = BGG_72K_INDEX[i];
@@ -321,7 +283,7 @@ async function searchBggGames(query) {
       results.push({
         bggId: bggId,
         name: bggName,
-        imageUrl: 'https://images.unsplash.com/photo-1610890716171-6b1bb98ffd09?auto=format&fit=crop&w=800&q=80',
+        imageUrl: null,
         year: null,
       });
       seenIds.add(bggId);
@@ -331,7 +293,7 @@ async function searchBggGames(query) {
     }
   }
 
-  // 4. Tìm trong bảng BoardGame Database
+  // 3. Tìm trong bảng BoardGame Database
   try {
     const dbGames = await prisma.boardGame.findMany({
       where: {
@@ -364,8 +326,41 @@ async function searchBggGames(query) {
     // Ignore DB error
   }
 
+  // 4. Lấy live thumbnail ảnh HD thực tế từ BGG cho top kết quả song song
+  const topCandidates = results.slice(0, 12);
+  await Promise.allSettled(
+    topCandidates.map(async (item) => {
+      if (item.bggId && (!item.imageUrl || item.imageUrl.includes('unsplash.com'))) {
+        try {
+          const detail = await getBggGameById(item.bggId);
+          if (detail && detail.imageUrl) {
+            item.imageUrl = detail.imageUrl;
+            item.year = detail.yearPublished || item.year;
+            item.minPlayers = detail.minPlayers || item.minPlayers;
+            item.maxPlayers = detail.maxPlayers || item.maxPlayers;
+            item.playTime = detail.playTime || item.playTime;
+            item.categories = detail.categories || item.categories;
+          }
+        } catch (e) {
+          // Fallback image
+          if (!item.imageUrl) {
+            item.imageUrl = 'https://images.unsplash.com/photo-1610890716171-6b1bb98ffd09?auto=format&fit=crop&w=800&q=80';
+          }
+        }
+      }
+    })
+  );
+
   return results.slice(0, 20);
 }
+
+module.exports = {
+  getBggGameById,
+  getBggHotness,
+  searchBggGames,
+  importBggGameToDatabase,
+};
+
 
 module.exports = {
   getBggGameById,

@@ -55,6 +55,30 @@ const STATUS_CONFIG = {
   },
 };
 
+const DEFAULT_BG_IMAGE = 'https://images.unsplash.com/photo-1610890716171-6b1bb98ffd09?auto=format&fit=crop&w=800&q=80';
+
+// Xử lý link ảnh an toàn, hỗ trợ trích xuất ảnh trực tiếp từ Google Images URL
+function sanitizeImageUrl(url) {
+  if (!url || typeof url !== 'string' || !url.trim()) {
+    return DEFAULT_BG_IMAGE;
+  }
+  const clean = url.trim();
+  if (clean.includes('imgurl=')) {
+    try {
+      const match = clean.match(/imgurl=([^&]+)/);
+      if (match && match[1]) {
+        return decodeURIComponent(match[1]);
+      }
+    } catch (e) {
+      // ignore
+    }
+  }
+  if (!clean.startsWith('http://') && !clean.startsWith('https://')) {
+    return DEFAULT_BG_IMAGE;
+  }
+  return clean;
+}
+
 // Helper phân tích nội dung file CSV
 function parseCSVContent(text) {
   const lines = [];
@@ -619,30 +643,35 @@ export default function GameVaultPage() {
     }
   };
 
-  // Tìm kiếm BGG theo Tên hoặc ID (Debounced)
-  useEffect(() => {
-    if (!bggSearchQuery || bggSearchQuery.trim().length < 2) {
+  // Tìm kiếm BGG khi người dùng nhấn Enter hoặc bấm nút Tìm kiếm
+  const handleExecuteBggSearch = async () => {
+    const q = bggSearchQuery.trim();
+    if (!q || q.length < 2) {
       setBggSearchResults([]);
+      setBggError('Vui lòng nhập ít nhất 2 ký tự và nhấn Enter để tìm kiếm.');
       return;
     }
 
-    const timer = setTimeout(async () => {
-      setIsFetchingBgg(true);
-      try {
-        const res = await fetch(`${getBackendUrl()}/api/shelf/bgg/search?query=${encodeURIComponent(bggSearchQuery.trim())}`);
-        const result = await res.json();
-        if (res.ok && result.success) {
-          setBggSearchResults(result.data || []);
+    setIsFetchingBgg(true);
+    setBggError('');
+    try {
+      const res = await fetch(`${getBackendUrl()}/api/shelf/bgg/search?query=${encodeURIComponent(q)}`);
+      const result = await res.json();
+      if (res.ok && result.success) {
+        setBggSearchResults(result.data || []);
+        if (!result.data || result.data.length === 0) {
+          setBggError(`Không tìm thấy game nào khớp với "${q}". Thử từ khóa khác hoặc chuyển sang tab "Tự tạo game mới".`);
         }
-      } catch (err) {
-        console.error('Error searching BGG:', err);
-      } finally {
-        setIsFetchingBgg(false);
+      } else {
+        throw new Error(result.message || 'Lỗi khi tìm kiếm trên BGG');
       }
-    }, 350);
-
-    return () => clearTimeout(timer);
-  }, [bggSearchQuery]);
+    } catch (err) {
+      console.error('Error searching BGG:', err);
+      setBggError(err.message || 'Không thể kết nối đến máy chủ tìm kiếm BGG');
+    } finally {
+      setIsFetchingBgg(false);
+    }
+  };
 
   // Toast message
   const showToast = (msg) => {
@@ -1153,18 +1182,17 @@ export default function GameVaultPage() {
                     <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-center">
                       {/* Cột 1: Thumbnail & Tên game & Thể loại */}
                       <div className="lg:col-span-4 flex items-center gap-4">
-                        <div className="relative w-16 h-16 sm:w-18 sm:h-18 rounded-xl overflow-hidden bg-surface-container-high shrink-0 border border-outline-variant/30 shadow-xs">
-                          {game.imageUrl ? (
-                            <img
-                              src={game.imageUrl}
-                              alt={game.name}
-                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                            />
-                          ) : (
-                            <div className="w-full h-full flex items-center justify-center text-on-surface-variant/40">
-                              <span className="material-symbols-outlined text-2xl">casino</span>
-                            </div>
-                          )}
+                        <div className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-xl overflow-hidden bg-surface-container-high shrink-0 border border-outline-variant/30 shadow-xs flex items-center justify-center">
+                          <img
+                            src={sanitizeImageUrl(game.imageUrl || item.imageUrl)}
+                            alt={game.name || 'Boardgame'}
+                            referrerPolicy="no-referrer"
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                            onError={(e) => {
+                              e.currentTarget.onerror = null;
+                              e.currentTarget.src = DEFAULT_BG_IMAGE;
+                            }}
+                          />
                           {item.personalRating ? (
                             <div className="absolute bottom-1 right-1 bg-black/75 backdrop-blur-xs text-amber-400 text-[10px] font-bold px-1.5 py-0.5 rounded flex items-center gap-0.5">
                               <span>★</span>
@@ -1441,22 +1469,55 @@ export default function GameVaultPage() {
                   {/* Ô tìm kiếm theo Tên game hoặc BGG ID */}
                   <div>
                     <label className="block font-label text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-1.5">
-                      Tìm theo tên game hoặc BGG ID:
+                      Tìm theo tên game hoặc BGG ID (Nhấn Enter ↵ hoặc bấm Tìm kiếm):
                     </label>
-                    <div className="relative">
-                      <input
-                        type="text"
-                        value={bggSearchQuery}
-                        onChange={(e) => setBggSearchQuery(e.target.value)}
-                        placeholder="Nhập tên game (Catan, Nemesis, Brass, Wingspan, Dune, Root, Azul...) hoặc ID..."
-                        className="w-full bg-surface-container-high/60 border border-outline-variant/30 rounded-xl pl-11 pr-10 py-3 font-body text-sm text-on-surface focus:outline-none focus:border-primary"
-                      />
-                      <span className="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-on-surface-variant text-xl">
-                        search
-                      </span>
-                      {isFetchingBgg && (
-                        <div className="absolute right-3.5 top-1/2 -translate-y-1/2 w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
-                      )}
+                    <div className="flex gap-2.5">
+                      <div className="relative flex-1">
+                        <input
+                          type="text"
+                          value={bggSearchQuery}
+                          onChange={(e) => setBggSearchQuery(e.target.value)}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                              e.preventDefault();
+                              handleExecuteBggSearch();
+                            }
+                          }}
+                          placeholder="Nhập tên game (Catan, Wingspan, Nemesis, Brass, Dune, Root...) hoặc BGG ID..."
+                          className="w-full bg-surface-container-high/60 border border-outline-variant/30 rounded-xl pl-11 pr-10 py-3 font-body text-sm text-on-surface focus:outline-none focus:border-primary"
+                        />
+                        <span className="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-on-surface-variant text-xl">
+                          search
+                        </span>
+                        {bggSearchQuery && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setBggSearchQuery('');
+                              setBggSearchResults([]);
+                              setBggError('');
+                            }}
+                            className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-on-surface text-sm cursor-pointer"
+                          >
+                            close
+                          </button>
+                        )}
+                      </div>
+
+                      <button
+                        type="button"
+                        onClick={handleExecuteBggSearch}
+                        disabled={isFetchingBgg || !bggSearchQuery.trim()}
+                        className="px-5 py-3 rounded-xl bg-primary text-on-primary font-label text-xs uppercase tracking-wider font-bold shadow-sm hover:bg-primary-dim disabled:opacity-50 disabled:pointer-events-none transition-all flex items-center gap-2 shrink-0 cursor-pointer"
+                      >
+                        {isFetchingBgg ? (
+                          <div className="w-4 h-4 border-2 border-on-primary border-t-transparent rounded-full animate-spin"></div>
+                        ) : (
+                          <span className="material-symbols-outlined text-base">search</span>
+                        )}
+                        <span>Tìm kiếm</span>
+                        <span className="hidden sm:inline text-[10px] bg-white/20 px-1.5 py-0.5 rounded font-mono">↵</span>
+                      </button>
                     </div>
                   </div>
 
@@ -1464,10 +1525,10 @@ export default function GameVaultPage() {
                   <div>
                     <div className="flex items-center justify-between mb-2">
                       <span className="font-label text-[11px] font-bold uppercase tracking-wider text-on-surface-variant flex items-center gap-1">
-                        {bggSearchQuery.trim().length >= 2 ? (
+                        {bggSearchResults.length > 0 ? (
                           <>
                             <span className="material-symbols-outlined text-primary text-sm">manage_search</span>
-                            Kết quả tìm kiếm cho &quot;{bggSearchQuery}&quot; ({bggSearchResults.length}):
+                            Kết quả tìm kiếm ({bggSearchResults.length}):
                           </>
                         ) : (
                           <>
@@ -1477,7 +1538,7 @@ export default function GameVaultPage() {
                         )}
                       </span>
                       {isFetchingBgg && (
-                        <span className="text-[10px] text-primary animate-pulse">Đang tìm dữ liệu BGG...</span>
+                        <span className="text-[10px] text-primary animate-pulse font-medium">Đang tìm kiếm BGG...</span>
                       )}
                     </div>
 
@@ -1495,13 +1556,15 @@ export default function GameVaultPage() {
                                 : 'border-outline-variant/20 hover:border-primary/50 bg-surface'
                             }`}
                           >
-                            <div className="w-11 h-11 rounded-lg overflow-hidden bg-surface-container-high shrink-0 border border-outline-variant/20">
+                            <div className="w-11 h-11 rounded-lg overflow-hidden bg-surface-container-high shrink-0 border border-outline-variant/20 flex items-center justify-center">
                               <img
-                                src={g.imageUrl}
+                                src={sanitizeImageUrl(g.imageUrl)}
                                 alt={g.name}
+                                referrerPolicy="no-referrer"
                                 className="w-full h-full object-cover"
                                 onError={(e) => {
-                                  e.target.src = 'https://images.unsplash.com/photo-1610890716171-6b1bb98ffd09?auto=format&fit=crop&w=800&q=80';
+                                  e.currentTarget.onerror = null;
+                                  e.currentTarget.src = DEFAULT_BG_IMAGE;
                                 }}
                               />
                             </div>
@@ -1530,12 +1593,17 @@ export default function GameVaultPage() {
                   {/* Xem trước Game BGG đã chọn */}
                   {bggSelectedGame && (
                     <div className="p-4 rounded-xl border border-primary/40 bg-surface-container-high/40 space-y-3 animate-in fade-in">
-                      <div className="flex gap-4">
-                        <div className="w-20 h-20 rounded-xl bg-surface-container-high overflow-hidden border border-outline-variant/30 shrink-0">
+                      <div className="flex gap-4 items-start">
+                        <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-xl bg-surface-container-high overflow-hidden border border-outline-variant/30 shrink-0 flex items-center justify-center">
                           <img
-                            src={bggSelectedGame.imageUrl}
+                            src={sanitizeImageUrl(bggSelectedGame.imageUrl)}
                             alt={bggSelectedGame.name}
+                            referrerPolicy="no-referrer"
                             className="w-full h-full object-cover"
+                            onError={(e) => {
+                              e.currentTarget.onerror = null;
+                              e.currentTarget.src = DEFAULT_BG_IMAGE;
+                            }}
                           />
                         </div>
                         <div className="min-w-0 flex-1">
@@ -1552,16 +1620,16 @@ export default function GameVaultPage() {
                           <h4 className="font-headline text-base font-bold text-on-surface mt-1 truncate">
                             {bggSelectedGame.name}
                           </h4>
-                          <div className="flex flex-wrap gap-2 text-xs text-on-surface-variant mt-1">
+                          <div className="flex flex-wrap gap-2.5 text-xs text-on-surface-variant mt-1">
                             <span>👥 {bggSelectedGame.minPlayers}-{bggSelectedGame.maxPlayers} người</span>
                             <span>⏱️ {bggSelectedGame.playTime} phút</span>
-                            <span>🎂 {bggSelectedGame.minAge}+ tuổi</span>
+                            {bggSelectedGame.minAge && <span>🎂 {bggSelectedGame.minAge}+ tuổi</span>}
                           </div>
-                          <div className="flex flex-wrap gap-1 mt-1.5">
-                            {bggSelectedGame.categories?.slice(0, 3).map((cat, idx) => (
+                          <div className="flex flex-wrap gap-1.5 mt-2">
+                            {bggSelectedGame.categories?.slice(0, 4).map((cat, idx) => (
                               <span
                                 key={idx}
-                                className="font-label text-[9px] font-bold bg-surface-container-high text-on-surface-variant px-1.5 py-0.5 rounded"
+                                className="font-label text-[9px] font-bold bg-surface-container-high text-on-surface-variant px-2 py-0.5 rounded-md"
                               >
                                 {cat}
                               </span>
@@ -1570,106 +1638,10 @@ export default function GameVaultPage() {
                         </div>
                       </div>
                       {bggSelectedGame.description && (
-                        <p className="text-xs text-on-surface-variant line-clamp-2 italic font-body">
+                        <p className="text-xs text-on-surface-variant line-clamp-3 italic font-body pt-1 border-t border-outline-variant/15">
                           &quot;{bggSelectedGame.description}&quot;
                         </p>
                       )}
-
-                      {/* Các thuộc tính trên kệ cá nhân */}
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-3 border-t border-outline-variant/20">
-                        <div>
-                          <label className="block font-label text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-1">
-                            Tình trạng Box
-                          </label>
-                          <select
-                            value={gameForm.condition}
-                            onChange={(e) => setGameForm({ ...gameForm, condition: e.target.value })}
-                            className="w-full bg-surface-container-high/60 border border-outline-variant/30 rounded-xl px-3 py-2.5 font-body text-sm text-on-surface"
-                          >
-                            {CONDITION_OPTIONS.map((opt) => (
-                              <option key={opt} value={opt}>
-                                {opt}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-
-                        <div>
-                          <label className="block font-label text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-1">
-                            Trạng thái trên kệ
-                          </label>
-                          <select
-                            value={gameForm.status}
-                            onChange={(e) => setGameForm({ ...gameForm, status: e.target.value })}
-                            className="w-full bg-surface-container-high/60 border border-outline-variant/30 rounded-xl px-3 py-2.5 font-body text-sm text-on-surface"
-                          >
-                            <option value="ON_SHELF">🏠 Đang trên kệ</option>
-                            <option value="LENT_OUT">🤝 Đang cho mượn</option>
-                            <option value="FOR_SALE">🏷️ Muốn bán / cho thuê</option>
-                            <option value="WISHLIST">💖 Muốn sưu tầm</option>
-                          </select>
-                        </div>
-
-                        {gameForm.status === 'LENT_OUT' && (
-                          <div className="sm:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-3 p-3 bg-amber-500/10 rounded-xl border border-amber-500/30">
-                            <div>
-                              <label className="block font-label text-xs font-bold uppercase tracking-wider text-amber-900 dark:text-amber-300 mb-1">
-                                Người mượn:
-                              </label>
-                              <input
-                                type="text"
-                                value={gameForm.borrower}
-                                onChange={(e) => setGameForm({ ...gameForm, borrower: e.target.value })}
-                                required
-                                placeholder="Ví dụ: Hoàng Nam..."
-                                className="w-full bg-amber-500/10 border border-amber-500/40 rounded-xl px-3 py-2 font-body text-sm text-on-surface"
-                              />
-                            </div>
-                            <div>
-                              <label className="block font-label text-xs font-bold uppercase tracking-wider text-amber-900 dark:text-amber-300 mb-1">
-                                Ngày hẹn trả:
-                              </label>
-                              <input
-                                type="date"
-                                value={gameForm.expectedReturnDate}
-                                onChange={(e) => setGameForm({ ...gameForm, expectedReturnDate: e.target.value })}
-                                className="w-full bg-surface-container-high/60 border border-outline-variant/30 rounded-xl px-3 py-2 font-body text-sm text-on-surface"
-                              />
-                            </div>
-                          </div>
-                        )}
-
-                        <div>
-                          <label className="block font-label text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-1">
-                            Đánh giá của bạn
-                          </label>
-                          <select
-                            value={gameForm.personalRating}
-                            onChange={(e) => setGameForm({ ...gameForm, personalRating: parseFloat(e.target.value) })}
-                            className="w-full bg-surface-container-high/60 border border-outline-variant/30 rounded-xl px-3 py-2.5 font-body text-sm text-on-surface"
-                          >
-                            <option value="5">⭐⭐⭐⭐⭐ (5.0 - Cực phẩm)</option>
-                            <option value="4.5">⭐⭐⭐⭐½ (4.5 - Rất thích)</option>
-                            <option value="4">⭐⭐⭐⭐ (4.0 - Game hay)</option>
-                            <option value="3.5">⭐⭐⭐½ (3.5 - Khá ổn)</option>
-                            <option value="3">⭐⭐⭐ (3.0 - Chơi tạm)</option>
-                            <option value="2">⭐⭐ (2.0 - Không hợp gu)</option>
-                          </select>
-                        </div>
-
-                        <div>
-                          <label className="block font-label text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-1">
-                            Ghi chú cá nhân
-                          </label>
-                          <input
-                            type="text"
-                            value={gameForm.personalNotes}
-                            onChange={(e) => setGameForm({ ...gameForm, personalNotes: e.target.value })}
-                            placeholder="Ví dụ: Đã bọc bài, bản mở rộng..."
-                            className="w-full bg-surface-container-high/60 border border-outline-variant/30 rounded-xl px-3 py-2 font-body text-sm text-on-surface focus:outline-none focus:border-primary"
-                          />
-                        </div>
-                      </div>
                     </div>
                   )}
                 </div>
