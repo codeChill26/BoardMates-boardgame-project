@@ -76,7 +76,8 @@ function LoginContent() {
         token: result.token,
       });
 
-      router.push('/');
+      const redirectUrl = searchParams.get('redirect') || '/';
+      router.push(redirectUrl);
     } catch (loginError) {
       setError(loginError?.message || 'Đăng nhập thất bại. Vui lòng thử lại.');
     } finally {
@@ -128,7 +129,8 @@ function LoginContent() {
         role: data.data?.role || 'USER',
       });
 
-      router.replace('/vault');
+      const redirectUrl = searchParams.get('redirect') || '/';
+      router.replace(redirectUrl);
     } catch (err) {
       console.warn('Firebase Google Login error:', err);
       if (err.code === 'auth/popup-closed-by-user') {
