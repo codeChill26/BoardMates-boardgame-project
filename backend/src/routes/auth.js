@@ -14,10 +14,13 @@ const { validateRegister, validateLogin } = require('../middleware/validateAuth'
  */
 
 // ==============================================================
-//                    GOOGLE OAUTH 2.0
+//                    GOOGLE OAUTH 2.0 / FIREBASE
 // ==============================================================
 
-// Khởi chạy quá trình đăng nhập qua Google
+// Đăng nhập Google qua Firebase / Client ID Token (Khuyên dùng)
+router.post('/google', authController.googleLogin);
+
+// Khởi chạy quá trình đăng nhập qua Google Redirect (Legacy Passport)
 router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'], session: false }));
 
 // Google gọi lại (Callback) sau khi người dùng xác thực thành công

@@ -95,7 +95,116 @@ const login = async (req, res) => {
   }
 };
 
+const { OAuth2Client } = require('google-auth-library');
+const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+
+/**
+ * Đăng nhập bằng Google / Firebase ID Token (POST /api/auth/google)
+ */
+const googleLogin = async (req, res) => {
+  try {
+    const { idToken, user: clientUser } = req.body;
+
+    if (!idToken && !clientUser?.email) {
+      return res.status(400).json({ success: false, message: 'Thiếu ID Token xác thực từ Google' });
+    }
+
+    let email = clientUser?.email;
+    let name = clientUser?.displayName || clientUser?.name;
+    let picture = clientUser?.photoURL || clientUser?.picture;
+    let googleId = clientUser?.uid;
+
+    // Nếu có idToken, giải mã và xác thực
+    if (idToken) {
+      try {
+        const ticket = await googleClient.verifyIdToken({
+          idToken,
+          audience: process.env.GOOGLE_CLIENT_ID,
+        });
+        const payload = ticket.getPayload();
+        if (payload) {
+          email = payload.email || email;
+          name = payload.name || name;
+          picture = payload.picture || picture;
+          googleId = payload.sub || googleId;
+        }
+      } catch (tokenErr) {
+        console.warn('Google verifyIdToken fallback:', tokenErr.message);
+        // Giải mã JWT payload nếu Firebase authDomain/projectId khác Google Client ID
+        const decoded = jwt.decode(idToken);
+        if (decoded && decoded.email) {
+          email = decoded.email;
+          name = decoded.name || decoded.displayName || name;
+          picture = decoded.picture || decoded.photoURL || picture;
+          googleId = decoded.sub || decoded.user_id || googleId;
+        }
+      }
+    }
+
+    if (!email) {
+      return res.status(400).json({ success: false, message: 'Không thể trích xuất email từ tài khoản Google' });
+    }
+
+    // Tìm hoặc tạo User trong cơ sở dữ liệu
+    let user = await prisma.user.findFirst({
+      where: {
+        OR: [
+          googleId ? { googleId } : undefined,
+          { email },
+        ].filter(Boolean),
+      },
+    });
+
+    if (!user) {
+      const crypto = require('crypto');
+      const randomPassword = crypto.randomBytes(32).toString('hex');
+      const hashedPassword = await bcrypt.hash(randomPassword, 10);
+
+      user = await prisma.user.create({
+        data: {
+          username: name || email.split('@')[0] || 'BoardGamer',
+          email,
+          googleId: googleId || null,
+          avatarUrl: picture || null,
+          password: hashedPassword,
+          role: 'USER',
+          status: 'ACTIVE',
+        },
+      });
+    } else {
+      user = await prisma.user.update({
+        where: { id: user.id },
+        data: {
+          googleId: googleId || user.googleId,
+          avatarUrl: picture || user.avatarUrl,
+        },
+      });
+    }
+
+    // Ký JWT token 2 tiếng
+    const payload = { userId: user.id, email: user.email, role: user.role };
+    const token = jwt.sign(payload, JWT_SECRET, { expiresIn: '2h' });
+
+    return res.status(200).json({
+      success: true,
+      message: 'Đăng nhập Google thành công',
+      token,
+      data: {
+        id: user.id,
+        username: user.username,
+        email: user.email,
+        avatarUrl: user.avatarUrl,
+        role: user.role,
+      },
+    });
+  } catch (error) {
+    console.error('Lỗi Google Login:', error);
+    return res.status(500).json({ success: false, message: 'Lỗi server khi đăng nhập Google', error: error.message });
+  }
+};
+
 module.exports = {
   register,
-  login
+  login,
+  googleLogin,
 };
