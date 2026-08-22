@@ -159,30 +159,68 @@
   .token-dot {
     background-color: var(--team);
   }
+
+  /* Safe Area Inset Utilities cho Mobile & PWA */
+  .safe-top {
+    padding-top: env(safe-area-inset-top, 0px);
+  }
+
+  .safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  .safe-left {
+    padding-left: env(safe-area-inset-left, 0px);
+  }
+
+  .safe-right {
+    padding-right: env(safe-area-inset-right, 0px);
+  }
+
+  .pb-safe {
+    padding-bottom: max(1rem, env(safe-area-inset-bottom, 0px));
+  }
+
+  .pt-safe {
+    padding-top: max(1rem, env(safe-area-inset-top, 0px));
+  }
 }
 
 :root {
   font-family: var(--font-body);
   color: var(--color-on-surface);
   background-color: var(--color-surface);
-  /* Checkbox/radio/range dựng sẵn của trình duyệt mặc định là xanh hệ thống —
-     mảng xanh duy nhất còn lại trên trang. Kéo nó về hổ phách chứ không phải
-     vàng rực: ô tick nhỏ, cần đủ tương phản với dấu tick trắng bên trong. */
   accent-color: var(--color-primary);
+  -webkit-tap-highlight-color: transparent;
+}
+
+html {
+  overflow-x: clip;
+  max-width: 100vw;
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
 }
 
 body {
   margin: 0;
   min-height: 100vh;
+  min-height: 100dvh;
   background-color: var(--color-surface);
+  overflow-x: clip;
+  max-width: 100vw;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 #root {
   width: 100%;
+  overflow-x: clip;
 }
 
 .page {
   min-height: 100vh;
+  min-height: 100dvh;
   display: flex;
   flex-direction: column;
 }
+
