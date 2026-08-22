@@ -6,8 +6,6 @@ import Image from 'next/image';
 import { motion, useReducedMotion } from 'framer-motion';
 import { usePathname, useRouter } from 'next/navigation';
 import { ChessPawnIcon } from '@/components/common/Icons';
-// logo-mark.png = Logo.png da tach nen kem thanh trong suot. Ban goc co nen kem
-// bake san, dat len nen sang moi cua bang mau se lo ra mot o kem quanh logo.
 import logo from '@/assets/logo-mark.png';
 import logoName from '@/assets/wordmark.png';
 import { useAuthStore } from '@/hooks/useAuthStore';
@@ -46,6 +44,18 @@ function Navbar() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  // Lock body scroll when mobile menu is open
+  useEffect(() => {
+    if (isMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isMenuOpen]);
+
   useEffect(() => {
     if (!user?.token) {
       disconnectSocket();
@@ -72,8 +82,6 @@ function Navbar() {
     logout();
     setIsMenuOpen(false);
     setIsProfileOpen(false);
-    // Ve trang chu chu khong ve /login: trang do dang la cua hau, dang xuat ma
-    // van thay man hinh dang nhap thi nguoc voi y do giau no.
     router.push('/');
   };
 
@@ -96,16 +104,11 @@ function Navbar() {
       setIsProfileOpen(false);
     }
 
-    // Chuyen sang tab khac -> bat dau o dau trang. Cac Link deu co scroll={false}
-    // (tat cuon-len-dau mac dinh cua Next), nen phai cuon tay o day.
     if (typeof window !== 'undefined') {
       window.scrollTo({ top: 0, left: 0 });
     }
   };
 
-  // tourId: moc cho NavbarTour bam vao (document.querySelector('[data-tour=...]')).
-  // CHI gan o ban desktop ben duoi — menu mobile de trong de querySelector khong
-  // nham lan giua hai ban sao cua cung mot link.
   const navLinks = [
     { to: '/', label: t.home, tourId: 'nav-home' },
     { to: '/community', label: t.community, comingSoon: true, tourId: 'nav-community' },
@@ -115,19 +118,20 @@ function Navbar() {
   ];
 
   return (
-    <nav className="fixed top-0 w-full z-50 border-b-2 border-outline/30 bg-surface/80 backdrop-blur-xl flex justify-between items-center px-6 md:px-8 py-4 font-headline tracking-tight">
-      <div className="flex items-center gap-3">
-        {/* Hamburger CHI hien tren mobile. Boc trong div md:hidden vi class
-            material-symbols-outlined tu dat display:inline-block, de bep md:hidden
-            neu dat truc tiep tren <button> -> hamburger van hien tren desktop. */}
+    <nav className="fixed top-0 w-full z-50 border-b-2 border-outline/30 bg-surface/85 backdrop-blur-xl flex justify-between items-center px-4 sm:px-6 md:px-8 py-3 md:py-4 font-headline tracking-tight pt-safe">
+      <div className="flex items-center gap-2 sm:gap-3">
+        {/* Hamburger on Mobile with >=44px touch target */}
         <div className="md:hidden flex items-center">
           <button
             type="button"
             data-tour="nav-menu"
-            className="material-symbols-outlined text-on-surface cursor-pointer p-1"
+            aria-label={isMenuOpen ? 'Đóng menu' : 'Mở menu'}
+            className="w-10 h-10 flex items-center justify-center rounded-md hover:bg-surface-container-high active:bg-surface-container-highest transition-colors cursor-pointer text-on-surface"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
           >
-            {isMenuOpen ? 'close' : 'menu'}
+            <span className="material-symbols-outlined text-2xl">
+              {isMenuOpen ? 'close' : 'menu'}
+            </span>
           </button>
         </div>
 
@@ -135,26 +139,26 @@ function Navbar() {
           href="/"
           onClick={(event) => handleNavClick(event, '/')}
           scroll={false}
-          className="flex items-center gap-2.5 cursor-pointer"
+          className="flex items-center gap-2 sm:gap-2.5 cursor-pointer"
         >
           <Image
             src={logo}
-            alt=""
-            width={48}
-            height={48}
+            alt="BoardMates Logo"
+            width={44}
+            height={44}
             loading="eager"
-            className="w-10 h-10 md:w-12 md:h-12 object-contain"
+            className="w-9 h-9 sm:w-10 sm:h-10 md:w-12 md:h-12 object-contain"
           />
           <Image
             src={logoName}
             alt="BoardMates"
             height={28}
             loading="eager"
-            className="h-6 md:h-7 w-auto object-contain"
+            className="h-5 sm:h-6 md:h-7 w-auto object-contain"
           />
         </Link>
       </div>
-      
+
       {/* Desktop Links */}
       <div className="hidden md:flex gap-6 lg:gap-8 items-center">
         {navLinks.map((link) => {
@@ -167,7 +171,9 @@ function Navbar() {
               data-tour={link.tourId}
               onClick={(event) => handleNavClick(event, link.to)}
               scroll={false}
-              className={`relative pb-3 font-label uppercase text-[10px] tracking-widest transition-colors duration-200 cursor-pointer active:opacity-70 flex items-center gap-1.5 ${isActive ? 'text-primary' : 'text-on-surface hover:text-primary'}`}
+              className={`relative pb-3 font-label uppercase text-[10px] tracking-widest transition-colors duration-200 cursor-pointer active:opacity-70 flex items-center gap-1.5 ${
+                isActive ? 'text-primary' : 'text-on-surface hover:text-primary'
+              }`}
             >
               {link.label}
               {link.comingSoon ? (
@@ -176,10 +182,6 @@ function Navbar() {
                 </span>
               ) : null}
 
-              {/* Quan co danh dau muc dang mo: layoutId cho framer tu truot no sang
-                  muc moi, nhu di quan tren ban co. CHI gan o desktop — menu mobile
-                  luon nam trong DOM (chi an bang CSS md:hidden), neu render them mot
-                  layoutId trung ten thi framer se nham lan giua hai cai. */}
               {isActive ? (
                 <motion.span
                   layoutId="navToken"
@@ -214,6 +216,7 @@ function Navbar() {
                 onClick={toggleNotifications}
                 className="relative w-10 h-10 rounded-full flex items-center justify-center hover:bg-primary/10 transition-colors cursor-pointer"
                 title="Notifications"
+                aria-label="Thông báo"
               >
                 <span className="material-symbols-outlined text-on-surface">notifications</span>
                 {unreadCount > 0 ? (
@@ -224,9 +227,11 @@ function Navbar() {
               </button>
 
               {isNotifyOpen && (
-                <div className="absolute right-0 mt-3 w-80 bg-surface-container-high border border-outline/30 rounded-2xl shadow-2xl overflow-hidden py-2 backdrop-blur-xl z-60">
+                <div className="absolute right-0 mt-3 w-80 max-w-[calc(100vw-2rem)] bg-surface-container-high border border-outline/30 rounded-2xl shadow-2xl overflow-hidden py-2 backdrop-blur-xl z-60">
                   <div className="px-4 py-3 border-b border-outline/10">
-                    <p className="text-[10px] font-label uppercase tracking-widest text-on-surface-variant">Notifications</p>
+                    <p className="text-[10px] font-label uppercase tracking-widest text-on-surface-variant">
+                      Notifications
+                    </p>
                   </div>
                   {notifications.length === 0 ? (
                     <div className="px-4 py-4">
@@ -255,7 +260,8 @@ function Navbar() {
             <div className="relative" ref={profileRef}>
               <button
                 onClick={() => setIsProfileOpen(!isProfileOpen)}
-                className="flex items-center gap-3 focus:outline-none group cursor-pointer"
+                className="flex items-center gap-2 sm:gap-3 focus:outline-none group cursor-pointer"
+                aria-label="Tài khoản"
               >
                 <div className="w-9 h-9 rounded-full bg-primary/20 border-2 border-primary/50 flex items-center justify-center overflow-hidden transition-all duration-300 group-hover:border-primary shadow-lg shadow-primary/10">
                   {user.avatarUrl ? (
@@ -267,57 +273,77 @@ function Navbar() {
                 <span className="hidden lg:block font-label text-[10px] font-bold text-on-surface uppercase tracking-widest">
                   {user.username || user.email?.split('@')[0] || 'User'}
                 </span>
-                <span className={`material-symbols-outlined text-on-surface-variant text-sm transition-transform duration-300 ${isProfileOpen ? 'rotate-180' : ''}`}>
+                <span
+                  className={`material-symbols-outlined text-on-surface-variant text-sm transition-transform duration-300 ${
+                    isProfileOpen ? 'rotate-180' : ''
+                  }`}
+                >
                   expand_more
                 </span>
               </button>
 
               {/* Profile Dropdown */}
               {isProfileOpen && (
-                <div className="absolute right-0 mt-3 w-56 bg-surface-container-high border border-outline/30 rounded-2xl shadow-2xl overflow-hidden py-2 backdrop-blur-xl z-60 animate-in fade-in slide-in-from-top-2 duration-200">
+                <div className="absolute right-0 mt-3 w-56 max-w-[calc(100vw-2rem)] bg-surface-container-high border border-outline/30 rounded-2xl shadow-2xl overflow-hidden py-2 backdrop-blur-xl z-60 animate-in fade-in slide-in-from-top-2 duration-200">
                   <div className="px-4 py-3 border-b border-outline/10 mb-1">
-                    <p className="text-[10px] font-label uppercase tracking-widest text-on-surface-variant mb-1">Signed in as</p>
+                    <p className="text-[10px] font-label uppercase tracking-widest text-on-surface-variant mb-1">
+                      Signed in as
+                    </p>
                     <p className="text-xs font-bold text-on-surface truncate">{user.email}</p>
                   </div>
-                  
-                  <Link 
+
+                  <Link
                     href="/profile"
                     onClick={(event) => handleNavClick(event, '/profile', { closeProfile: true })}
                     scroll={false}
                     className="flex items-center gap-3 px-4 py-3 hover:bg-primary/10 transition-colors text-on-surface group"
                   >
-                    <span className="material-symbols-outlined text-xl text-on-surface-variant group-hover:text-primary">account_circle</span>
-                    <span className="font-label text-xs uppercase tracking-wider">{t.profile || 'Profile'}</span>
+                    <span className="material-symbols-outlined text-xl text-on-surface-variant group-hover:text-primary">
+                      account_circle
+                    </span>
+                    <span className="font-label text-xs uppercase tracking-wider">
+                      {t.profile || 'Profile'}
+                    </span>
                   </Link>
 
-                  <Link 
+                  <Link
                     href="/vault"
                     onClick={(event) => handleNavClick(event, '/vault', { closeProfile: true })}
                     scroll={false}
                     className="flex items-center gap-3 px-4 py-3 hover:bg-primary/10 transition-colors text-on-surface group"
                   >
-                    <span className="material-symbols-outlined text-xl text-on-surface-variant group-hover:text-primary">inventory_2</span>
-                    <span className="font-label text-xs uppercase tracking-wider">{t.gameVault || 'Kho Game'}</span>
+                    <span className="material-symbols-outlined text-xl text-on-surface-variant group-hover:text-primary">
+                      inventory_2
+                    </span>
+                    <span className="font-label text-xs uppercase tracking-wider">
+                      {t.gameVault || 'Kho Game'}
+                    </span>
                   </Link>
 
                   {user?.role === 'ADMIN' ? (
-                    <Link 
+                    <Link
                       href="/admin"
                       onClick={(event) => handleNavClick(event, '/admin', { closeProfile: true })}
                       scroll={false}
                       className="flex items-center gap-3 px-4 py-3 hover:bg-primary/10 transition-colors text-on-surface group"
                     >
-                      <span className="material-symbols-outlined text-xl text-on-surface-variant group-hover:text-primary">admin_panel_settings</span>
+                      <span className="material-symbols-outlined text-xl text-on-surface-variant group-hover:text-primary">
+                        admin_panel_settings
+                      </span>
                       <span className="font-label text-xs uppercase tracking-wider">Admin</span>
                     </Link>
                   ) : null}
-                  
-                  <button 
+
+                  <button
                     onClick={handleLogout}
                     className="w-full flex items-center gap-3 px-4 py-3 hover:bg-error/10 transition-colors text-on-surface group border-t border-outline/10 cursor-pointer"
                   >
-                    <span className="material-symbols-outlined text-xl text-on-surface-variant group-hover:text-error">logout</span>
-                    <span className="font-label text-xs uppercase tracking-wider group-hover:text-error">{t.logout}</span>
+                    <span className="material-symbols-outlined text-xl text-on-surface-variant group-hover:text-error">
+                      logout
+                    </span>
+                    <span className="font-label text-xs uppercase tracking-wider group-hover:text-error">
+                      {t.logout}
+                    </span>
                   </button>
                 </div>
               )}
@@ -328,7 +354,7 @@ function Navbar() {
             href="/login"
             onClick={(event) => handleNavClick(event, '/login')}
             scroll={false}
-            className="flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-primary text-on-primary font-label text-xs uppercase tracking-wider font-bold hover:bg-primary-dim transition-all shadow-sm hover:shadow active:scale-95 cursor-pointer"
+            className="flex items-center gap-1.5 px-3.5 sm:px-4 py-1.5 rounded-full bg-primary text-on-primary font-label text-xs uppercase tracking-wider font-bold hover:bg-primary-dim transition-all shadow-sm hover:shadow active:scale-95 cursor-pointer"
           >
             <span className="material-symbols-outlined text-base">login</span>
             <span>{t.login}</span>
@@ -338,68 +364,82 @@ function Navbar() {
 
       {/* Mobile Menu Overlay */}
       {isMenuOpen && (
-        <div className="absolute top-full left-0 w-full bg-surface-container-high border-b-2 border-outline shadow-xl md:hidden overflow-hidden transition-all duration-300">
-          <div className="flex flex-col p-6 gap-6">
-            {navLinks.map((link) => (
-              <Link
-                key={link.to}
-                href={link.to}
-                onClick={(event) => handleNavClick(event, link.to, { closeMenu: true })}
-                scroll={false}
-                className={`font-label uppercase text-sm tracking-widest flex items-center gap-2 ${pathname === link.to ? 'text-primary font-bold' : 'text-on-surface'}`}
-              >
-                {link.label}
-                {link.comingSoon ? (
-                  <span className="bg-tertiary text-on-tertiary text-[8px] font-bold px-1.5 py-0.5 rounded-full normal-case tracking-normal">
-                    {t.comingSoon}
-                  </span>
-                ) : null}
-              </Link>
-            ))}
-            <div className="pt-4 border-t border-outline/20 flex flex-col gap-4">
-              <div className="flex items-center justify-between">
-                <span className="font-label text-xs uppercase text-on-surface-variant">Ngôn ngữ / Language</span>
-                <LanguageSwitcher />
-              </div>
-              {user ? (
-                <>
-                  <Link
-                    href="/profile"
-                    onClick={(event) => handleNavClick(event, '/profile', { closeMenu: true })}
-                    scroll={false}
-                    className="flex items-center gap-2 text-on-surface font-label uppercase text-sm tracking-widest"
-                  >
-                    <span className="material-symbols-outlined">account_circle</span>
-                    {t.profile || 'Profile'}
-                  </Link>
-                  <Link
-                    href="/vault"
-                    onClick={(event) => handleNavClick(event, '/vault', { closeMenu: true })}
-                    scroll={false}
-                    className="flex items-center gap-2 text-on-surface font-label uppercase text-sm tracking-widest"
-                  >
-                    <span className="material-symbols-outlined">inventory_2</span>
-                    {t.gameVault || 'Kho Game'}
-                  </Link>
-                  <button
-                    onClick={handleLogout}
-                    className="flex items-center gap-2 text-error font-label uppercase text-sm tracking-widest cursor-pointer"
-                  >
-                    <span className="material-symbols-outlined">logout</span>
-                    {t.logout}
-                  </button>
-                </>
-              ) : (
+        <div className="fixed inset-x-0 top-[60px] sm:top-[68px] bottom-0 bg-black/40 backdrop-blur-sm z-40 md:hidden animate-in fade-in duration-200">
+          <div className="w-full max-h-[85vh] bg-surface-container-high border-b-2 border-outline shadow-2xl overflow-y-auto overscroll-contain pb-safe">
+            <div className="flex flex-col p-6 gap-5">
+              {navLinks.map((link) => (
                 <Link
-                  href="/login"
-                  onClick={(event) => handleNavClick(event, '/login', { closeMenu: true })}
+                  key={link.to}
+                  href={link.to}
+                  onClick={(event) => handleNavClick(event, link.to, { closeMenu: true })}
                   scroll={false}
-                  className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-primary text-on-primary font-label uppercase text-sm font-bold tracking-widest hover:bg-primary-dim transition-all shadow-sm cursor-pointer"
+                  className={`font-label uppercase text-sm tracking-widest py-2 flex items-center justify-between border-b border-outline/10 ${
+                    pathname === link.to ? 'text-primary font-bold' : 'text-on-surface'
+                  }`}
                 >
-                  <span className="material-symbols-outlined text-base">login</span>
-                  <span>{t.login}</span>
+                  <span className="flex items-center gap-2">
+                    {link.label}
+                  </span>
+                  {link.comingSoon ? (
+                    <span className="bg-tertiary text-on-tertiary text-[9px] font-bold px-2 py-0.5 rounded-full normal-case tracking-normal">
+                      {t.comingSoon}
+                    </span>
+                  ) : (
+                    <span className="material-symbols-outlined text-base text-on-surface-variant">
+                      arrow_forward_ios
+                    </span>
+                  )}
                 </Link>
-              )}
+              ))}
+
+              <div className="pt-2 flex flex-col gap-4">
+                <div className="flex items-center justify-between py-2 border-b border-outline/10">
+                  <span className="font-label text-xs uppercase text-on-surface-variant font-bold">
+                    Ngôn ngữ / Language
+                  </span>
+                  <LanguageSwitcher />
+                </div>
+
+                {user ? (
+                  <>
+                    <Link
+                      href="/profile"
+                      onClick={(event) => handleNavClick(event, '/profile', { closeMenu: true })}
+                      scroll={false}
+                      className="flex items-center gap-2.5 text-on-surface font-label uppercase text-sm tracking-widest py-2"
+                    >
+                      <span className="material-symbols-outlined text-primary">account_circle</span>
+                      {t.profile || 'Profile'}
+                    </Link>
+                    <Link
+                      href="/vault"
+                      onClick={(event) => handleNavClick(event, '/vault', { closeMenu: true })}
+                      scroll={false}
+                      className="flex items-center gap-2.5 text-on-surface font-label uppercase text-sm tracking-widest py-2"
+                    >
+                      <span className="material-symbols-outlined text-primary">inventory_2</span>
+                      {t.gameVault || 'Kho Game'}
+                    </Link>
+                    <button
+                      onClick={handleLogout}
+                      className="flex items-center gap-2.5 text-error font-label uppercase text-sm tracking-widest py-2 cursor-pointer text-left"
+                    >
+                      <span className="material-symbols-outlined">logout</span>
+                      {t.logout}
+                    </button>
+                  </>
+                ) : (
+                  <Link
+                    href="/login"
+                    onClick={(event) => handleNavClick(event, '/login', { closeMenu: true })}
+                    scroll={false}
+                    className="flex items-center justify-center gap-2 px-4 py-3 rounded-lg bg-primary text-on-primary font-label uppercase text-sm font-bold tracking-widest hover:bg-primary-dim transition-all shadow-sm cursor-pointer mt-2"
+                  >
+                    <span className="material-symbols-outlined text-base">login</span>
+                    <span>{t.login}</span>
+                  </Link>
+                )}
+              </div>
             </div>
           </div>
         </div>

@@ -273,19 +273,19 @@ export default function AboutPage() {
   // len — duoi do about.exe da phai chia doi cho con xuc xac roi, chen them cot
   // nua la be het.
   return (
-    <div className="pt-28 md:pt-32 pb-20 px-6 md:px-8 max-w-7xl mx-auto w-full grid grid-cols-1 xl:grid-cols-12 gap-8">
+    <div className="pt-24 sm:pt-28 md:pt-32 pb-16 md:pb-20 px-4 sm:px-6 md:px-8 max-w-7xl mx-auto w-full grid grid-cols-1 xl:grid-cols-12 gap-6 md:gap-8">
       <section className="xl:col-span-9 window-border window-shadow bg-surface-container-lowest overflow-hidden">
         <div className="retro-title-bar bg-surface-container-high px-4 py-2 flex justify-between items-center">
           <span className="font-label text-[10px] md:text-xs font-bold uppercase tracking-widest text-on-surface truncate pr-2">
             about.exe
           </span>
           <div className="flex gap-2 shrink-0">
-            <div className="w-2 h-2 md:w-3 md:h-3 rounded-full border border-on-surface"></div>
-            <div className="w-2 h-2 md:w-3 md:h-3 rounded-full border border-on-surface bg-primary"></div>
+            <div className="w-2.5 h-2.5 rounded-full border border-on-surface"></div>
+            <div className="w-2.5 h-2.5 rounded-full border border-on-surface bg-primary"></div>
           </div>
         </div>
 
-        <div className="p-6 md:p-12 grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
+        <div className="p-5 sm:p-6 md:p-10 lg:p-12 grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-10 items-start">
           {/* Trai: noi dung mat dang mo */}
           <div className="lg:col-span-8 min-h-[26rem] space-y-6">
             <div className="space-y-2">

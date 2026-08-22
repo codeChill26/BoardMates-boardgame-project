@@ -168,7 +168,7 @@ export default function JoinUsPage() {
   }, [positions]);
 
   return (
-    <div className="pt-28 md:pt-32 pb-20 px-6 md:px-8 max-w-7xl mx-auto w-full space-y-16">
+    <div className="pt-24 sm:pt-28 md:pt-32 pb-16 md:pb-20 px-4 sm:px-6 md:px-8 max-w-7xl mx-auto w-full space-y-10 sm:space-y-16">
       {/* Cua so bat mo: scale 0.94 -> 1.02 -> 1 bang spring, nhu mo mot phan mem */}
       <motion.section
         initial={reducedMotion ? false : { opacity: 0, scale: 0.94 }}
@@ -181,15 +181,15 @@ export default function JoinUsPage() {
             join_us.exe
           </span>
           <div className="flex gap-2 shrink-0">
-            <div className="w-2 h-2 md:w-3 md:h-3 rounded-full border border-on-surface"></div>
-            <div className="w-2 h-2 md:w-3 md:h-3 rounded-full border border-on-surface bg-primary"></div>
+            <div className="w-2.5 h-2.5 rounded-full border border-on-surface"></div>
+            <div className="w-2.5 h-2.5 rounded-full border border-on-surface bg-primary"></div>
           </div>
         </div>
-        <div className="p-6 md:p-12 space-y-6">
-          <h1 className="text-4xl md:text-6xl font-headline font-bold leading-[0.9] tracking-tighter text-on-surface">
+        <div className="p-5 sm:p-6 md:p-12 space-y-4 sm:space-y-6">
+          <h1 className="text-3xl sm:text-4xl md:text-6xl font-headline font-bold leading-[0.95] tracking-tight text-on-surface">
             {t.title}
           </h1>
-          <p className="text-base md:text-lg text-on-surface-variant font-body max-w-2xl">
+          <p className="text-sm sm:text-base md:text-lg text-on-surface-variant font-body max-w-2xl leading-relaxed">
             {t.intro}
           </p>
         </div>
