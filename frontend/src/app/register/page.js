@@ -39,17 +39,30 @@ export default function RegisterPage() {
 
   return (
     <div className="bg-background text-on-background min-h-screen flex flex-col selection:bg-primary-container selection:text-on-primary-container relative">
-      <main className="flex-grow flex items-center justify-center px-6 py-12 relative overflow-hidden">
+      <main className="flex-grow flex items-center justify-center px-4 sm:px-6 pt-16 pb-12 sm:py-12 relative overflow-hidden">
+        {/* Nút quay lại homepage */}
+        <Link 
+          href="/" 
+          className="absolute top-4 sm:top-8 left-4 sm:left-8 flex items-center gap-1.5 sm:gap-2 text-on-surface-variant hover:text-primary transition-colors font-label font-bold text-xs sm:text-sm uppercase tracking-wider z-20"
+        >
+          <span className="material-symbols-outlined text-base sm:text-lg">arrow_back</span>
+          <span>Về trang chủ</span>
+        </Link>
+
         {/* Ambient Decorative Elements */}
         <div className="absolute top-[-10%] left-[-5%] w-96 h-96 bg-surface-container-low rounded-full blur-3xl opacity-50 pointer-events-none"></div>
         <div className="absolute bottom-[-10%] right-[-5%] w-96 h-96 bg-secondary-container/20 rounded-full blur-3xl opacity-50 pointer-events-none"></div>
         
-        <div className="w-full max-w-lg bg-surface-container-lowest p-8 md:p-12 rounded-xl shadow-sm border border-outline-variant/10 z-10">
+        <div className="w-full max-w-lg bg-surface-container-lowest p-5 sm:p-8 md:p-12 rounded-xl shadow-sm border border-outline-variant/10 z-10">
           {/* Brand Anchor */}
-          <div className="text-center mb-10">
-            <span className="font-label text-primary text-xs uppercase tracking-[0.2em] mb-3 block">Bắt đầu hành trình của bạn</span>
-            <h1 className="font-headline text-5xl md:text-6xl font-bold tracking-tight text-on-surface uppercase">BoardMates</h1>
-            <div className="w-12 h-1 bg-primary mx-auto mt-6 rounded-full"></div>
+          <div className="text-center mb-8 sm:mb-10">
+            <span className="font-label text-primary text-[10px] sm:text-xs uppercase tracking-[0.2em] mb-2 sm:mb-3 block">
+              Bắt đầu hành trình của bạn
+            </span>
+            <h1 className="font-headline text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-on-surface uppercase break-words">
+              BoardMates
+            </h1>
+            <div className="w-12 h-1 bg-primary mx-auto mt-4 sm:mt-6 rounded-full"></div>
           </div>
 
           {/* Hiển thị lỗi/thành công */}
@@ -64,12 +77,12 @@ export default function RegisterPage() {
             </div>
           )}
 
-          <form onSubmit={handleRegister} className="space-y-6">
+          <form onSubmit={handleRegister} className="space-y-5 sm:space-y-6">
             {/* Input Group: Họ và tên */}
             <div className="group">
               <label className="font-label text-xs font-bold uppercase tracking-wider text-on-surface-variant block mb-1" htmlFor="fullName">Họ và tên</label>
               <input 
-                className="w-full bg-surface-container-high border-b-2 border-transparent border-b-outline-variant py-3 px-1 text-on-surface placeholder:text-on-surface-variant/40 focus:outline-none focus:border-b-primary transition-all duration-300 font-body" 
+                className="w-full bg-surface-container-high border-b-2 border-transparent border-b-outline-variant py-3 px-1 text-on-surface placeholder:text-on-surface-variant/40 focus:outline-none focus:border-b-primary transition-all duration-300 font-body text-sm" 
                 id="fullName" 
                 placeholder="Nguyễn Văn A" 
                 type="text"
@@ -83,7 +96,7 @@ export default function RegisterPage() {
             <div className="group">
               <label className="font-label text-xs font-bold uppercase tracking-wider text-on-surface-variant block mb-1" htmlFor="email">Email</label>
               <input 
-                className="w-full bg-surface-container-high border-b-2 border-transparent border-b-outline-variant py-3 px-1 text-on-surface placeholder:text-on-surface-variant/40 focus:outline-none focus:border-b-primary transition-all duration-300 font-body" 
+                className="w-full bg-surface-container-high border-b-2 border-transparent border-b-outline-variant py-3 px-1 text-on-surface placeholder:text-on-surface-variant/40 focus:outline-none focus:border-b-primary transition-all duration-300 font-body text-sm" 
                 id="email" 
                 placeholder="example@email.com" 
                 type="email"
@@ -98,7 +111,7 @@ export default function RegisterPage() {
               <label className="font-label text-xs font-bold uppercase tracking-wider text-on-surface-variant block mb-1" htmlFor="password">Mật khẩu</label>
               <div className="relative">
                 <input 
-                  className="w-full bg-surface-container-high border-b-2 border-transparent border-b-outline-variant py-3 px-1 text-on-surface placeholder:text-on-surface-variant/40 focus:outline-none focus:border-b-primary transition-all duration-300 font-body" 
+                  className="w-full bg-surface-container-high border-b-2 border-transparent border-b-outline-variant py-3 px-1 text-on-surface placeholder:text-on-surface-variant/40 focus:outline-none focus:border-b-primary transition-all duration-300 font-body text-sm" 
                   id="password" 
                   placeholder="••••••••" 
                   type={showPassword ? 'text' : 'password'}
@@ -119,7 +132,7 @@ export default function RegisterPage() {
             <div className="group">
               <label className="font-label text-xs font-bold uppercase tracking-wider text-on-surface-variant block mb-1" htmlFor="confirmPassword">Nhập lại mật khẩu</label>
               <input 
-                className="w-full bg-surface-container-high border-b-2 border-transparent border-b-outline-variant py-3 px-1 text-on-surface placeholder:text-on-surface-variant/40 focus:outline-none focus:border-b-primary transition-all duration-300 font-body" 
+                className="w-full bg-surface-container-high border-b-2 border-transparent border-b-outline-variant py-3 px-1 text-on-surface placeholder:text-on-surface-variant/40 focus:outline-none focus:border-b-primary transition-all duration-300 font-body text-sm" 
                 id="confirmPassword" 
                 placeholder="••••••••" 
                 type={showPassword ? 'text' : 'password'}
@@ -139,14 +152,14 @@ export default function RegisterPage() {
                   required
                 />
               </div>
-              <label className="text-sm text-on-surface-variant font-body leading-tight" htmlFor="terms">
+              <label className="text-xs sm:text-sm text-on-surface-variant font-body leading-tight" htmlFor="terms">
                 Tôi đồng ý với <a className="text-primary hover:underline underline-offset-4 decoration-primary/30 transition-all font-bold" href="#">điều khoản</a> và chính sách bảo mật của BoardMates.
               </label>
             </div>
 
             {/* Action Button */}
             <button 
-              className="w-full bg-tertiary hover:bg-tertiary-fixed-dim disabled:bg-tertiary/50 text-on-tertiary font-label font-bold py-4 rounded-lg shadow-sm transform active:scale-[0.98] transition-all duration-200 tracking-widest text-sm mt-4 uppercase"
+              className="w-full bg-tertiary hover:bg-tertiary-fixed-dim disabled:bg-tertiary/50 text-on-tertiary font-label font-bold py-3.5 sm:py-4 rounded-lg shadow-sm transform active:scale-[0.98] transition-all duration-200 tracking-widest text-xs sm:text-sm mt-4 uppercase cursor-pointer"
               type="submit"
               disabled={isLoading}
             >
@@ -154,8 +167,8 @@ export default function RegisterPage() {
             </button>
 
             {/* Redirect Link */}
-            <div className="text-center pt-6">
-              <p className="text-sm text-on-surface-variant font-body">
+            <div className="text-center pt-4 sm:pt-6">
+              <p className="text-xs sm:text-sm text-on-surface-variant font-body">
                 Đã có tài khoản? 
                 <Link href="/login" className="font-label font-bold text-primary hover:text-primary-dim transition-colors ml-1 uppercase text-xs tracking-wider">
                   Đăng nhập
@@ -167,25 +180,25 @@ export default function RegisterPage() {
       </main>
 
       {/* Footer Segment */}
-      <footer className="w-full bg-surface-container-low border-t border-outline-variant py-8 px-12 flex flex-col md:flex-row justify-between items-center gap-6">
-        <div className="text-xl font-headline italic font-bold text-on-surface uppercase">BoardMates</div>
-        <div className="text-xs font-body text-on-surface-variant tracking-normal">
+      <footer className="w-full bg-surface-container-low border-t border-outline-variant py-6 sm:py-8 px-6 sm:px-12 flex flex-col md:flex-row justify-between items-center gap-4 sm:gap-6">
+        <div className="text-lg sm:text-xl font-headline italic font-bold text-on-surface uppercase">BoardMates</div>
+        <div className="text-xs font-body text-on-surface-variant tracking-normal text-center">
           © 2026 BoardMates. Tất cả quyền được bảo lưu.
         </div>
         <div className="flex gap-6 items-center">
-          <a className="text-on-surface-variant hover:text-primary transition-opacity" href="#" aria-label="Facebook">
+          <a className="text-on-surface-variant hover:text-primary transition-opacity p-1" href="#" aria-label="Facebook">
             <span className="sr-only">Facebook</span>
             <div className="h-5 w-5">
               <FacebookIcon />
             </div>
           </a>
-          <a className="text-on-surface-variant hover:text-primary transition-opacity" href="#" aria-label="Instagram">
+          <a className="text-on-surface-variant hover:text-primary transition-opacity p-1" href="#" aria-label="Instagram">
             <span className="sr-only">Instagram</span>
             <div className="h-5 w-5">
               <InstagramIcon />
             </div>
           </a>
-          <a className="text-on-surface-variant hover:text-primary transition-opacity" href="#" aria-label="TikTok">
+          <a className="text-on-surface-variant hover:text-primary transition-opacity p-1" href="#" aria-label="TikTok">
             <span className="sr-only">TikTok</span>
             <div className="h-5 w-5">
               <TikTokIcon />

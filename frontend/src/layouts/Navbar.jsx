@@ -118,15 +118,15 @@ function Navbar() {
   ];
 
   return (
-    <nav className="fixed top-0 w-full z-50 border-b-2 border-outline/30 bg-surface/85 backdrop-blur-xl flex justify-between items-center px-4 sm:px-6 md:px-8 py-3 md:py-4 font-headline tracking-tight pt-safe">
-      <div className="flex items-center gap-2 sm:gap-3">
+    <nav className="fixed top-0 w-full z-50 border-b-2 border-outline/30 bg-surface/85 backdrop-blur-xl flex justify-between items-center px-3 sm:px-6 md:px-8 py-2.5 sm:py-3 md:py-4 font-headline tracking-tight pt-safe">
+      <div className="flex items-center gap-1.5 sm:gap-3 min-w-0 shrink">
         {/* Hamburger on Mobile with >=44px touch target */}
-        <div className="md:hidden flex items-center">
+        <div className="md:hidden flex items-center shrink-0">
           <button
             type="button"
             data-tour="nav-menu"
             aria-label={isMenuOpen ? 'Đóng menu' : 'Mở menu'}
-            className="w-10 h-10 flex items-center justify-center rounded-md hover:bg-surface-container-high active:bg-surface-container-highest transition-colors cursor-pointer text-on-surface"
+            className="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center rounded-md hover:bg-surface-container-high active:bg-surface-container-highest transition-colors cursor-pointer text-on-surface"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
           >
             <span className="material-symbols-outlined text-2xl">
@@ -139,7 +139,7 @@ function Navbar() {
           href="/"
           onClick={(event) => handleNavClick(event, '/')}
           scroll={false}
-          className="flex items-center gap-2 sm:gap-2.5 cursor-pointer"
+          className="flex items-center gap-1.5 sm:gap-2.5 cursor-pointer min-w-0 shrink"
         >
           <Image
             src={logo}
@@ -147,14 +147,14 @@ function Navbar() {
             width={44}
             height={44}
             loading="eager"
-            className="w-9 h-9 sm:w-10 sm:h-10 md:w-12 md:h-12 object-contain"
+            className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 object-contain shrink-0"
           />
           <Image
             src={logoName}
             alt="BoardMates"
             height={28}
             loading="eager"
-            className="h-5 sm:h-6 md:h-7 w-auto object-contain"
+            className="h-4 sm:h-5 md:h-7 w-auto max-w-[85px] sm:max-w-[120px] md:max-w-none object-contain shrink"
           />
         </Link>
       </div>
@@ -203,7 +203,7 @@ function Navbar() {
         })}
       </div>
 
-      <div className="flex items-center gap-2 md:gap-4">
+      <div className="flex items-center gap-1.5 sm:gap-4 shrink-0">
         <div className="hidden sm:block" data-tour="nav-language">
           <LanguageSwitcher />
         </div>
@@ -214,7 +214,7 @@ function Navbar() {
               <button
                 type="button"
                 onClick={toggleNotifications}
-                className="relative w-10 h-10 rounded-full flex items-center justify-center hover:bg-primary/10 transition-colors cursor-pointer"
+                className="relative w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center hover:bg-primary/10 transition-colors cursor-pointer"
                 title="Notifications"
                 aria-label="Thông báo"
               >
@@ -263,7 +263,7 @@ function Navbar() {
                 className="flex items-center gap-2 sm:gap-3 focus:outline-none group cursor-pointer"
                 aria-label="Tài khoản"
               >
-                <div className="w-9 h-9 rounded-full bg-primary/20 border-2 border-primary/50 flex items-center justify-center overflow-hidden transition-all duration-300 group-hover:border-primary shadow-lg shadow-primary/10">
+                <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-primary/20 border-2 border-primary/50 flex items-center justify-center overflow-hidden transition-all duration-300 group-hover:border-primary shadow-lg shadow-primary/10">
                   {user.avatarUrl ? (
                     <img src={user.avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
                   ) : (
@@ -354,9 +354,9 @@ function Navbar() {
             href="/login"
             onClick={(event) => handleNavClick(event, '/login')}
             scroll={false}
-            className="flex items-center gap-1.5 px-3.5 sm:px-4 py-1.5 rounded-full bg-primary text-on-primary font-label text-xs uppercase tracking-wider font-bold hover:bg-primary-dim transition-all shadow-sm hover:shadow active:scale-95 cursor-pointer"
+            className="flex items-center gap-1 px-2.5 sm:px-4 py-1.5 rounded-full bg-primary text-on-primary font-label text-[11px] sm:text-xs uppercase tracking-wider font-bold hover:bg-primary-dim transition-all shadow-sm hover:shadow active:scale-95 cursor-pointer shrink-0"
           >
-            <span className="material-symbols-outlined text-base">login</span>
+            <span className="material-symbols-outlined text-sm sm:text-base">login</span>
             <span>{t.login}</span>
           </Link>
         )}
@@ -364,7 +364,7 @@ function Navbar() {
 
       {/* Mobile Menu Overlay */}
       {isMenuOpen && (
-        <div className="fixed inset-x-0 top-[60px] sm:top-[68px] bottom-0 bg-black/40 backdrop-blur-sm z-40 md:hidden animate-in fade-in duration-200">
+        <div className="fixed inset-x-0 top-[54px] sm:top-[68px] bottom-0 bg-black/40 backdrop-blur-sm z-40 md:hidden animate-in fade-in duration-200">
           <div className="w-full max-h-[85vh] bg-surface-container-high border-b-2 border-outline shadow-2xl overflow-y-auto overscroll-contain pb-safe">
             <div className="flex flex-col p-6 gap-5">
               {navLinks.map((link) => (
