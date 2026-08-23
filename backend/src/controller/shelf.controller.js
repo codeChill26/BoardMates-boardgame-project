@@ -8,10 +8,10 @@ const getShelfGames = async (req, res) => {
   try {
     const userId = req.user.id;
     const page = Math.max(1, parseInt(req.query.page, 10) || 1);
-    const limit = Math.max(1, Math.min(100, parseInt(req.query.limit, 10) || 8));
+    const limit = Math.max(1, Math.min(500, parseInt(req.query.limit, 10) || 8));
     const skip = (page - 1) * limit;
 
-    const { search, status, category, players, sortBy, sortOrder } = req.query;
+    const { search, status, category, players, difficulty, bggScore, minWeight, maxWeight, sortBy, sortOrder } = req.query;
 
     const where = {
       userId: userId,
@@ -46,6 +46,36 @@ const getShelfGames = async (req, res) => {
       }
     }
 
+    // Lọc theo độ khó (Difficulty / Weight)
+    if (difficulty && difficulty !== 'ALL') {
+      if (difficulty === 'LIGHT') {
+        gameWhere.weight = { lt: 2.0 };
+      } else if (difficulty === 'MEDIUM') {
+        gameWhere.weight = { gte: 2.0, lt: 3.0 };
+      } else if (difficulty === 'MEDIUM_HEAVY') {
+        gameWhere.weight = { gte: 3.0, lt: 4.0 };
+      } else if (difficulty === 'HEAVY') {
+        gameWhere.weight = { gte: 4.0 };
+      }
+    } else if (minWeight || maxWeight) {
+      gameWhere.weight = {};
+      if (minWeight) gameWhere.weight.gte = parseFloat(minWeight);
+      if (maxWeight) gameWhere.weight.lte = parseFloat(maxWeight);
+    }
+
+    // Lọc theo điểm BGG Score (Rating)
+    if (bggScore && bggScore !== 'ALL') {
+      if (bggScore === '8_PLUS') {
+        gameWhere.bggRating = { gte: 8.0 };
+      } else if (bggScore === '7_8') {
+        gameWhere.bggRating = { gte: 7.0, lt: 8.0 };
+      } else if (bggScore === '6_7') {
+        gameWhere.bggRating = { gte: 6.0, lt: 7.0 };
+      } else if (bggScore === 'UNDER_6') {
+        gameWhere.bggRating = { lt: 6.0 };
+      }
+    }
+
     if (Object.keys(gameWhere).length > 0) {
       where.game = gameWhere;
     }
@@ -54,6 +84,12 @@ const getShelfGames = async (req, res) => {
     let orderBy = { updatedAt: 'desc' };
     if (sortBy === 'name') {
       orderBy = { game: { name: sortOrder === 'asc' ? 'asc' : 'desc' } };
+    } else if (sortBy === 'weight') {
+      orderBy = { game: { weight: sortOrder === 'asc' ? 'asc' : 'desc' } };
+    } else if (sortBy === 'bggRating') {
+      orderBy = { game: { bggRating: sortOrder === 'asc' ? 'asc' : 'desc' } };
+    } else if (sortBy === 'bggRank') {
+      orderBy = { game: { bggRank: sortOrder === 'asc' ? 'asc' : 'desc' } };
     } else if (sortBy === 'rating') {
       orderBy = { personalRating: sortOrder === 'asc' ? 'asc' : 'desc' };
     } else if (sortBy === 'createdAt') {

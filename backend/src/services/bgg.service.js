@@ -99,14 +99,54 @@ async function getBggGameById(bggId) {
 
   const cleanDescription = stripHtmlTags(item.description);
 
+  // Trích xuất thống kê động từ BGG (Độ khó - Weight, Thứ hạng, Điểm Rating, Số người chơi hay nhất)
+  let weight = null;
+  let bggRating = null;
+  let bggRank = null;
+  let bestPlayers = null;
+
+  try {
+    const dynRes = await fetch(`https://api.geekdo.com/api/dynamicinfo?objectid=${cleanId}&objecttype=thing`, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        Accept: 'application/json',
+      },
+    });
+    if (dynRes.ok) {
+      const dynData = await dynRes.json();
+      const rawWeight = dynData?.item?.stats?.avgweight || dynData?.item?.polls?.boardgameweight?.averageweight;
+      if (rawWeight) {
+        weight = parseFloat(parseFloat(rawWeight).toFixed(2));
+      }
+      const rawRating = dynData?.item?.stats?.average;
+      if (rawRating) {
+        bggRating = parseFloat(parseFloat(rawRating).toFixed(1));
+      }
+      const rawRank = dynData?.item?.rankinfo?.find((r) => r.rankobjectid === 1 || r.browsesubtype === 'boardgame')?.rank;
+      if (rawRank && !isNaN(parseInt(rawRank, 10))) {
+        bggRank = parseInt(rawRank, 10);
+      }
+      const bestArr = dynData?.item?.polls?.userplayers?.best;
+      if (bestArr && bestArr[0]) {
+        bestPlayers = bestArr[0].min === bestArr[0].max ? `${bestArr[0].min}` : `${bestArr[0].min}-${bestArr[0].max}`;
+      }
+    }
+  } catch (err) {
+    // Dynamic info fallback silently
+  }
+
   const result = {
     bggId: cleanId,
     name: item.name,
     yearPublished: item.yearpublished ? parseInt(item.yearpublished, 10) : null,
     minPlayers: item.minplayers ? parseInt(item.minplayers, 10) : 1,
     maxPlayers: item.maxplayers ? parseInt(item.maxplayers, 10) : 4,
+    bestPlayers,
     playTime: item.maxplaytime ? parseInt(item.maxplaytime, 10) : (item.minplaytime ? parseInt(item.minplaytime, 10) : 45),
     minAge: item.minage ? parseInt(item.minage, 10) : 10,
+    weight,
+    bggRating,
+    bggRank,
     categories,
     publisher,
     imageUrl,
@@ -162,10 +202,14 @@ async function importBggGameToDatabase(bggId) {
   });
 
   if (existing) {
-    // Cập nhật thông tin nếu có ảnh hoặc thể loại mới
+    // Cập nhật thông tin nếu có ảnh, độ khó, rank mới
     existing = await prisma.boardGame.update({
       where: { id: existing.id },
       data: {
+        bggId: bggData.bggId || existing.bggId,
+        weight: bggData.weight ?? existing.weight,
+        bggRating: bggData.bggRating ?? existing.bggRating,
+        bggRank: bggData.bggRank ?? existing.bggRank,
         imageUrl: bggData.imageUrl || existing.imageUrl,
         description: bggData.description || existing.description,
         categories: bggData.categories.length > 0 ? bggData.categories : existing.categories,
@@ -180,6 +224,7 @@ async function importBggGameToDatabase(bggId) {
   } else {
     const created = await prisma.boardGame.create({
       data: {
+        bggId: bggData.bggId,
         name: bggData.name.trim(),
         description: bggData.description,
         categories: bggData.categories,
@@ -189,6 +234,9 @@ async function importBggGameToDatabase(bggId) {
         age: bggData.minAge,
         publisher: bggData.publisher,
         imageUrl: bggData.imageUrl,
+        weight: bggData.weight,
+        bggRating: bggData.bggRating,
+        bggRank: bggData.bggRank,
       },
     });
     return { isNew: true, game: created };

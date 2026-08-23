@@ -146,3 +146,58 @@ Tất cả tài khoản đăng nhập bằng Google đều được lưu trữ t
 | `role` | `Enum Role` | `'USER'` | Quyền hạn mặc định |
 | `status` | `Enum UserStatus` | `'ACTIVE'` | Trạng thái hoạt động |
 | `createdAt` | `DateTime` | Timestamp | Thời điểm tạo tài khoản |
+
+---
+
+## 📄 9. Tính Năng Xem Trước & Xuất Catalog Kho Game Ra File PDF (A4 Magazine & Table)
+
+1. **Giao Diện Modal Xem Trước (Live A4 Print Preview):**
+   - Tạo component [`frontend/src/components/vault/ExportPdfModal.jsx`](file:///d:/FPT%20MATERIALS/MyOwn/BG-Project/frontend/src/components/vault/ExportPdfModal.jsx) chuẩn thiết kế Retro / Editorial.
+   - Hỗ trợ 2 phong cách bố cục: **Tạp chí 2 cột (Magazine Grid)** với ảnh bìa nổi bật và **Bảng Danh Mục (Compact Table)** cô đọng.
+   - Bộ lọc phạm vi xuất linh hoạt: *Tất cả game*, *Đang trên kệ (`ON_SHELF`)*, *Muốn bán/thuê (`FOR_SALE`)*, *Đang cho mượn (`LENT_OUT`)*, hoặc *Wishlist*.
+   - Cho phép tùy chỉnh: Tiêu đề bộ sưu tập, Thông tin liên hệ (SĐT, Zalo, địa chỉ giao lưu), Bật/tắt hiển thị ghi chú cá nhân, đánh giá sao và người mượn.
+2. **Nhúng Mã QR Code Trực Tiếp:**
+   - Tích hợp thư viện `qrcode.react` tạo mã QR SVG chuẩn xác, hỗ trợ quét camera điện thoại để truy cập trực tiếp vào kho game hoặc liên hệ chủ kho.
+3. **Bộ Sinh PDF Chuẩn A4 Chất Lượng Cao:**
+   - Kết hợp `html2canvas` (độ phân giải 2x Retina, hỗ trợ CORS ảnh CDN BGG) và `jspdf` để xuất file `.pdf` sắc nét, tự động phân trang A4 thông minh và không bị lỗi font tiếng Việt.
+   - Nút **"In Ngay"** hỗ trợ gửi lệnh in ấn trực tiếp tới máy in qua `window.print()`.
+4. **Nâng Cấp Backend Tải Toàn Bộ Danh Mục:**
+   - Cập nhật [`backend/src/controller/shelf.controller.js`](file:///d:/FPT%20MATERIALS/MyOwn/BG-Project/backend/src/controller/shelf.controller.js) hỗ trợ `limit=500` game/request giúp xuất trọn vẹn toàn bộ kho game trong 1 lần bấm.
+
+---
+
+## ⚡ 10. Tích Hợp Chỉ Số Độ Khó BGG (Weight / Complexity) & Tự Động Đồng Bộ Toàn Bộ Kho Game
+
+1. **Bổ Sung Dữ Liệu BGG Dynamic Stats Vào Cơ Sở Dữ Liệu (`BoardGame` Model):**
+   - Đã thêm các trường `weight` (Float: 1.00 - 5.00), `bggRating` (Float: 1.0 - 10.0), `bggRank` (Int), `bggId` (Int) vào Prisma Schema và đồng bộ lên PostgreSQL Supabase.
+2. **Khai Thác BGG API Tự Động:**
+   - Cập nhật [`backend/src/services/bgg.service.js`](file:///d:/FPT%20MATERIALS/MyOwn/BG-Project/backend/src/services/bgg.service.js) tự động lấy độ khó, điểm rating, thứ hạng thế giới và số người chơi hay nhất (`bestPlayers`) từ `api.geekdo.com/api/dynamicinfo`.
+3. **Hiển Thị Trực Quan Trên Giao Diện Kho Game (`/vault`):**
+   - Danh sách game nằm ngang: Cột Thông số hiển thị huy hiệu `⚡ X.XX/5` phân màu 4 cấp bậc:
+     * 🟢 **< 2.0**: Nhập môn
+     * 🟡 **2.0 - 3.0**: Vừa phải
+     * 🟠 **3.0 - 4.0**: Chiến thuật
+     * 🔴 **>= 4.0**: Chuyên gia
+   - Modal Thêm Game: Thẻ xem trước (Preview) hiển thị đầy đủ bộ 3 chỉ số Độ khó BGG, Score và Rank.
+   - Catalog PDF Modal: Hiển thị độ khó chi tiết trên cả Magazine Card và Table Layout.
+4. **Tự Động Đồng Bộ (Backfill) Cho Toàn Bộ Game Đã Có Trên Kệ:**
+   - Chạy script [`backend/scripts/sync_bgg_weights.js`](file:///d:/FPT%20MATERIALS/MyOwn/BG-Project/backend/scripts/sync_bgg_weights.js) kết hợp 72k records và từ điển Top BGG để đồng bộ tự động cho toàn bộ các game đã nạp trong kho (Gloomhaven, Cascadia, Dune: Imperium, Wingspan, Twilight Imperium, Gaia Project, v.v.).
+5. **Bộ Lọc & Sắp Xếp Theo Độ Khó & Điểm BGG Score (Filter & Sort by Weight & BGG Score):**
+   - **Backend API:** Cập nhật [`backend/src/controller/shelf.controller.js`](file:///d:/FPT%20MATERIALS/MyOwn/BG-Project/backend/src/controller/shelf.controller.js) hỗ trợ:
+     * `difficulty=LIGHT|MEDIUM|MEDIUM_HEAVY|HEAVY`
+     * `bggScore=8_PLUS|7_8|6_7|UNDER_6`
+     * `sortBy=bggRating|bggRank|weight|name|rating|createdAt` với `sortOrder=asc|desc`.
+   - **Frontend Vault Toolbar Đa Tầng:** 
+     * **Tầng 1 (Bộ lọc tiêu chí):** Tìm kiếm + Trạng thái + Thể loại + Độ khó BGG + Điểm BGG.
+     * **Tầng 2 (Thanh Sắp Xếp Thứ Tự Chuyên Biệt):** Các nút bấm nhanh (*⭐ Điểm BGG*, *⚡ Độ khó BGG*, *🏆 Top BXH BGG*, *🔤 Tên game*, *🕒 Mới cập nhật*, *🆕 Mới thêm*, *💖 Đánh giá*).
+     * **Nút Đảo Chiều Thứ Tự Trực Quan:** Bấm nút `[ ↕️ Thứ tự: Tăng dần (▲) / Giảm dần (▼) ]` hoặc bấm lại vào chip đang chọn để đổi chiều tức thì.
+     * **Nút Đặt Lại (Reset Filters):** Xóa toàn bộ bộ lọc và hoàn nguyên thứ tự sắp xếp về mặc định chỉ với 1 click.
+   - **PDF Catalog Export Modal:** Hỗ trợ lọc đồng thời theo trạng thái, độ khó và mức điểm BGG Score để xuất tài liệu chuyên biệt.
+6. **Đồng Bộ Thứ Tự Sắp Xếp Khi Xuất PDF (PDF Sort Order Sync):**
+   - Khi bấm **[ 📄 Xuất Catalog PDF ]**, hệ thống tự động kế thừa đúng tiêu chí sắp xếp và chiều thứ tự (tăng dần/giảm dần) mà bạn đang chọn trên trang kho game.
+   - Cho phép tinh chỉnh hoặc đổi thứ tự sắp xếp trực tiếp ngay bên trong Modal Xem trước PDF (*⭐ Điểm BGG*, *⚡ Độ khó BGG*, *🏆 BXH BGG*, *🔤 Tên A-Z*...).
+   - Đánh số thứ tự `#01, #02, #03...` và dàn trang trong file PDF sẽ tự động sắp xếp 100% khớp theo tiêu chí bạn đã chọn.
+
+
+
+

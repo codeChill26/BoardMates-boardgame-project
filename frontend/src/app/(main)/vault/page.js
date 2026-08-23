@@ -7,6 +7,7 @@ import { useAuthStore } from '@/hooks/useAuthStore';
 import { useLanguageStore } from '@/hooks/useLanguageStore';
 import { getBackendUrl } from '@/lib/apiConfig';
 import * as XLSX from 'xlsx';
+import ExportPdfModal from '@/components/vault/ExportPdfModal';
 
 const POPULAR_CATEGORIES = [
   'Chiến thuật',
@@ -57,6 +58,33 @@ const STATUS_CONFIG = {
 };
 
 const DEFAULT_BG_IMAGE = 'https://images.unsplash.com/photo-1610890716171-6b1bb98ffd09?auto=format&fit=crop&w=800&q=80';
+
+// Helper phân loại và định dạng huy hiệu độ khó BGG (Weight: 1.0 - 5.0)
+function getWeightBadge(weight) {
+  if (!weight) return null;
+  const num = typeof weight === 'number' ? weight : parseFloat(weight);
+  if (isNaN(num)) return null;
+
+  let label = 'Nhập môn';
+  let badgeClass = 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border-emerald-500/30';
+
+  if (num >= 4.0) {
+    label = 'Chuyên gia';
+    badgeClass = 'bg-red-500/10 text-red-700 dark:text-red-300 border-red-500/30';
+  } else if (num >= 3.0) {
+    label = 'Chiến thuật';
+    badgeClass = 'bg-orange-500/10 text-orange-700 dark:text-orange-300 border-orange-500/30';
+  } else if (num >= 2.0) {
+    label = 'Vừa phải';
+    badgeClass = 'bg-amber-500/10 text-amber-700 dark:text-amber-300 border-amber-500/30';
+  }
+
+  return {
+    num: num.toFixed(2),
+    label,
+    badgeClass,
+  };
+}
 
 // Xử lý link ảnh an toàn, hỗ trợ trích xuất ảnh trực tiếp từ Google Images URL
 function sanitizeImageUrl(url) {
@@ -159,6 +187,8 @@ export default function GameVaultPage() {
   const [selectedStatus, setSelectedStatus] = useState('ALL');
   const [selectedCategory, setSelectedCategory] = useState('ALL');
   const [selectedPlayers, setSelectedPlayers] = useState('');
+  const [selectedDifficulty, setSelectedDifficulty] = useState('ALL');
+  const [selectedBggScore, setSelectedBggScore] = useState('ALL');
   const [sortBy, setSortBy] = useState('updatedAt');
   const [sortOrder, setSortOrder] = useState('desc');
   const [page, setPage] = useState(1);
@@ -202,6 +232,37 @@ export default function GameVaultPage() {
   const [isImportingCsv, setIsImportingCsv] = useState(false);
   const [csvError, setCsvError] = useState('');
 
+  // PDF Export States
+  const [isPdfModalOpen, setIsPdfModalOpen] = useState(false);
+  const [allVaultGames, setAllVaultGames] = useState([]);
+  const [isLoadingAllGames, setIsLoadingAllGames] = useState(false);
+
+  // Mở modal xuất PDF và nạp toàn bộ danh mục game theo đúng thứ tự sort đang chọn
+  const handleOpenPdfModal = async () => {
+    if (!user?.token) return;
+    setIsLoadingAllGames(true);
+    try {
+      const res = await fetch(`${getBackendUrl()}/api/shelf?limit=500&page=1&sortBy=${sortBy}&sortOrder=${sortOrder}`, {
+        headers: {
+          Authorization: `Bearer ${user.token}`,
+        },
+      });
+      const result = await res.json();
+      if (res.ok && result.success && Array.isArray(result.data)) {
+        setAllVaultGames(result.data);
+      } else {
+        // Fallback sang danh sách hiện tại nếu request lỗi
+        setAllVaultGames(shelfItems);
+      }
+    } catch (err) {
+      console.error('Lỗi nạp toàn bộ game cho PDF:', err);
+      setAllVaultGames(shelfItems);
+    } finally {
+      setIsLoadingAllGames(false);
+      setIsPdfModalOpen(true);
+    }
+  };
+
   const [gameForm, setGameForm] = useState({
     name: '',
     imageUrl: '',
@@ -243,6 +304,8 @@ export default function GameVaultPage() {
 
       if (search.trim()) query.append('search', search.trim());
       if (selectedPlayers) query.append('players', selectedPlayers);
+      if (selectedDifficulty && selectedDifficulty !== 'ALL') query.append('difficulty', selectedDifficulty);
+      if (selectedBggScore && selectedBggScore !== 'ALL') query.append('bggScore', selectedBggScore);
 
       const res = await fetch(`${getBackendUrl()}/api/shelf?${query.toString()}`, {
         headers: {
@@ -292,7 +355,7 @@ export default function GameVaultPage() {
     } else {
       setIsLoading(false);
     }
-  }, [user?.token, page, limit, selectedStatus, selectedCategory, selectedPlayers, sortBy, sortOrder]);
+  }, [user?.token, page, limit, selectedStatus, selectedCategory, selectedPlayers, selectedDifficulty, selectedBggScore, sortBy, sortOrder]);
 
   // Debounce tìm kiếm
   useEffect(() => {
@@ -907,6 +970,20 @@ export default function GameVaultPage() {
 
           <div className="flex flex-wrap items-center gap-2.5">
             <button
+              onClick={handleOpenPdfModal}
+              disabled={isLoadingAllGames}
+              className="flex items-center gap-1.5 px-4 py-3 rounded-xl border border-amber-600/40 bg-amber-500/10 hover:bg-amber-500/20 text-amber-800 dark:text-amber-300 font-label text-xs uppercase tracking-wider font-bold transition-all shadow-xs cursor-pointer disabled:opacity-50"
+              title="Xem trước và xuất danh mục toàn bộ kho game ra file PDF A4 đẹp mắt kèm mã QR"
+            >
+              {isLoadingAllGames ? (
+                <div className="w-4 h-4 border-2 border-amber-700 border-t-transparent rounded-full animate-spin"></div>
+              ) : (
+                <span className="material-symbols-outlined text-base text-amber-700 dark:text-amber-400">picture_as_pdf</span>
+              )}
+              <span>Xuất Catalog PDF</span>
+            </button>
+
+            <button
               onClick={handleDownloadTemplate}
               className="flex items-center gap-1.5 px-4 py-3 rounded-xl border border-outline-variant/40 hover:border-primary text-on-surface font-label text-xs uppercase tracking-wider font-bold transition-all hover:bg-surface-container-high cursor-pointer"
               title="Tải file Excel mẫu (.xlsx) về máy để chỉnh sửa"
@@ -1004,10 +1081,11 @@ export default function GameVaultPage() {
         </div>
 
         {/* SEARCH & FILTERS BAR */}
-        <div className="bg-surface-container-lowest p-4 rounded-2xl border border-outline-variant/20 shadow-sm space-y-4">
-          <div className="flex flex-col md:flex-row gap-3">
+        <div className="bg-surface-container-lowest p-4 rounded-2xl border border-outline-variant/20 shadow-sm space-y-3.5">
+          {/* Dòng 1: Ô tìm kiếm & Các bộ lọc tiêu chí */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-2.5">
             {/* Search Input */}
-            <div className="relative flex-1">
+            <div className="relative sm:col-span-2 lg:col-span-2">
               <span className="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-on-surface-variant/60">
                 search
               </span>
@@ -1029,34 +1107,34 @@ export default function GameVaultPage() {
             </div>
 
             {/* Status Dropdown */}
-            <div className="w-full md:w-48">
+            <div>
               <select
                 value={selectedStatus}
                 onChange={(e) => {
                   setSelectedStatus(e.target.value);
                   setPage(1);
                 }}
-                className="w-full bg-surface-container-high/60 border border-outline-variant/30 rounded-xl px-3 py-2.5 font-body text-sm text-on-surface focus:outline-none focus:border-primary transition-colors cursor-pointer"
+                className="w-full bg-surface-container-high/60 border border-outline-variant/30 rounded-xl px-3 py-2.5 font-body text-xs text-on-surface focus:outline-none focus:border-primary transition-colors cursor-pointer"
               >
-                <option value="ALL">Tất cả trạng thái</option>
-                <option value="ON_SHELF">🏠 Đang trên kệ</option>
-                <option value="LENT_OUT">🤝 Đang cho mượn</option>
-                <option value="FOR_SALE">🏷️ Muốn bán / thuê</option>
-                <option value="WISHLIST">💖 Muốn sưu tầm</option>
+                <option value="ALL">🏠 Mọi trạng thái</option>
+                <option value="ON_SHELF">Đang trên kệ</option>
+                <option value="LENT_OUT">Đang cho mượn</option>
+                <option value="FOR_SALE">Muốn bán / thuê</option>
+                <option value="WISHLIST">Muốn sưu tầm</option>
               </select>
             </div>
 
             {/* Category Dropdown */}
-            <div className="w-full md:w-44">
+            <div>
               <select
                 value={selectedCategory}
                 onChange={(e) => {
                   setSelectedCategory(e.target.value);
                   setPage(1);
                 }}
-                className="w-full bg-surface-container-high/60 border border-outline-variant/30 rounded-xl px-3 py-2.5 font-body text-sm text-on-surface focus:outline-none focus:border-primary transition-colors cursor-pointer"
+                className="w-full bg-surface-container-high/60 border border-outline-variant/30 rounded-xl px-3 py-2.5 font-body text-xs text-on-surface focus:outline-none focus:border-primary transition-colors cursor-pointer"
               >
-                <option value="ALL">Tất cả thể loại</option>
+                <option value="ALL">🎲 Mọi thể loại</option>
                 {POPULAR_CATEGORIES.map((cat) => (
                   <option key={cat} value={cat}>
                     {cat}
@@ -1065,42 +1143,132 @@ export default function GameVaultPage() {
               </select>
             </div>
 
-            {/* Players Dropdown */}
-            <div className="w-full md:w-36">
+            {/* Difficulty Dropdown */}
+            <div>
               <select
-                value={selectedPlayers}
+                value={selectedDifficulty}
                 onChange={(e) => {
-                  setSelectedPlayers(e.target.value);
+                  setSelectedDifficulty(e.target.value);
                   setPage(1);
                 }}
-                className="w-full bg-surface-container-high/60 border border-outline-variant/30 rounded-xl px-3 py-2.5 font-body text-sm text-on-surface focus:outline-none focus:border-primary transition-colors cursor-pointer"
+                className="w-full bg-surface-container-high/60 border border-outline-variant/30 rounded-xl px-3 py-2.5 font-body text-xs text-on-surface focus:outline-none focus:border-primary transition-colors cursor-pointer"
               >
-                <option value="">Số người</option>
-                <option value="1">1 người</option>
-                <option value="2">2 người</option>
-                <option value="4">4 người</option>
-                <option value="6">6+ người</option>
+                <option value="ALL">⚡ Mọi độ khó BGG</option>
+                <option value="LIGHT">🟢 Nhập môn (&lt; 2.0)</option>
+                <option value="MEDIUM">🟡 Vừa phải (2.0 - 3.0)</option>
+                <option value="MEDIUM_HEAVY">🟠 Chiến thuật (3.0 - 4.0)</option>
+                <option value="HEAVY">🔴 Chuyên gia (≥ 4.0)</option>
               </select>
             </div>
 
-            {/* Sort Dropdown */}
-            <div className="w-full md:w-40">
+            {/* BGG Score Dropdown */}
+            <div>
               <select
-                value={`${sortBy}-${sortOrder}`}
+                value={selectedBggScore}
                 onChange={(e) => {
-                  const [by, ord] = e.target.value.split('-');
-                  setSortBy(by);
-                  setSortOrder(ord);
+                  setSelectedBggScore(e.target.value);
                   setPage(1);
                 }}
-                className="w-full bg-surface-container-high/60 border border-outline-variant/30 rounded-xl px-3 py-2.5 font-body text-sm text-on-surface focus:outline-none focus:border-primary transition-colors cursor-pointer"
+                className="w-full bg-surface-container-high/60 border border-outline-variant/30 rounded-xl px-3 py-2.5 font-body text-xs text-on-surface focus:outline-none focus:border-primary transition-colors cursor-pointer"
               >
-                <option value="updatedAt-desc">Mới cập nhật</option>
-                <option value="createdAt-desc">Mới thêm gần đây</option>
-                <option value="name-asc">Tên game A - Z</option>
-                <option value="name-desc">Tên game Z - A</option>
-                <option value="rating-desc">Đánh giá cao nhất</option>
+                <option value="ALL">⭐ Mọi điểm BGG</option>
+                <option value="8_PLUS">Xuất sắc (≥ 8.0/10)</option>
+                <option value="7_8">Tốt (7.0 - 8.0/10)</option>
+                <option value="6_7">Khá (6.0 - 7.0/10)</option>
+                <option value="UNDER_6">Dưới 6.0/10</option>
               </select>
+            </div>
+          </div>
+
+          {/* Dòng 2: Thanh Sắp Xếp Thứ Tự Nhanh (Sort Bar & Direction Order) */}
+          <div className="flex flex-wrap items-center justify-between gap-2.5 pt-3 border-t border-outline-variant/20 text-xs">
+            <div className="flex flex-wrap items-center gap-1.5">
+              <span className="font-label text-[11px] font-bold uppercase tracking-wider text-on-surface-variant flex items-center gap-1 mr-1">
+                <span className="material-symbols-outlined text-sm text-primary">sort</span>
+                Sắp xếp:
+              </span>
+
+              {[
+                { id: 'bggRating', label: 'Điểm BGG', icon: 'star', defaultOrder: 'desc' },
+                { id: 'weight', label: 'Độ khó BGG', icon: 'bolt', defaultOrder: 'asc' },
+                { id: 'bggRank', label: 'Top BXH BGG', icon: 'trophy', defaultOrder: 'asc' },
+                { id: 'name', label: 'Tên game', icon: 'sort_by_alpha', defaultOrder: 'asc' },
+                { id: 'updatedAt', label: 'Mới cập nhật', icon: 'schedule', defaultOrder: 'desc' },
+                { id: 'createdAt', label: 'Mới thêm', icon: 'add_circle', defaultOrder: 'desc' },
+                { id: 'rating', label: 'Đánh giá', icon: 'favorite', defaultOrder: 'desc' },
+              ].map((s) => {
+                const isActive = sortBy === s.id;
+                return (
+                  <button
+                    key={s.id}
+                    type="button"
+                    onClick={() => {
+                      if (isActive) {
+                        setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+                      } else {
+                        setSortBy(s.id);
+                        setSortOrder(s.defaultOrder);
+                      }
+                      setPage(1);
+                    }}
+                    className={`inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg font-label font-bold transition-all cursor-pointer ${
+                      isActive
+                        ? 'bg-primary text-on-primary shadow-xs'
+                        : 'bg-surface-container-high hover:bg-surface-container-highest text-on-surface-variant hover:text-on-surface'
+                    }`}
+                  >
+                    <span className="material-symbols-outlined text-xs">{s.icon}</span>
+                    <span>{s.label}</span>
+                    {isActive && (
+                      <span className="material-symbols-outlined text-xs">
+                        {sortOrder === 'asc' ? 'arrow_upward' : 'arrow_downward'}
+                      </span>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Chiều thứ tự & Nút Reset */}
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => {
+                  setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+                  setPage(1);
+                }}
+                className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-outline-variant/30 hover:border-primary text-on-surface font-label font-bold text-[11px] transition-colors cursor-pointer bg-surface-container-high/40"
+                title="Bấm để đảo chiều thứ tự tăng dần / giảm dần"
+              >
+                <span className="material-symbols-outlined text-xs text-primary">swap_vert</span>
+                <span>
+                  {sortOrder === 'asc'
+                    ? 'Thứ tự: Tăng dần (▲)'
+                    : 'Thứ tự: Giảm dần (▼)'}
+                </span>
+              </button>
+
+              {(search || selectedStatus !== 'ALL' || selectedCategory !== 'ALL' || selectedPlayers || selectedDifficulty !== 'ALL' || selectedBggScore !== 'ALL' || sortBy !== 'updatedAt' || sortOrder !== 'desc') && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSearch('');
+                    setSelectedStatus('ALL');
+                    setSelectedCategory('ALL');
+                    setSelectedPlayers('');
+                    setSelectedDifficulty('ALL');
+                    setSelectedBggScore('ALL');
+                    setSortBy('updatedAt');
+                    setSortOrder('desc');
+                    setPage(1);
+                  }}
+                  className="inline-flex items-center gap-1 px-2 py-1.5 rounded-lg text-error hover:bg-error/10 font-label font-bold text-[11px] transition-colors cursor-pointer"
+                  title="Xóa tất cả bộ lọc và đặt lại thứ tự mặc định"
+                >
+                  <span className="material-symbols-outlined text-xs">filter_alt_off</span>
+                  <span>Đặt lại</span>
+                </button>
+              )}
             </div>
           </div>
         </div>
@@ -1217,7 +1385,7 @@ export default function GameVaultPage() {
                         </div>
                       </div>
 
-                      {/* Cột 2: Thông số (Số người & Thời lượng) */}
+                      {/* Cột 2: Thông số (Số người, Thời lượng & Độ khó) */}
                       <div className="lg:col-span-2 flex lg:flex-col gap-3 lg:gap-1 text-xs text-on-surface-variant font-body">
                         <div className="flex items-center gap-1.5">
                           <span className="material-symbols-outlined text-primary text-base">group</span>
@@ -1231,6 +1399,21 @@ export default function GameVaultPage() {
                           <span className="material-symbols-outlined text-primary text-base">schedule</span>
                           <span>{game.playTime ? `${game.playTime} phút` : '30-60 phút'}</span>
                         </div>
+                        {game.weight ? (() => {
+                          const wBadge = getWeightBadge(game.weight);
+                          if (!wBadge) return null;
+                          return (
+                            <div className="flex items-center gap-1 pt-0.5">
+                              <span
+                                className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-bold border font-label ${wBadge.badgeClass}`}
+                                title={`Độ khó BGG: ${wBadge.num}/5 (${wBadge.label})`}
+                              >
+                                <span>⚡ {wBadge.num}/5</span>
+                                <span className="hidden sm:inline font-normal">({wBadge.label})</span>
+                              </span>
+                            </div>
+                          );
+                        })() : null}
                       </div>
 
                       {/* Cột 3: Tình trạng Box */}
@@ -1667,10 +1850,40 @@ export default function GameVaultPage() {
                           <h4 className="font-headline text-base font-bold text-on-surface mt-1 truncate">
                             {bggSelectedGame.name}
                           </h4>
-                          <div className="flex flex-wrap gap-2.5 text-xs text-on-surface-variant mt-1">
+                          <div className="flex flex-wrap items-center gap-2.5 text-xs text-on-surface-variant mt-1">
                             <span>👥 {bggSelectedGame.minPlayers}-{bggSelectedGame.maxPlayers} người</span>
+                            {bggSelectedGame.bestPlayers && (
+                              <span className="text-primary font-semibold">★ Hay nhất: {bggSelectedGame.bestPlayers}p</span>
+                            )}
                             <span>⏱️ {bggSelectedGame.playTime} phút</span>
                             {bggSelectedGame.minAge && <span>🎂 {bggSelectedGame.minAge}+ tuổi</span>}
+                          </div>
+
+                          {/* BGG STATS: ĐỘ KHÓ, RATING, RANK */}
+                          <div className="flex flex-wrap items-center gap-2 mt-2 pt-1 border-t border-outline-variant/15 text-[11px]">
+                            {bggSelectedGame.weight && (() => {
+                              const wb = getWeightBadge(bggSelectedGame.weight);
+                              return (
+                                <span
+                                  className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md font-bold border ${wb?.badgeClass}`}
+                                >
+                                  <span>⚡ Độ khó: {wb?.num}/5</span>
+                                  <span className="font-normal">({wb?.label})</span>
+                                </span>
+                              );
+                            })()}
+
+                            {bggSelectedGame.bggRating && (
+                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md font-bold bg-amber-500/10 text-amber-700 dark:text-amber-300 border border-amber-500/30">
+                                <span>⭐ BGG Score: {bggSelectedGame.bggRating}/10</span>
+                              </span>
+                            )}
+
+                            {bggSelectedGame.bggRank && (
+                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md font-bold bg-blue-500/10 text-blue-700 dark:text-blue-300 border border-blue-500/30">
+                                <span>🏆 Rank #{bggSelectedGame.bggRank}</span>
+                              </span>
+                            )}
                           </div>
                           <div className="flex flex-wrap gap-1.5 mt-2">
                             {bggSelectedGame.categories?.slice(0, 4).map((cat, idx) => (
@@ -2401,6 +2614,17 @@ export default function GameVaultPage() {
           </div>
         </div>
       )}
+
+      {/* MODAL XEM TRƯỚC VÀ XUẤT CATALOG PDF */}
+      <ExportPdfModal
+        isOpen={isPdfModalOpen}
+        onClose={() => setIsPdfModalOpen(false)}
+        allGames={allVaultGames.length > 0 ? allVaultGames : shelfItems}
+        user={user}
+        stats={stats}
+        initialSortBy={sortBy}
+        initialSortOrder={sortOrder}
+      />
     </div>
   );
 }
