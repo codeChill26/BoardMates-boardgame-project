@@ -1,12 +1,12 @@
-# 🎲 Tài Liệu Hướng Dẫn Tích Hợp BoardGameGeek (BGG) & Quản Lý Kho Game
+# 🎲 Tài Liệu Hướng Dẫn Tích Hợp BoardGameGeek (BGG) & Quản Lý Kho Game (Vault)
 
-Tài liệu này ghi lại toàn bộ kiến trúc, cơ chế hoạt động, cấu trúc dữ liệu và hướng dẫn sử dụng các tính năng kết nối trực tiếp đến **BoardGameGeek (BGG)** cùng hệ thống **Import CSV / Quản lý Kho Game (Vault)** đã được hoàn thiện trong dự án **BoardMates (Dicero)**.
+Tài liệu này ghi lại toàn bộ kiến trúc, cơ chế hoạt động, cấu trúc dữ liệu và hướng dẫn sử dụng các tính năng kết nối trực tiếp đến **BoardGameGeek (BGG)** cùng hệ thống **Import CSV / Quản lý Kho Game (Vault) / Xuất Catalog PDF** đã được hoàn thiện trong dự án **BoardMates (Dicero)**.
 
 ---
 
 ## 📌 1. Tổng Quan Kiến Trúc & Nguồn Dữ Liệu BGG
 
-Để mang lại trải nghiệm tra cứu và thêm game mượt mà nhất, hệ thống kết hợp 3 lớp dữ liệu:
+Để mang lại trải nghiệm tra cứu và thêm game mượt mà nhất, hệ thống kết hợp 4 lớp dữ liệu:
 
 1. **BGG Global Index (72,062 Games)**:
    - File dữ liệu: [`backend/data/bgg_72k_index.json`](file:///d:/FPT%20MATERIALS/MyOwn/BG-Project/backend/data/bgg_72k_index.json)
@@ -14,7 +14,14 @@ Tài liệu này ghi lại toàn bộ kiến trúc, cơ chế hoạt động, c�
 2. **BGG Geekdo JSON API (Chi tiết & Ảnh HD)**:
    - Endpoint: `https://api.geekdo.com/api/geekitems?objectid={bggId}&objecttype=thing`
    - Trích xuất tự động: Tên game, năm phát hành, số người chơi (`minPlayers` - `maxPlayers`), thời lượng chơi (`playTime`), độ tuổi tối thiểu (`minAge`), thể loại (`categories`), nhà phát hành (`publisher`), mô tả đã làm sạch HTML, và link ảnh bìa gốc HD từ CDN `cf.geekdo-images.com`.
-3. **BGG Hotness API (Xu hướng thế giới)**:
+3. **BGG Dynamic Stats API (Độ Khó, Điểm Rating & Rank Thế Giới)**:
+   - Endpoint: `https://api.geekdo.com/api/dynamicinfo?objectid={bggId}&objecttype=thing`
+   - Trích xuất tức thì:
+     * ⚡ **`weight` (Độ khó BGG)**: Điểm phức tạp từ `1.00` đến `5.00` do hàng trăm nghìn người chơi bình chọn.
+     * ⭐ **`bggRating` (Điểm BGG Score)**: Điểm trung bình từ `1.0` đến `10.0`.
+     * 🏆 **`bggRank` (Thứ hạng BGG)**: Thứ hạng game toàn cầu trên bảng xếp hạng BGG.
+     * 👥 **`bestPlayers`**: Số lượng người chơi lý tưởng nhất do cộng đồng khuyến nghị.
+4. **BGG Hotness API (Xu hướng thế giới)**:
    - Endpoint: `https://api.geekdo.com/api/hotness`
    - Cung cấp danh sách Top 50 boardgame đang được quan tâm nhất thế giới trong ngày.
 
@@ -24,24 +31,54 @@ Tài liệu này ghi lại toàn bộ kiến trúc, cơ chế hoạt động, c�
 
 Trang quản lý: **[Kho Game / Vault](http://localhost:3007/vault)** ([`frontend/src/app/(main)/vault/page.js`](file:///d:/FPT%20MATERIALS/MyOwn/BG-Project/frontend/src/app/%28main%29/vault/page.js))
 
-### 2.1. Modal "Thêm Game Lên Kệ" (2 Tab Tinh Gọn)
-Khi người dùng bấm nút **"+ Thêm Game Lên Kệ"**, Modal hiển thị 2 Tab rõ ràng:
-
-1. **🌐 Tab 1: 1. Chọn game từ BoardGameGeek (BGG)** *(Mặc định được mở)*:
-   - **Ô tìm kiếm thời gian thực (Debounced 350ms)**: Người dùng có thể gõ **Tên Game** (ví dụ: *Catan, Cyclades, Nemesis, Quack, Wingspan, Brass, Dune, Terra Mystica, King of Tokyo, Ma Sói, Mèo Nổ...*) hoặc **BGG ID** (ví dụ: *13, 54998, 177302, 224517...*).
-   - **Hỗ trợ gõ tiếng Việt không dấu & có dấu**: Tự động chuẩn hóa từ khóa tìm kiếm (`removeVietnameseTones`).
-   - **Gợi ý Top Hotness**: Khi ô tìm kiếm trống, tự động hiển thị Top 50 game hot nhất thế giới để chọn nhanh bằng 1 click.
-   - **Preview Card & Form cá nhân hóa**: Khi bấm chọn game, hệ thống tải thông số game từ BGG, cho phép chọn tình trạng box (*Mới 100%, Like New 99%, Đã bọc bài...*), trạng thái (*Đang trên kệ, Đang cho mượn, Muốn bán, Wishlist*), ghi chú và đánh giá sao cá nhân trước khi bấm **"Lưu Game BGG Vào Kệ"**.
-
-2. **✏️ Tab 2: 2. Tự tạo game mới**:
-   - Dành cho các tựa game tự thiết kế, game nội bộ hoặc game độc quyền không có trên BGG. Cho phép nhập thủ công tên, link ảnh, số người, thời lượng và thông số sở hữu.
+### 2.1. Thanh Tìm Kiếm & Bộ Lọc Nâng Cao Đa Tầng (Multi-tier Toolbar)
+- **Tầng 1 - Bộ lọc tiêu chí**:
+  * 🔍 **Tìm kiếm nhanh**: Theo tên game (hỗ trợ tiếng Việt có dấu/không dấu, debounce 300ms).
+  * 🏠 **Trạng thái**: *Đang trên kệ, Đang cho mượn, Muốn bán / thuê, Muốn sưu tầm*.
+  * 🎲 **Thể loại**: *Chiến thuật, Kinh tế, Gia đình, Party, Đấu trí, Giải đố...*
+  * ⚡ **Độ khó BGG (Weight)**:
+    * 🟢 **Nhập môn** (`< 2.0`)
+    * 🟡 **Vừa phải** (`2.0 – 3.0`)
+    * 🟠 **Chiến thuật** (`3.0 – 4.0`)
+    * 🔴 **Chuyên gia** (`≥ 4.0`)
+  * ⭐ **Điểm BGG Score**:
+    * ⭐ **Xuất sắc** (`≥ 8.0/10`)
+    * ⭐ **Tốt** (`7.0 – 8.0/10`)
+    * ⭐ **Khá** (`6.0 – 7.0/10`)
+    * ⭐ **Dưới 6.0/10**
+- **Tầng 2 - Thanh Sắp Xếp Thứ Tự Chuyên Biệt (Quick Sort Chips)**:
+  * Nút bấm nhanh 1 click: ⭐ **Điểm BGG** | ⚡ **Độ khó BGG** | 🏆 **Top BXH BGG** | 🔤 **Tên game** | 🕒 **Mới cập nhật** | 🆕 **Mới thêm** | 💖 **Đánh giá cá nhân**.
+  * **Nút Đảo Chiều Thứ Tự**: `[ ↕️ Thứ tự: Tăng dần (▲) / Giảm dần (▼) ]`.
+  * **Nút Đặt Lại (`Reset`)**: Tự động hiển thị khi có bộ lọc hoạt động để đưa về mặc định chỉ với 1 click.
 
 ---
 
-### 2.2. Modal "Nạp Danh Sách Bằng File CSV" (Batch Import)
-- **Tải file mẫu**: Nút **"Tải File Mẫu (CSV)"** gọi endpoint `/api/shelf/template/csv` tải file CSV có sẵn 10 game mẫu, hỗ trợ hiển thị tiếng Việt hoàn hảo trên Microsoft Excel nhờ chuẩn **UTF-8 BOM (`\uFEFF`)**.
-- **Bảng Preview phân trang (Tối đa 10 game/trang)**: Khi chọn file `.csv`, hệ thống phân tích dữ liệu client-side và hiển thị bảng xem trước (Ảnh bìa, Tên game, Thể loại, Số người, Tình trạng, Trạng thái) kèm các nút chuyển trang Trước / Sau và nút xóa từng dòng.
-- **Tạo kép tự động (Dual Record Creation)**: Khi bấm xác nhận nạp, backend tự động kiểm tra bảng `BoardGame` gốc (tạo mới nếu chưa có) và tạo đồng thời bản ghi trong bảng `ShelfGame` của người dùng.
+### 2.2. Danh Sách Game Nằm Ngang (Horizontal Card List View)
+- Mỗi thẻ game hiển thị huy hiệu độ khó `⚡ X.XX/5` phân màu rõ ràng:
+  * 🟢 Nhập môn (vd: *Catan - 2.3/5*, *Cascadia - 1.8/5*)
+  * 🟡 Vừa phải (vd: *Wingspan - 2.4/5*, *Pandemic - 2.4/5*)
+  * 🟠 Chiến thuật (vd: *Dune: Imperium - 3.0/5*, *Scythe - 3.4/5*)
+  * 🔴 Chuyên gia (vd: *Gloomhaven - 3.9/5*, *Twilight Imperium 4e - 4.3/5*)
+
+---
+
+### 2.3. Modal "Thêm Game Lên Kệ" (2 Tab Tinh Gọn)
+Khi bấm **"+ Thêm Game Lên Kệ"**:
+1. **🌐 Tab 1: Chọn game từ BoardGameGeek (BGG)**:
+   - Tra cứu tức thì theo Tên hoặc BGG ID.
+   - Thẻ xem trước hiển thị bộ 3 chỉ số vàng: **⚡ Độ khó BGG**, **⭐ BGG Score**, **🏆 Thứ hạng BXH**.
+   - Tùy chỉnh tình trạng box, trạng thái kệ, ghi chú và lưu vào database.
+2. **✏️ Tab 2: Tự tạo game mới**:
+   - Cho phép nhập thủ công các tựa game nội bộ, game thiết kế riêng.
+
+---
+
+### 2.4. Modal Xuất Catalog PDF Tương Tác ([`ExportPdfModal.jsx`](file:///d:/FPT%20MATERIALS/MyOwn/BG-Project/frontend/src/components/vault/ExportPdfModal.jsx))
+- **Live Preview A4**: Xem trước catalog trước khi in.
+- **2 Phong cách bố cục**: *Tạp chí 2 cột (Magazine Card)* hoặc *Bảng tổng hợp (Compact Table)*.
+- **Tự động đồng bộ thứ tự**: Kế thừa và cho phép đổi thứ tự sắp xếp (*Điểm BGG, Độ khó, Top BXH, Tên A-Z...*) ngay trong modal.
+- **Tích hợp mã QR cá nhân**: Khách quét mã QR để truy cập trực tiếp kệ game của bạn trên web.
+- **Đóng gói PDF chất lượng cao**: Sử dụng `html-to-image` + `jsPDF` render siêu nét, kèm chế độ in trực tiếp bằng trình duyệt (`window.print`).
 
 ---
 
@@ -52,79 +89,35 @@ Mã nguồn: [`backend/src/routes/shelf.js`](file:///d:/FPT%20MATERIALS/MyOwn/BG
 ### 3.1. Tìm kiếm BoardGame BGG (Search)
 - **Method**: `GET`
 - **URL**: `/api/shelf/bgg/search?query={tên_game_hoặc_id}`
-- **Quyền**: Public
-- **Ví dụ**: `/api/shelf/bgg/search?query=Cyclades` hoặc `/api/shelf/bgg/search?query=54998`
-- **Response mẫu**:
-```json
-{
-  "success": true,
-  "data": [
-    {
-      "bggId": 54998,
-      "name": "Cyclades",
-      "imageUrl": "https://cf.geekdo-images.com/...",
-      "year": 2009
-    },
-    {
-      "bggId": 96778,
-      "name": "Cyclades: Hades",
-      "imageUrl": "https://cf.geekdo-images.com/...",
-      "year": 2011
-    }
-  ]
-}
-```
 
----
-
-### 3.2. Lấy Top Game Hotness từ BGG
-- **Method**: `GET`
-- **URL**: `/api/shelf/bgg/hotness`
-- **Quyền**: Public
-- **Response mẫu**:
-```json
-{
-  "success": true,
-  "data": [
-    {
-      "bggId": 224517,
-      "name": "Brass: Birmingham",
-      "imageUrl": "https://cf.geekdo-images.com/...",
-      "bggLink": "https://boardgamegeek.com/boardgame/224517"
-    }
-  ]
-}
-```
-
----
-
-### 3.3. Lấy Chi Tiết Thông Số & Ảnh HD theo BGG ID
+### 3.2. Lấy Chi Tiết Game & BGG Stats
 - **Method**: `GET`
 - **URL**: `/api/shelf/bgg/details/:bggId`
-- **Ví dụ**: `/api/shelf/bgg/details/177302` (Nemesis)
 - **Response mẫu**:
 ```json
 {
   "success": true,
   "data": {
-    "bggId": 177302,
-    "name": "Nemesis",
-    "yearPublished": 2018,
+    "bggId": 316554,
+    "name": "Dune: Imperium",
+    "yearPublished": 2020,
     "minPlayers": 1,
-    "maxPlayers": 5,
+    "maxPlayers": 4,
     "playTime": 120,
-    "minAge": 12,
-    "categories": ["Miniatures", "Sci-Fi", "Horror", "Survival"],
-    "publisher": "Awaken Realms",
-    "imageUrl": "https://cf.geekdo-images.com/wKGkNuT1vH80Y2qj9M5fDg__original/img/P9A9dK5vG1xQ_Y6m3eG0L5m7t1U=/0x0/filters:format(jpeg)/pic4431802.jpg",
-    "description": "Nemesis is a 1-5 player survival sci-fi game where players are woken up from hibernation...",
-    "bggLink": "https://boardgamegeek.com/boardgame/177302"
+    "minAge": 14,
+    "weight": 3.05,
+    "bggRating": 8.4,
+    "bggRank": 6,
+    "bestPlayers": "3-4",
+    "imageUrl": "https://cf.geekdo-images.com/...",
+    "categories": ["Sci-Fi", "Political", "Strategy"]
   }
 }
 ```
 
----
-
+### 3.3. Lấy Danh Sách Kệ Kèm Bộ Lọc & Sắp Xếp
+- **Method**: `GET`
+- **URL**: `/api/shelf?page=1&limit=10&status=ALL&category=ALL&difficulty=MEDIUM_HEAVY&bggScore=8_PLUS&sortBy=bggRating&sortOrder=desc`
 ### 3.4. Nhập Game BGG vào Kệ Cá Nhân
 - **Method**: `POST`
 - **URL**: `/api/shelf/bgg/import`
@@ -132,11 +125,11 @@ Mã nguồn: [`backend/src/routes/shelf.js`](file:///d:/FPT%20MATERIALS/MyOwn/BG
 - **Body**:
 ```json
 {
-  "bggId": 177302,
+  "bggId": 316554,
   "condition": "Like New 99%",
   "status": "ON_SHELF",
   "personalRating": 5.0,
-  "personalNotes": "Đã bọc toàn bộ thẻ bài và mua thêm insert gỗ"
+  "personalNotes": "Đã bọc toàn bộ thẻ bài và mua thêm sleeve cao cấp"
 }
 ```
 
@@ -145,78 +138,39 @@ Mã nguồn: [`backend/src/routes/shelf.js`](file:///d:/FPT%20MATERIALS/MyOwn/BG
 ### 3.5. Tải Template CSV & Batch Import CSV
 - **Tải File Mẫu**: `GET /api/shelf/template/csv`
 - **Nạp Hàng Loạt**: `POST /api/shelf/batch-import`
-  - **Headers**: `Authorization: Bearer {token}`
-  - **Body**:
-  ```json
-  {
-    "games": [
-      {
-        "name": "Catan",
-        "condition": "Like New 99%",
-        "status": "ON_SHELF",
-        "personalRating": 4.5,
-        "personalNotes": "Bản tiếng Việt",
-        "imageUrl": "https://images.unsplash.com/photo-1610890716171-6b1bb98ffd09?auto=format&fit=crop&w=800&q=80",
-        "categories": ["Chiến thuật", "Kinh tế"],
-        "minPlayers": 3,
-        "maxPlayers": 4,
-        "playTime": 90,
-        "age": 10
-      }
-    ]
-  }
-  ```
+- **Headers**: `Authorization: Bearer {token}`
 
 ---
 
-## 🔄 4. Sơ Đồ Quy Trình Hoạt Động
+## 🛠️ 4. Script Tự Động Đồng Bộ Dữ Liệu BGG Stats (Backfill Script)
 
-```mermaid
-sequenceDiagram
-    autonumber
-    actor User as Người dùng
-    participant UI as Giao diện Vault (Next.js)
-    participant API as Backend API (Express)
-    participant Index as In-Memory 72K Index
-    participant BGG as BoardGameGeek (Geekdo CDN)
-    participant DB as PostgreSQL (Prisma)
+Để cập nhật tự động toàn bộ boardgame đã có trong cơ sở dữ liệu với các chỉ số BGG mới nhất:
 
-    User->>UI: Gõ từ khóa tìm kiếm (ví dụ: "Cyclades")
-    UI->>API: GET /api/shelf/bgg/search?query=Cyclades
-    API->>Index: Quét nhanh trong 72,062 games
-    Index-->>API: Trả về kết quả khớp (BGG #54998)
-    API-->>UI: Hiển thị danh sách thẻ game gợi ý
-
-    User->>UI: Click chọn game "Cyclades"
-    UI->>API: GET /api/shelf/bgg/details/54998
-    API->>BGG: Fetch chi tiết & CDN Image URL
-    BGG-->>API: Trả về JSON (Ảnh HD, Players, Time, Desc...)
-    API-->>UI: Tự động điền đầy đủ form và hiển thị Preview
-
-    User->>UI: Chọn tình trạng Box & Bấm "Lưu Game BGG Vào Kệ"
-    UI->>API: POST /api/shelf/bgg/import { bggId: 54998, condition: "Like New" }
-    API->>DB: Upsert BoardGame (Master Record)
-    API->>DB: Upsert ShelfGame (userId, gameId)
-    DB-->>API: Lưu thành công
-    API-->>UI: 201 Created -> Refresh Danh sách Kệ Game
+```bash
+cd backend
+node scripts/sync_bgg_weights.js
 ```
+
+Script thực hiện:
+1. Quét toàn bộ các game trong bảng `BoardGame` trên PostgreSQL Supabase.
+2. Khớp với cơ sở dữ liệu 72.062 games và từ điển BGG.
+3. Tự động cập nhật `weight`, `bggRating`, `bggRank`, `bggId` cho tất cả các game.
+4. Ngay lập tức mọi kệ game của người dùng đều tự động hiển thị đầy đủ thông số BGG mà không cần thao tác thủ công.
 
 ---
 
 ## 📋 5. Bảng Tham Chiếu Một Số Tựa Game Tiêu Biểu
 
-| Tên Game | BGG ID | Thể loại | Số người | Link BGG |
-| :--- | :---: | :--- | :---: | :--- |
-| **Cyclades** | `54998` | Thần thoại, Đấu giá, Chiến thuật | 2 - 5 | [BGG #54998](https://boardgamegeek.com/boardgame/54998) |
-| **The Quacks of Quedlinburg** | `244521` | Push-Your-Luck, Bag Building | 2 - 4 | [BGG #244521](https://boardgamegeek.com/boardgame/244521) |
-| **Brass: Birmingham** (Rank #1 BGG) | `224517` | Kinh tế, Xây dựng mạng lưới | 2 - 4 | [BGG #224517](https://boardgamegeek.com/boardgame/224517) |
-| **Nemesis** | `177302` | Khoa học viễn tưởng, Sinh tồn | 1 - 5 | [BGG #177302](https://boardgamegeek.com/boardgame/177302) |
-| **Terra Mystica** | `120677` | Chiến thuật sâu, Không may rủi | 2 - 5 | [BGG #120677](https://boardgamegeek.com/boardgame/120677) |
-| **King of Tokyo** | `70323` | Quái vật, Đổ xí ngầu, Party | 2 - 6 | [BGG #70323](https://boardgamegeek.com/boardgame/70323) |
-| **Wingspan** | `266192` | Động vật học, Engine Building | 1 - 5 | [BGG #266192](https://boardgamegeek.com/boardgame/266192) |
-| **Catan** | `13` | Giao thương, Đàm phán | 3 - 4 | [BGG #13](https://boardgamegeek.com/boardgame/13) |
-| **Dune: Imperium** | `316554` | Deck building, Worker Placement | 1 - 4 | [BGG #316554](https://boardgamegeek.com/boardgame/316554) |
-| **Azul** | `230802` | Xếp gạch nghệ thuật, Trừu tượng | 2 - 4 | [BGG #230802](https://boardgamegeek.com/boardgame/230802) |
+| Tên Game | BGG ID | Độ Khó (Weight) | Điểm BGG | BXH Thế Giới | Link BGG |
+| :--- | :---: | :---: | :---: | :---: | :--- |
+| **Brass: Birmingham** | `224517` | 🔴 `3.88/5` | ⭐ `8.6` | 🏆 `#1` | [BGG #224517](https://boardgamegeek.com/boardgame/224517) |
+| **Gloomhaven** | `174430` | 🔴 `3.90/5` | ⭐ `8.6` | 🏆 `#3` | [BGG #174430](https://boardgamegeek.com/boardgame/174430) |
+| **Dune: Imperium** | `316554` | 🟠 `3.05/5` | ⭐ `8.4` | 🏆 `#6` | [BGG #316554](https://boardgamegeek.com/boardgame/316554) |
+| **Scythe** | `169786` | 🟠 `3.45/5` | ⭐ `8.1` | 🏆 `#17` | [BGG #169786](https://boardgamegeek.com/boardgame/169786) |
+| **Wingspan** | `266192` | 🟡 `2.47/5` | ⭐ `8.0` | 🏆 `#28` | [BGG #266192](https://boardgamegeek.com/boardgame/266192) |
+| **Cascadia** | `295947` | 🟢 `1.84/5` | ⭐ `7.9` | 🏆 `#41` | [BGG #295947](https://boardgamegeek.com/boardgame/295947) |
+| **Catan** | `13` | 🟡 `2.30/5` | ⭐ `7.1` | 🏆 `#512` | [BGG #13](https://boardgamegeek.com/boardgame/13) |
+| **Cyclades** | `54998` | 🟠 `2.84/5` | ⭐ `7.5` | 🏆 `#232` | [BGG #54998](https://boardgamegeek.com/boardgame/54998) |
 
 ---
 
@@ -230,8 +184,8 @@ curl "http://localhost:8080/api/shelf/bgg/search?query=Quack"
 # 2. Lấy Top 50 game hot trên thế giới từ BGG
 curl "http://localhost:8080/api/shelf/bgg/hotness"
 
-# 3. Xem chi tiết game Cyclades (BGG ID: 54998)
-curl "http://localhost:8080/api/shelf/bgg/details/54998"
+# 3. Xem chi tiết game Dune: Imperium (BGG ID: 316554)
+curl "http://localhost:8080/api/shelf/bgg/details/316554"
 
 # 4. Tải file mẫu CSV
 curl "http://localhost:8080/api/shelf/template/csv" -o sample_shelf_games.csv
