@@ -1,5 +1,5 @@
 # 📜 NHẬT KÝ THAY ĐỔI TOÀN BỘ HỆ THỐNG (CHANGELOG)
-### Dự Án: BoardMates — Vault, BGG Sync, Inactivity Timeout, Vercel Backend & Firebase Google Auth
+### Dự Án: BoardMates — Vault, BGG Sync, Inactivity Timeout, Vercel Backend, Firebase Google Auth, PWA & Responsive
 
 Tài liệu này ghi lại chi tiết toàn bộ các hạng mục công việc, cải tiến kỹ thuật, cập nhật giao diện, cơ sở dữ liệu và triển khai hệ thống đã hoàn thành.
 
@@ -9,7 +9,7 @@ Tài liệu này ghi lại chi tiết toàn bộ các hạng mục công việc,
 
 1. **Kiến Trúc Database (Prisma & Supabase):**
    - Tạo mới bảng `ShelfGame` kết nối quan hệ Master-Detail với `BoardGame` và `User`.
-   - Mỗi game trên kệ lưu trữ metadata cá nhân: `condition` (Tình trạng hộp), `status` (Trạng thái: `ON_SHELF`, `LENT_OUT`, `FOR_SALE`, `WISHLIST`), `borrowerName` & `expectedReturnDate` (Thông tin cho mượn), `personalRating` (1 - 5 sao), `personalNotes` (Ghi chú riêng tư).
+   - Mỗi game trên kệ lưu trữ metadata cá nhân: `condition` (Tình trạng hộp), `status` (Trạng thái: `ON_SHELF`, `LENT_OUT`, `FOR_SALE`, `WISHLIST`), `borrower` & `expectedReturnDate` (Thông tin cho mượn), `personalRating` (1 - 5 sao), `personalNotes` (Ghi chú riêng tư).
    - Ràng buộc `@@unique([userId, gameId])` chống trùng lặp.
 2. **Backend API Endpoints (`/api/shelf`):**
    - `GET /api/shelf`: Lấy danh sách game trên kệ (tìm kiếm, lọc theo `status`, `category`, `players`, sắp xếp và phân trang chuẩn).
@@ -105,7 +105,44 @@ Tài liệu này ghi lại chi tiết toàn bộ các hạng mục công việc,
    - Gỡ bỏ hoàn toàn thư viện `passport` và `passport-google-oauth20`.
    - Xóa bỏ file `backend/src/config/passport.js` và middleware `passport.initialize()`.
    - Xóa bỏ các route redirect cũ `GET /api/auth/google` và `GET /api/auth/google/callback`.
-5. **Bảo Mật 100% Tuyệt Đối:**
-   - Mã nguồn không chứa bất kỳ secret key cứng nào.
-   - Toàn bộ Private Secret Keys (Database, JWT, Admin) nằm an toàn ở Backend.
-   - Các file `.env`, `.env.local` đều được bảo vệ trong `.gitignore`.
+
+---
+
+## 📱 7. Hệ Thống Progressive Web App (PWA) & Tối Ưu Hóa Responsive Mobile Toàn Diện
+
+1. **Web App Manifest (`src/app/manifest.js`):**
+   - Định nghĩa App Name, Theme Color (`#A85B00`), Background Color (`#FFFBF3`), Display `standalone`, Orientation `portrait-primary`.
+   - Tích hợp 3 **App Shortcuts** (Khám phá, Gia nhập Core Team, Vault) khi ấn giữ icon trên màn hình điện thoại.
+2. **Bộ Icon Chuẩn Đa Nền Tảng (`public/icons/`):**
+   - Tạo trọn bộ `icon-192.png`, `icon-512.png`, `icon-maskable-512.png` (Android Adaptive Safe Margin), và `apple-touch-icon.png` (iOS Safari).
+3. **Service Worker Engine (`public/sw.js` & `src/lib/sw-register.js`):**
+   - Caching Stale-While-Revalidate cho Google Fonts (*Newsreader, Manrope, Space Grotesk*) và static assets giúp mở app 0ms.
+   - Tự động fallback sang màn hình ngoại tuyến **`SYSTEM_OFFLINE.EXE`** (`src/app/offline/page.jsx`) khi mất kết nối mạng 4G/Wifi.
+4. **Trải Nghiệm Cài Đặt (PWA Installation):**
+   - Thêm nút **`[ 📲 Tải App Về Máy ]`** ngay tại Hero Section trên trang chủ.
+   - Popup retro **`INSTALL_BOARDMATES.EXE`** tự động kích hoạt trên Android / Chromium.
+   - Modal hướng dẫn trực quan 2 bước dành riêng cho iOS Safari (Bấm Share `⎋` $\rightarrow$ Add to Home Screen `⊞`).
+   - Tự động nhận diện chế độ Standalone và hiển thị huy hiệu `● PWA STANDALONE`.
+5. **Khắc Phục Lỗi Responsive Mobile:**
+   - Xử lý **Safe Area Insets** (`.safe-top`, `.safe-bottom`, `.pb-safe`, `viewport-fit=cover`) chống tràn viền Tai thỏ / Dynamic Island và thanh gạt Home Bar.
+   - Khắc phục va chạm giữa logo BoardMates và nút Đăng Nhập trên Navbar bằng `min-w-0 shrink` và logo co giãn linh hoạt.
+   - Khắc phục chữ tiêu đề BoardMates bị tràn khỏi khung đăng nhập / đăng ký trên màn hình nhỏ ($< 380\text{px}$).
+   - Đảm bảo toàn bộ touch targets $\ge 44\text{px}$ và thêm `touch-action: pan-y` cho khối 3D WebGL.
+
+---
+
+## 🗄️ 8. Cơ Chế Lưu Trữ Dữ Liệu Tài Khoản Google Trong Database (PostgreSQL)
+
+Tất cả tài khoản đăng nhập bằng Google đều được lưu trữ trực tiếp vào bảng **`User`** với cấu trúc dữ liệu chuẩn:
+
+| Tên Cột | Kiểu Dữ Liệu | Giá trị khi Đăng nhập Google | Mô tả |
+|---|---|---|---|
+| `id` | `Int` (Autoincrement) | `1, 2, 3...` | Khóa chính tự tăng |
+| `username` | `String` | Lấy từ `displayName` | Tên người dùng |
+| `email` | `String` (Unique) | Email Google | Địa chỉ Email duy nhất |
+| `googleId` | `String` (Unique) | Google `sub` / UID | ID định danh từ Google |
+| `avatarUrl` | `String` | Link ảnh đại diện | Avatar Google CDN |
+| `password` | `String` | Hash Bcrypt ngẫu nhiên | Mật khẩu bảo mật ngẫu nhiên |
+| `role` | `Enum Role` | `'USER'` | Quyền hạn mặc định |
+| `status` | `Enum UserStatus` | `'ACTIVE'` | Trạng thái hoạt động |
+| `createdAt` | `DateTime` | Timestamp | Thời điểm tạo tài khoản |

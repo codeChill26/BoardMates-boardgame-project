@@ -65,9 +65,16 @@ The AI service exposes `/health`, `POST /v1/chat` (Ollama), `POST /v1/embeddings
 
 ### Frontend → backend
 
-Every call is a raw `fetch` to a **hardcoded `http://localhost:8080`** (~15 call sites across pages and components; `axios` is a dependency but unused). There is no API client module and no `NEXT_PUBLIC_*` base URL, which is why the Docker frontend can't reach the backend by service name. If you touch this, centralize it rather than adding another hardcoded literal.
+API calls use dynamic configuration in `frontend/src/lib/apiConfig.js` (`getBackendUrl()`), which automatically fails over to the deployed Vercel backend (`https://board-mates-boardgame-project-v45x.vercel.app`) when local backend is down, and enforces HTTPS in production to avoid mixed-content issues.
 
 Conventions: pages under `src/app/(main)/` get the shared shell via `MainLayout`; `@/*` maps to `src/*`; Tailwind v4 is configured through `@tailwindcss/postcss` with no `tailwind.config` file. State is zustand with `persist` — `useAuthStore` (key `dicero-auth-storage`, holds `{ ...user, token }`) and `useLanguageStore` (key `language-storage`, defaults to `vi`). Both guard `localStorage` behind a `typeof window` check for SSR.
+
+PWA Architecture:
+- Dynamic Web App Manifest generated at `src/app/manifest.js` (served at `/manifest.webmanifest`).
+- Service Worker at `public/sw.js` (registered by `src/lib/sw-register.js` in `<PWAProvider>`).
+- Caching strategies: Stale-While-Revalidate for Google Fonts and static chunks; Network-First with fallback to `/offline` (`src/app/offline/page.jsx`).
+- PWA install hook (`usePWA.js`) and prompts (`PWAInstallPrompt.jsx`, hero section install button).
+- Viewport and Safe Area utilities in `globals.css` (`.safe-top`, `.safe-bottom`, `.pb-safe`, `viewport-fit=cover`).
 
 i18n is a hand-rolled dictionary: `translations[language].<section>` from [frontend/src/data/translations.js](frontend/src/data/translations.js), read per-component as `const t = translations[language].navbar`. New user-facing strings need both `vi` and `en` entries.
 
@@ -79,7 +86,7 @@ Express-generator layout under `src/`: `routes/` (thin, carry the `@swagger` JSD
 
 Every JSON response follows `{ success: true, data }` or `{ success: false, message }`. The error handler in [backend/app.js](backend/app.js) only returns JSON for URLs starting with `/api` — the non-API branch still calls `res.render('error')`, but the jade views were deleted and the configured views dir doesn't exist. This app is JSON-only; don't add server-rendered pages without restoring that setup.
 
-Auth is JWT Bearer with payload `{ userId, email, role }`, expiring in 1d. [`authenticate`](backend/src/middleware/authenticate.js) sets `req.user = { id, email, role }` — note `userId` in the token becomes `id` on the request. Role gates go through `requireRole('ADMIN')`. Google OAuth (passport) lives alongside password auth; users may have a null `password`.
+Auth is JWT Bearer with payload `{ userId, email, role }`, expiring in 2h. [`authenticate`](backend/src/middleware/authenticate.js) sets `req.user = { id, email, role }` — note `userId` in the token becomes `id` on the request. Role gates go through `requireRole('ADMIN')`. Google Sign-In is handled via Firebase Popup on frontend sending `idToken` to `POST /api/auth/google`, verified via `google-auth-library` and upserted in the PostgreSQL `User` table (storing `googleId`, `avatarUrl`, and hashed random password).
 
 Prisma 7 specifics that differ from older versions: `DATABASE_URL` is supplied by [backend/prisma.config.ts](backend/prisma.config.ts), **not** by a `url` in the `datasource` block of [schema.prisma](backend/prisma/schema.prisma). The client is instantiated with the `PrismaPg` adapter over a `pg` Pool in [prismaClient.js](backend/src/middleware/prismaClient.js), and when `DATABASE_URL` is missing it exports a Proxy that throws on first use — the server boots fine and fails only when a query runs, so "server started" doesn't mean the DB is connected.
 
