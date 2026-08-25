@@ -1,30 +1,31 @@
 const express = require('express');
 const router = express.Router();
-const prisma = require('../middleware/prismaClient');
-
+const adminController = require('../controller/admin.controller');
 const authenticate = require('../middleware/authenticate');
 const { requireRole } = require('../middleware/authorizeRole');
 
-router.get('/stats', authenticate, requireRole('ADMIN'), async (req, res) => {
-  try {
-    const [users, listings, orders] = await Promise.all([
-      prisma.user.count(),
-      prisma.listing.count(),
-      prisma.order.count(),
-    ]);
+// Áp dụng middleware kiểm tra quyền ADMIN cho toàn bộ router
+router.use(authenticate, requireRole('ADMIN'));
 
-    res.json({
-      success: true,
-      data: {
-        users,
-        listings,
-        orders,
-      },
-    });
-  } catch (error) {
-    console.error('Error fetching admin stats:', error);
-    res.status(500).json({ success: false, message: 'Loi server' });
-  }
-});
+// 1. TỔNG QUAN & METRICS ANALYTICS
+router.get('/overview', adminController.getOverviewStats);
+router.get('/stats', adminController.getOverviewStats); // tương thích ngược
+
+// 2. QUẢN LÝ NGƯỜI DÙNG
+router.get('/users', adminController.getUsers);
+router.put('/users/:id/status', adminController.updateUserStatus);
+router.put('/users/:id/role', adminController.updateUserRole);
+
+// 3. QUẢN LÝ SỰ KIỆN
+router.get('/events', adminController.getEvents);
+router.put('/events/:id/status', adminController.updateEventStatus);
+router.delete('/events/:id', adminController.deleteEvent);
+
+// 4. QUẢN LÝ MARKETPLACE
+router.get('/marketplace', adminController.getListings);
+router.put('/marketplace/:id/status', adminController.updateListingStatus);
+
+// 5. QUẢN LÝ CỘNG ĐỒNG
+router.get('/community', adminController.getCommunityOverview);
 
 module.exports = router;
