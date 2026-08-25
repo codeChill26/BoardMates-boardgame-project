@@ -137,7 +137,7 @@ const HeroSection = () => {
               </span>
             </div>
             <p className="font-headline italic text-lg sm:text-xl md:text-2xl text-on-secondary-container leading-tight">
-              "{t.featured}"
+              &quot;{t.featured}&quot;
             </p>
           </div>
         </div>

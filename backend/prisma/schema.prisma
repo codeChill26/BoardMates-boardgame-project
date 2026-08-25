@@ -37,6 +37,21 @@ enum OrderStatus {
   CANCELLED
 }
 
+enum EventType {
+  CASUAL      // Lên kèo giao lưu nhanh
+  TOURNAMENT  // Giải đấu
+  WORKSHOP    // Hướng dẫn / Trải nghiệm game mới
+  NIGHT       // Board Game Night cộng đồng
+}
+
+enum EventStatus {
+  OPEN       // Đang mở slot
+  FULL       // Đã đủ người
+  ONGOING    // Đang diễn ra
+  COMPLETED  // Đã kết thúc
+  CANCELLED  // Đã hủy
+}
+
 model User {
   id        Int      @id @default(autoincrement())
   username  String
@@ -57,6 +72,8 @@ model User {
 
   listings  Listing[]
   shelfGames ShelfGame[]
+  hostedEvents Event[] @relation("EventHost")
+  eventParticipations EventParticipant[]
 }
 
 model BoardGame {
@@ -77,6 +94,7 @@ model BoardGame {
 
   listings    Listing[]
   shelfItems  ShelfGame[]
+  events      Event[]
 }
 
 model Listing {
@@ -139,4 +157,53 @@ model ShelfGame {
   game               BoardGame @relation(fields: [gameId], references: [id], onDelete: Cascade)
 
   @@unique([userId, gameId])
+}
+
+model Event {
+  id              Int          @id @default(autoincrement())
+  title           String
+  description     String?
+  eventType       EventType    @default(CASUAL)
+  status          EventStatus  @default(OPEN)
+
+  gameId          Int?
+  customGameName  String?
+  games           Json?        // Danh sách nhiều board game đính kèm: [{ id, name, imageUrl, bggId, playTime, weight }]
+  imageUrl        String?
+
+  hostId          Int
+  location        String       // Tên quán cafe, địa điểm (vd: The Mind Cafe, Board Mates Hub, Online...)
+  address         String?      // Địa chỉ chi tiết
+  city            String?      @default("TP. Hồ Chí Minh")
+  lat             Float?       // Vĩ độ GPS
+  lng             Float?       // Kinh độ GPS
+
+  startDate       DateTime
+  endDate         DateTime?
+
+  maxParticipants Int          @default(4)
+  entryFee        Float?       @default(0) // 0 = Miễn phí / Tự túc tiền nước
+  skillLevel      String?      @default("ALL") // ALL, BEGINNER, INTERMEDIATE, EXPERT
+
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+
+  host            User         @relation("EventHost", fields: [hostId], references: [id], onDelete: Cascade)
+  game            BoardGame?   @relation(fields: [gameId], references: [id], onDelete: SetNull)
+  participants    EventParticipant[]
+}
+
+model EventParticipant {
+  id        Int      @id @default(autoincrement())
+  eventId   Int
+  userId    Int
+  role      String   @default("PLAYER") // HOST, PLAYER, SPECTATOR
+  status    String   @default("JOINED") // JOINED, WAITLIST, CANCELLED
+  notes     String?
+  joinedAt  DateTime @default(now())
+
+  event     Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([eventId, userId])
 }

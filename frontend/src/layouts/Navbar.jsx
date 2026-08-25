@@ -112,7 +112,7 @@ function Navbar() {
   const navLinks = [
     { to: '/', label: t.home, tourId: 'nav-home' },
     { to: '/community', label: t.community, comingSoon: true, tourId: 'nav-community' },
-    { to: '/events', label: t.events, comingSoon: true, tourId: 'nav-events' },
+    { to: '/events', label: t.events, tourId: 'nav-events' },
     { to: '/join-us', label: t.joinUs, tourId: 'nav-join-us' },
     { to: '/about', label: t.about, tourId: 'nav-about' },
   ];

@@ -17,6 +17,7 @@ var ordersRouter = require('./src/routes/orders');
 var adminRouter = require('./src/routes/admin');
 var positionsRouter = require('./src/routes/positions');
 var shelfRouter = require('./src/routes/shelf');
+var eventsRouter = require('./src/routes/events');
 
 var app = express();
 
@@ -36,6 +37,7 @@ app.use('/api/orders', ordersRouter);
 app.use('/api/admin', adminRouter);
 app.use('/api/positions', positionsRouter);
 app.use('/api/shelf', shelfRouter);
+app.use('/api/events', eventsRouter);
 app.use('/api/users', usersRouter);
 app.use('/api', indexRouter);
 

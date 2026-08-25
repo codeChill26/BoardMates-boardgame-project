@@ -14,7 +14,9 @@ export function usePWA() {
 
     // Check if dismissed in this session
     const dismissed = sessionStorage.getItem('pwa_prompt_dismissed') === 'true';
-    setIsDismissed(dismissed);
+    if (dismissed) {
+      setIsDismissed(true);
+    }
 
     // Check standalone mode (already installed & running as app)
     const isStandaloneMode =
@@ -22,7 +24,9 @@ export function usePWA() {
       window.navigator.standalone === true ||
       document.referrer.includes('android-app://');
 
-    setIsInstalled(isStandaloneMode);
+    if (isStandaloneMode) {
+      setIsInstalled(true);
+    }
 
     // Detect iOS device
     const userAgent = window.navigator.userAgent.toLowerCase();
@@ -30,7 +34,9 @@ export function usePWA() {
       /iphone|ipad|ipod/.test(userAgent) ||
       (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
     
-    setIsIOS(isAppleDevice && !isStandaloneMode);
+    if (isAppleDevice && !isStandaloneMode) {
+      setIsIOS(true);
+    }
 
     // Listen for beforeinstallprompt on Android / Chromium Desktop
     const handleBeforeInstallPrompt = (e) => {

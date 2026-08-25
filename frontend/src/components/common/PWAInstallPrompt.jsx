@@ -227,7 +227,7 @@ export default function PWAInstallPrompt() {
                             <>
                               Cuộn xuống và chọn{' '}
                               <span className="font-bold text-on-surface">
-                                "Thêm vào MH chính" (Add to Home Screen ⊞)
+                                &quot;Thêm vào MH chính&quot; (Add to Home Screen ⊞)
                               </span>
                               .
                             </>
@@ -235,7 +235,7 @@ export default function PWAInstallPrompt() {
                             <>
                               Scroll down and select{' '}
                               <span className="font-bold text-on-surface">
-                                "Add to Home Screen ⊞"
+                                &quot;Add to Home Screen ⊞&quot;
                               </span>
                               .
                             </>

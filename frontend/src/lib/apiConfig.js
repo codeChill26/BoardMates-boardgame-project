@@ -12,37 +12,17 @@ if (backendUrl && backendUrl.endsWith('/')) {
 
 if (typeof window !== 'undefined') {
   const isHttps = window.location.protocol === 'https:';
-  const isLocalConfig = backendUrl.includes('localhost') || backendUrl.includes('127.0.0.1');
+  const isLocalHost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
 
   if (isHttps) {
-    // Khi chạy trên domain HTTPS (Vercel Production), trình duyệt chặn HTTP mixed-content sang localhost.
-    // Bắt buộc dùng backend HTTPS đã deploy trên Vercel.
+    // Khi chạy trên domain HTTPS (Vercel Production)
     backendUrl = DEPLOY_URL;
-  } else if (isLocalConfig) {
-    // Đọc trạng thái cache từ localStorage để tránh độ trễ ở request đầu
-    const cachedStatus = window.localStorage.getItem('bm_backend_local_running');
-    if (cachedStatus === 'false') {
-      backendUrl = DEPLOY_URL;
-    } else {
-      backendUrl = LOCAL_URL;
-    }
-
-    // Ping thử backend local (endpoint /api) để tự động chuyển sang Vercel nếu backend local tắt
-    fetch(`${LOCAL_URL}/api`, { method: 'GET', mode: 'cors' })
-      .then((res) => {
-        if (res.ok) {
-          window.localStorage.setItem('bm_backend_local_running', 'true');
-          backendUrl = LOCAL_URL;
-        } else {
-          window.localStorage.setItem('bm_backend_local_running', 'false');
-          backendUrl = DEPLOY_URL;
-        }
-      })
-      .catch(() => {
-        // Backend local không bật -> Tự động chuyển sang Vercel
-        window.localStorage.setItem('bm_backend_local_running', 'false');
-        backendUrl = DEPLOY_URL;
-      });
+  } else if (isLocalHost) {
+    // Khi chạy trên máy local, luôn ưu tiên kết nối Backend Node.js localhost:8080
+    backendUrl = LOCAL_URL;
+    window.localStorage.setItem('bm_backend_local_running', 'true');
+  } else {
+    backendUrl = LOCAL_URL || DEPLOY_URL;
   }
 }
 
