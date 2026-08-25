@@ -16,7 +16,7 @@ const STORAGE_KEY = 'boardmates-tour-seen';
 const STEPS = [
   { key: 'welcome', target: null },
   { key: 'home', target: 'nav-home' },
-  { key: 'community', target: 'nav-community' },
+  { key: 'community', target: 'nav-marketplace' },
   { key: 'events', target: 'nav-events' },
   { key: 'joinUs', target: 'nav-join-us' },
   { key: 'about', target: 'nav-about' },

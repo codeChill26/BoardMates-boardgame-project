@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { getBackendUrl } from '@/lib/apiConfig';
 import EventMapPicker, { POPULAR_BOARDGAME_CAFES } from './EventMapPicker';
+import GameCameraScannerModal from '../vault/GameCameraScannerModal';
 
 const PRESET_GAMES = [
   { id: 1, name: 'Catan', image: 'https://images.unsplash.com/photo-1610890716171-6b1bb98ffd09?auto=format&fit=crop&w=800&q=80', bggId: 13, playTime: 90, weight: 2.3 },
@@ -53,6 +54,7 @@ export default function CreateEventModal({
   const [gameSearchQuery, setGameSearchQuery] = useState('');
   const [gameSearchResults, setGameSearchResults] = useState([]);
   const [isSearchingGames, setIsSearchingGames] = useState(false);
+  const [isCameraModalOpen, setIsCameraModalOpen] = useState(false);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
@@ -348,11 +350,20 @@ export default function CreateEventModal({
                       className="w-full pl-8 pr-3 py-1.5 text-xs border-2 border-on-surface/40 focus:border-primary rounded-sm bg-surface text-on-surface outline-hidden"
                     />
                   </div>
+                  <button
+                    type="button"
+                    onClick={() => setIsCameraModalOpen(true)}
+                    className="px-2.5 py-1.5 text-xs font-bold rounded-sm border-2 border-primary bg-primary/10 text-primary hover:bg-primary hover:text-white flex items-center gap-1 cursor-pointer transition-colors shrink-0"
+                    title="Chụp ảnh hộp game để nhận diện BGG tự động"
+                  >
+                    <span className="material-symbols-outlined text-[16px]">photo_camera</span>
+                    <span className="hidden sm:inline">{isEn ? 'Scan Box' : 'Quét Ảnh'}</span>
+                  </button>
                   {gameSearchQuery && (
                     <button
                       type="button"
                       onClick={handleAddCustomGame}
-                      className="px-3 py-1.5 text-xs font-bold rounded-sm border-2 border-on-surface bg-tertiary text-on-tertiary cursor-pointer"
+                      className="px-3 py-1.5 text-xs font-bold rounded-sm border-2 border-on-surface bg-tertiary text-on-tertiary cursor-pointer shrink-0"
                     >
                       + {isEn ? 'Add' : 'Thêm'}
                     </button>
@@ -583,6 +594,19 @@ export default function CreateEventModal({
           </form>
         </div>
       </motion.div>
+
+      {/* Modal Quét Ảnh Hộp Game BGG */}
+      <GameCameraScannerModal
+        isOpen={isCameraModalOpen}
+        onClose={() => setIsCameraModalOpen(false)}
+        token={user?.token}
+        onGameAdded={(game) => {
+          if (game) {
+            handleAddGame(game);
+          }
+        }}
+        language={language}
+      />
     </div>
   );
 }

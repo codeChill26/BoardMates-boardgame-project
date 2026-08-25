@@ -8,6 +8,7 @@ import { useLanguageStore } from '@/hooks/useLanguageStore';
 import { getBackendUrl } from '@/lib/apiConfig';
 import * as XLSX from 'xlsx';
 import ExportPdfModal from '@/components/vault/ExportPdfModal';
+import GameCameraScannerModal from '@/components/vault/GameCameraScannerModal';
 
 const POPULAR_CATEGORIES = [
   'Chiến thuật',
@@ -236,6 +237,9 @@ export default function GameVaultPage() {
   const [isPdfModalOpen, setIsPdfModalOpen] = useState(false);
   const [allVaultGames, setAllVaultGames] = useState([]);
   const [isLoadingAllGames, setIsLoadingAllGames] = useState(false);
+
+  // Camera & Mobile BGG Box Scanner State
+  const [isCameraScannerOpen, setIsCameraScannerOpen] = useState(false);
 
   // Mở modal xuất PDF và nạp toàn bộ danh mục game theo đúng thứ tự sort đang chọn
   const handleOpenPdfModal = async () => {
@@ -999,6 +1003,15 @@ export default function GameVaultPage() {
             >
               <span className="material-symbols-outlined text-base">upload_file</span>
               <span>Nhập Excel / CSV</span>
+            </button>
+
+            <button
+              onClick={() => setIsCameraScannerOpen(true)}
+              className="flex items-center gap-1.5 px-4 py-3 rounded-xl border-2 border-primary bg-primary text-white hover:bg-primary-dim font-label text-xs uppercase tracking-wider font-bold transition-all shadow-md active:scale-95 cursor-pointer"
+              title="Dùng camera điện thoại hoặc chụp ảnh hộp game để nhận diện BGG tự động"
+            >
+              <span className="material-symbols-outlined text-base">photo_camera</span>
+              <span>Quét Ảnh Hộp Game</span>
             </button>
 
             <button
@@ -2624,6 +2637,19 @@ export default function GameVaultPage() {
         stats={stats}
         initialSortBy={sortBy}
         initialSortOrder={sortOrder}
+      />
+
+      {/* MODAL QUÉT CAMERA & NHẬN DIỆN BGG CHO ĐIỆN THOẠI */}
+      <GameCameraScannerModal
+        isOpen={isCameraScannerOpen}
+        onClose={() => setIsCameraScannerOpen(false)}
+        token={user?.token}
+        onGameAdded={() => {
+          fetchShelfGames();
+          fetchStats();
+          showToast('Đã thêm game vào kho thành công!');
+        }}
+        language={language}
       />
     </div>
   );

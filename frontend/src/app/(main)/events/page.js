@@ -68,10 +68,19 @@ export default function EventsPage() {
     }, 3500);
   };
 
-  // Chỉ cho phép thành viên đã đăng nhập tạo kèo
+  // Chỉ cho phép thành viên thường tạo kèo (Admin chỉ quản lý & kiểm duyệt)
   const handleOpenCreateEvent = () => {
     if (!user?.token && !user?.id) {
       setIsLoginPromptOpen(true);
+      return;
+    }
+    if (user?.role === 'ADMIN') {
+      showToast(
+        isEn
+          ? 'Admin accounts are reserved for system monitoring & moderation only.'
+          : 'Tài khoản Quản Trị Viên (Admin) chỉ dùng để quản lý hệ thống và kiểm duyệt, không dùng để đăng kèo.',
+        'error'
+      );
       return;
     }
     setIsCreateOpen(true);

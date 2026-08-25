@@ -76,7 +76,10 @@ function LoginContent() {
         token: result.token,
       });
 
-      const redirectUrl = searchParams.get('redirect') || '/';
+      const userRole = result.data?.role || 'USER';
+      const adminSlug = process.env.NEXT_PUBLIC_ADMIN_SECRET_SLUG || 'bm-control-8x92k';
+      const defaultRedirect = userRole === 'ADMIN' ? `/${adminSlug}` : '/';
+      const redirectUrl = searchParams.get('redirect') || defaultRedirect;
       router.push(redirectUrl);
     } catch (loginError) {
       setError(loginError?.message || 'Đăng nhập thất bại. Vui lòng thử lại.');
@@ -123,16 +126,19 @@ function LoginContent() {
       }
 
       // 3. Lưu phiên đăng nhập
+      const userRole = data.data?.role || 'USER';
       setUser({
         id: data.data?.id,
         email: data.data?.email || fbUser.email,
         username: data.data?.username || fbUser.displayName,
         avatarUrl: data.data?.avatarUrl || fbUser.photoURL,
         token: data.token,
-        role: data.data?.role || 'USER',
+        role: userRole,
       });
 
-      const redirectUrl = searchParams.get('redirect') || '/';
+      const adminSlug = process.env.NEXT_PUBLIC_ADMIN_SECRET_SLUG || 'bm-control-8x92k';
+      const defaultRedirect = userRole === 'ADMIN' ? `/${adminSlug}` : '/';
+      const redirectUrl = searchParams.get('redirect') || defaultRedirect;
       router.replace(redirectUrl);
     } catch (err) {
       console.warn('Firebase Google Login error:', err);

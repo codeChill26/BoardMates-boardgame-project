@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { getBackendUrl } from '@/lib/apiConfig';
 
-export default function MarketplaceManager({ token, language = 'vi' }) {
+export default function MarketplaceManager({ token, masterKey, language = 'vi' }) {
   const isEn = language === 'en';
   const [listings, setListings] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -20,6 +20,12 @@ export default function MarketplaceManager({ token, language = 'vi' }) {
     setTimeout(() => setFeedbackMsg(null), 3500);
   };
 
+  const getHeaders = useCallback(() => {
+    const headers = { Authorization: `Bearer ${token}` };
+    if (masterKey) headers['x-admin-key'] = masterKey;
+    return headers;
+  }, [token, masterKey]);
+
   const fetchListings = useCallback(async () => {
     try {
       setLoading(true);
@@ -32,7 +38,7 @@ export default function MarketplaceManager({ token, language = 'vi' }) {
       if (statusFilter) params.append('status', statusFilter);
 
       const res = await fetch(`${getBackendUrl()}/api/admin/marketplace?${params.toString()}`, {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: getHeaders(),
       });
 
       const json = await res.json().catch(() => null);
@@ -48,7 +54,7 @@ export default function MarketplaceManager({ token, language = 'vi' }) {
     } finally {
       setLoading(false);
     }
-  }, [token, search, typeFilter, statusFilter, page]);
+  }, [getHeaders, search, typeFilter, statusFilter, page]);
 
   useEffect(() => {
     fetchListings();
@@ -61,7 +67,7 @@ export default function MarketplaceManager({ token, language = 'vi' }) {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
+          ...getHeaders(),
         },
         body: JSON.stringify({ status: newStatus }),
       });

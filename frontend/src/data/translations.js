@@ -2,7 +2,7 @@ export const translations = {
   vi: {
     navbar: {
       home: 'Trang chủ',
-      community: 'Cộng đồng',
+      community: 'Marketplace',
       events: 'Sự kiện',
       joinUs: 'Tham gia',
       about: 'Giới thiệu',
@@ -36,8 +36,8 @@ export const translations = {
           body: 'Điểm bắt đầu: BoardMates là gì và chúng mình đang xây dựng điều gì.',
         },
         community: {
-          title: 'Cộng đồng',
-          body: 'Nơi bạn tìm thấy những người cùng gu board game để chơi và chia sẻ. Phần này đang được xây, sẽ mở sớm.',
+          title: 'Marketplace',
+          body: 'Sàn rao vặt, trao đổi board game, phụ kiện và tìm kiếm những tựa game độc đáo từ cộng đồng.',
         },
         events: {
           title: 'Sự kiện',
@@ -463,8 +463,8 @@ export const translations = {
           body: 'The starting point: what BoardMates is and what we are building.',
         },
         community: {
-          title: 'Community',
-          body: 'Where you find people who share your taste in board games. We are still building this one — it opens soon.',
+          title: 'Marketplace',
+          body: 'Buy, sell, and trade board games, sleeves, and accessories directly with fellow boardgamers.',
         },
         events: {
           title: 'Events',

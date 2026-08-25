@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { getBackendUrl } from '@/lib/apiConfig';
 
-export default function CommunityManager({ token, language = 'vi' }) {
+export default function CommunityManager({ token, masterKey, language = 'vi' }) {
   const isEn = language === 'en';
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -17,8 +17,11 @@ export default function CommunityManager({ token, language = 'vi' }) {
   const fetchCommunity = useCallback(async () => {
     try {
       setLoading(true);
+      const headers = { Authorization: `Bearer ${token}` };
+      if (masterKey) headers['x-admin-key'] = masterKey;
+
       const res = await fetch(`${getBackendUrl()}/api/admin/community`, {
-        headers: { Authorization: `Bearer ${token}` },
+        headers,
       });
 
       const json = await res.json().catch(() => null);

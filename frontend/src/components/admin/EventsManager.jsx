@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { getBackendUrl } from '@/lib/apiConfig';
 
-export default function EventsManager({ token, language = 'vi' }) {
+export default function EventsManager({ token, masterKey, language = 'vi' }) {
   const isEn = language === 'en';
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -19,6 +19,12 @@ export default function EventsManager({ token, language = 'vi' }) {
     setTimeout(() => setFeedbackMsg(null), 3500);
   };
 
+  const getHeaders = useCallback(() => {
+    const headers = { Authorization: `Bearer ${token}` };
+    if (masterKey) headers['x-admin-key'] = masterKey;
+    return headers;
+  }, [token, masterKey]);
+
   const fetchEvents = useCallback(async () => {
     try {
       setLoading(true);
@@ -30,7 +36,7 @@ export default function EventsManager({ token, language = 'vi' }) {
       if (statusFilter) params.append('status', statusFilter);
 
       const res = await fetch(`${getBackendUrl()}/api/admin/events?${params.toString()}`, {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: getHeaders(),
       });
 
       const json = await res.json().catch(() => null);
@@ -46,7 +52,7 @@ export default function EventsManager({ token, language = 'vi' }) {
     } finally {
       setLoading(false);
     }
-  }, [token, search, statusFilter, page]);
+  }, [getHeaders, search, statusFilter, page]);
 
   useEffect(() => {
     fetchEvents();
@@ -59,7 +65,7 @@ export default function EventsManager({ token, language = 'vi' }) {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
+          ...getHeaders(),
         },
         body: JSON.stringify({ status: newStatus }),
       });
@@ -87,7 +93,7 @@ export default function EventsManager({ token, language = 'vi' }) {
       setBusyId(eventId);
       const res = await fetch(`${getBackendUrl()}/api/admin/events/${eventId}`, {
         method: 'DELETE',
-        headers: { Authorization: `Bearer ${token}` },
+        headers: getHeaders(),
       });
 
       const json = await res.json().catch(() => null);

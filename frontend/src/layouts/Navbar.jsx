@@ -111,7 +111,7 @@ function Navbar() {
 
   const navLinks = [
     { to: '/', label: t.home, tourId: 'nav-home' },
-    { to: '/community', label: t.community, comingSoon: true, tourId: 'nav-community' },
+    { to: '/marketplace', label: 'Marketplace', comingSoon: true, tourId: 'nav-marketplace' },
     { to: '/events', label: t.events, tourId: 'nav-events' },
     { to: '/join-us', label: t.joinUs, tourId: 'nav-join-us' },
     { to: '/about', label: t.about, tourId: 'nav-about' },
@@ -322,15 +322,15 @@ function Navbar() {
 
                   {user?.role === 'ADMIN' ? (
                     <Link
-                      href="/admin"
-                      onClick={(event) => handleNavClick(event, '/admin', { closeProfile: true })}
+                      href={`/${process.env.NEXT_PUBLIC_ADMIN_SECRET_SLUG || 'bm-control-8x92k'}`}
+                      onClick={(event) => handleNavClick(event, `/${process.env.NEXT_PUBLIC_ADMIN_SECRET_SLUG || 'bm-control-8x92k'}`, { closeProfile: true })}
                       scroll={false}
-                      className="flex items-center gap-3 px-4 py-3 hover:bg-primary/10 transition-colors text-on-surface group"
+                      className="flex items-center gap-3 px-4 py-3 bg-primary/10 hover:bg-primary/20 transition-colors text-primary font-bold group"
                     >
-                      <span className="material-symbols-outlined text-xl text-on-surface-variant group-hover:text-primary">
+                      <span className="material-symbols-outlined text-xl text-primary">
                         admin_panel_settings
                       </span>
-                      <span className="font-label text-xs uppercase tracking-wider">Admin</span>
+                      <span className="font-label text-xs uppercase tracking-wider">Bảng Quản Trị</span>
                     </Link>
                   ) : null}
 
@@ -420,6 +420,17 @@ function Navbar() {
                       <span className="material-symbols-outlined text-primary">inventory_2</span>
                       {t.gameVault || 'Kho Game'}
                     </Link>
+                    {user?.role === 'ADMIN' && (
+                      <Link
+                        href={`/${process.env.NEXT_PUBLIC_ADMIN_SECRET_SLUG || 'bm-control-8x92k'}`}
+                        onClick={(event) => handleNavClick(event, `/${process.env.NEXT_PUBLIC_ADMIN_SECRET_SLUG || 'bm-control-8x92k'}`, { closeMenu: true })}
+                        scroll={false}
+                        className="flex items-center gap-2.5 text-primary font-label uppercase text-sm font-bold tracking-widest py-2"
+                      >
+                        <span className="material-symbols-outlined text-primary">admin_panel_settings</span>
+                        Bảng Quản Trị
+                      </Link>
+                    )}
                     <button
                       onClick={handleLogout}
                       className="flex items-center gap-2.5 text-error font-label uppercase text-sm tracking-widest py-2 cursor-pointer text-left"

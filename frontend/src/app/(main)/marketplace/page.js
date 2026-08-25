@@ -99,8 +99,17 @@ export default function MarketplacePage() {
       <header className="mb-12">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div>
-            <span className="label-text text-primary font-bold uppercase tracking-[0.2em] text-xs mb-2 block tracking-widest">Bộ sưu tập 2024</span>
-            <h1 className="text-5xl md:text-6xl font-headline italic text-on-surface">Cửa hàng</h1>
+            <div className="flex items-center gap-2 mb-2">
+              <span className="bg-tertiary text-on-tertiary text-[10px] font-bold px-2 py-0.5 rounded-full font-mono uppercase tracking-wider">
+                SẮP RA MẮT • COMING SOON
+              </span>
+            </div>
+            <h1 className="text-4xl md:text-5xl font-headline font-bold text-on-surface">
+              Marketplace
+            </h1>
+            <p className="text-xs sm:text-sm text-on-surface-variant mt-1 font-sans">
+              Sàn rao vặt, trao đổi Board Game và phụ kiện chính hãng giữa các kỳ thủ BoardMates.
+            </p>
           </div>
           
           <div className="flex items-center gap-4">

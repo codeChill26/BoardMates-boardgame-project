@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { getBackendUrl } from '@/lib/apiConfig';
 
-export default function UsersManager({ token, language = 'vi', currentUserId }) {
+export default function UsersManager({ token, masterKey, language = 'vi', currentUserId }) {
   const isEn = language === 'en';
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -20,6 +20,12 @@ export default function UsersManager({ token, language = 'vi', currentUserId }) 
     setTimeout(() => setFeedbackMsg(null), 3500);
   };
 
+  const getHeaders = useCallback(() => {
+    const headers = { Authorization: `Bearer ${token}` };
+    if (masterKey) headers['x-admin-key'] = masterKey;
+    return headers;
+  }, [token, masterKey]);
+
   const fetchUsers = useCallback(async () => {
     try {
       setLoading(true);
@@ -32,7 +38,7 @@ export default function UsersManager({ token, language = 'vi', currentUserId }) 
       if (statusFilter) params.append('status', statusFilter);
 
       const res = await fetch(`${getBackendUrl()}/api/admin/users?${params.toString()}`, {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: getHeaders(),
       });
 
       const json = await res.json().catch(() => null);
@@ -66,7 +72,7 @@ export default function UsersManager({ token, language = 'vi', currentUserId }) 
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
+          ...getHeaders(),
         },
         body: JSON.stringify({ status: newStatus }),
       });
@@ -97,7 +103,7 @@ export default function UsersManager({ token, language = 'vi', currentUserId }) 
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
+          ...getHeaders(),
         },
         body: JSON.stringify({ role: newRole }),
       });

@@ -1,0 +1,18 @@
+# Environment files
+.env
+.env.local
+.env.development
+.env.production
+*.env
+.env.*
+!.env.example
+
+# Dependencies
+node_modules/
+npm-debug.log*
+
+# Database & Uploads
+prisma/*.db
+prisma/*.db-journal
+uploads/
+tmp/
